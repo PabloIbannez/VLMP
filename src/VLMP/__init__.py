@@ -6,6 +6,8 @@ import json
 
 import numpy as np
 
+from .VLMP import VLMP
+
 ################### DEBUG MODE ##################
 
 DEBUG_MODE = True
@@ -48,3 +50,6 @@ else:
 
 clogger.setFormatter(CustomFormatter())
 logger.addHandler(clogger)
+
+
+print("VLMP")

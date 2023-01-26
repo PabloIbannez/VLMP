@@ -1,6 +1,8 @@
 import sys, os
 
-from VLMP.models import modelBase
+import logging
+
+from . import modelBase
 
 import numpy as np
 
@@ -19,22 +21,15 @@ class wlc(modelBase):
         particleIndex: Select a particle by its index
     """
 
-    availableParameters = ["N","mass","b","Kb","Ka"]
-    availableSelectors  = ["particleIndex"]
-
     def __init__(self,**kwargs):
-        super().__init__()
-        self.logger.debug("[WLC] Using model Worm Like Chain (WLC)")
+        super().__init__("wlc",
+                         availableParameters = ["N","mass","b","Kb","Ka"],
+                         availableSelectors  = ["particleIndex"],
+                         **kwargs)
 
         ############################################################
         ####################  Model Parameters  ####################
         ############################################################
-
-        # Check if all parameters given by kwargs are available
-        for key in kwargs:
-            if key not in self.availableParameters:
-                self.logger.error(f"[WLC] Parameter \"{key}\" not available")
-                sys.exit(1)
 
         #Read the number of particles
         self.N = kwargs.get("N",0)
@@ -47,17 +42,17 @@ class wlc(modelBase):
         self.Kb = kwargs.get("Kb",1.0)
         self.Ka = kwargs.get("Ka",1.0)
 
-        self.logger.debug(f"[WLC] Generating WLC with \"N\":{self.N} particles")
-        self.logger.debug(f"[WLC] Parameters \"mass\":{self.mass}, \"b\":{self.b}, \"Kb\":{self.Kb}, \"Ka\":{self.Ka}")
+        self.logger.info(f"[{self.name}] Generating WLC with \"N\":{self.N} particles")
+        self.logger.info(f"[{self.name}] Parameters \"mass\":{self.mass}, \"b\":{self.b}, \"Kb\":{self.Kb}, \"Ka\":{self.Ka}")
 
         ########################################################
         ############### Generate the WLC model #################
         ########################################################
 
         #Generate coordinates, a line along the z axis
-        self.coords = np.zeros((self.N,3))
+        self.coordinates = np.zeros((self.N,3))
         for i in range(self.N):
-            self.coords[i,2] = i*self.b
+            self.coordinates[i,2] = i*self.b
 
         #Generate topology
         self.topology = {}
@@ -98,12 +93,6 @@ class wlc(modelBase):
             self.topology["forceField"]["angles"]["data"].append([i,i+1,i+2])
 
     def selection(self,**kwargs):
-        # Check if all selectors given by kwargs are available
-        for key in kwargs:
-            if key not in self.availableSelectors:
-                self.logger.error(f"[WLC] Selector \"{key}\" not available")
-                sys.exit(1)
-
         return kwargs.get("particleIndex",[])
 
     def write(self, filePath:str):
