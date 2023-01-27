@@ -3,6 +3,7 @@ import os
 ################ MODEL INTERFACE ################
 
 import abc
+from UAMMD.simulation import simulation
 
 class modelBase(metaclass=abc.ABCMeta):
 
@@ -20,11 +21,73 @@ class modelBase(metaclass=abc.ABCMeta):
             if key not in self.availableParameters:
                 self.logger.warning(f"[{name}] Parameter \"{key}\" not available for model \"{name}\"")
 
-    def getCoordinates(self):
-        return self.coordinates
+        self.ids        = None
+        self.positions  = None
+        self.velocities = None
+        self.directions = None
+
+    def getIds(self):
+        return self.ids
+
+    def getPositions(self):
+        return self.positions
+
+    def getVelocities(self):
+        return self.velocities
+
+    def getDirections(self):
+        return self.directions
 
     def getTopology(self):
         return self.topology
+
+    def getSimulation(self):
+        if self.ids is None and \
+           self.positions is None and \
+           self.velocities is None and \
+           self.directions is None:
+            return simulation({"topology":self.topology})
+        else:
+            coordinates = {}
+            coordinates["labels"] = []
+            coordinates["data"]   = []
+
+            coordinates["labels"].append("id")
+            if self.ids is not None:
+                for id_ in self.ids:
+                    coordinates["data"].append([int(id_)])
+            else:
+                #If no ids are given, use the index of the particle as id
+
+                if self.positions is not None:
+                    for i in range(len(self.positions)):
+                        coordinates["data"].append([i])
+                elif self.velocities is not None:
+                    for i in range(len(self.velocities)):
+                        coordinates["data"].append([i])
+                elif self.directions is not None:
+                    for i in range(len(self.directions)):
+                        coordinates["data"].append([i])
+
+            if self.positions is not None:
+                coordinates["labels"].append("position")
+                for i,pos in enumerate(self.positions):
+                    x,y,z = pos
+                    coordinates["data"][i].append([float(x),float(y),float(z)])
+
+            if self.velocities is not None:
+                coordinates["labels"].append("velocity")
+                for i,vel in enumerate(self.velocities):
+                    x,y,z = vel
+                    coordinates["data"][i].append([float(x),float(y),float(z)])
+
+            if self.directions is not None:
+                coordinates["labels"].append("direction")
+                for i,dir_ in enumerate(self.directions):
+                    x,y,z,w = dir_
+                    coordinates["data"][i].append([float(x),float(y),float(z),float(w)])
+
+            return simulation({"coordinates":coordinates,"topology":self.topology})
 
     @classmethod
     def __subclasshook__(cls, subclass):

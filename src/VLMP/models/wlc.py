@@ -49,10 +49,10 @@ class wlc(modelBase):
         ############### Generate the WLC model #################
         ########################################################
 
-        #Generate coordinates, a line along the z axis
-        self.coordinates = np.zeros((self.N,3))
+        #Generate positions, a line along the z axis
+        self.positions = np.zeros((self.N,3))
         for i in range(self.N):
-            self.coordinates[i,2] = i*self.b
+            self.positions[i,2] = i*self.b
 
         #Generate topology
         self.topology = {}
