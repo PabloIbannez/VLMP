@@ -71,7 +71,7 @@ class integratorBase(metaclass=abc.ABCMeta):
         sim = {}
 
         sim["integrator"] = {
-        name:{
+        self._name:{
             "type":[self.integratorClass,self.integratorSubClass],
             "parameters":copy.deepcopy(self.integratorParameters)
         }}
@@ -79,7 +79,7 @@ class integratorBase(metaclass=abc.ABCMeta):
         sim["integrator"]["schedule"] = {
             "type":["Schedule","Integrator"],
             "labels":["order","integrator","steps"],
-            "data":[[1,name,self.getIntegrationSteps()]]}
+            "data":[[1,self._name,self.getIntegrationSteps()]]}
 
         return simulation(copy.deepcopy(sim),DEBUG_MODE)
 

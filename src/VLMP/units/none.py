@@ -21,7 +21,7 @@ class none(unitsBase):
         ####################  None Parameters   ####################
         ############################################################
 
-        self.unitsUAMMD = "none"
+        self.unitsUAMMD = "None"
 
     def fromInputToInternalTime(self, time):
         return time

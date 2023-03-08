@@ -46,20 +46,20 @@ class modelExtensionBase(metaclass=abc.ABCMeta):
 
         ########################################################
 
-        self.extensions = None
+        self.extension = None
 
-    def getExtensions(self):
-        if self.extensions is None:
-            self.logger.error(f"[ModelExtension] ({self._type}) Extensions not set")
-            raise ValueError(f"Extensions not set")
-        return self.extensions
+    def getExtension(self):
+        if self.extension is None:
+            self.logger.error(f"[ModelExtension] ({self._type}) Extension not set")
+            raise ValueError(f"Extension not set")
+        return self.extension
 
     def getSimulation(self,DEBUG_MODE = False):
 
         sim = {}
 
         sim["topology"] = {}
-        sim["topology"]["forceField"] = self.getExtensions()
+        sim["topology"]["forceField"] = self.getExtension()
 
         return simulation(copy.deepcopy(sim),DEBUG_MODE)
 

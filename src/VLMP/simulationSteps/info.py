@@ -18,4 +18,5 @@ class info(simulationStepBase):
                          availableParameters  = {},
                          compulsoryParameters = {},
                          **kwargs)
+        self.simulationStep = {}
         print("info.__init__")

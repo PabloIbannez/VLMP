@@ -10,10 +10,10 @@ DEBUG_MODE = True
 
 import VLMP.units           as _units
 import VLMP.globals         as _globals
-import VLMP.integrators     as _integrators
 import VLMP.models          as _models
 import VLMP.modelOperations as _modelOperations
 import VLMP.modelExtensions as _modelExtensions
+import VLMP.integrators     as _integrators
 import VLMP.simulationSteps as _simulationSteps
 
 class VLMP:
@@ -109,9 +109,9 @@ class VLMP:
 
     def loadSimulationPool(self,simulationPool:dict):
 
-        simulationBuffer = OrderedDict()
-
         for simulationInfo in simulationPool:
+
+            simulationBuffer = OrderedDict()
 
             ############## UNITS ##############
 
@@ -165,30 +165,6 @@ class VLMP:
                     except:
                         self.logger.error(f"[VLMP] Error loading global \"{name}\"")
                         raise ValueError("Error loading global")
-
-            ############## INTEGRATOR ##############
-
-            #Check if integrator section is present
-            if "integrator" not in simulationInfo.keys():
-                self.logger.error("[VLMP] Integrator section not found")
-                raise ValueError("Integrator section not found")
-            else:
-
-                for integrator in simulationInfo["integrator"]:
-
-                    typ, name, param = self.__checkComponent(integrator,"integrator",simulationBuffer)
-                    self.logger.debug(f"[VLMP] Adding integrator \"{name}\"")
-
-                    #Check if typ is part of "_integrators"
-                    if typ not in dir(_integrators):
-                        self.logger.error(f"[VLMP] Integrator \"{typ}\" not found")
-                        raise ValueError("Integrator not found")
-
-                    try:
-                        simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,units=units,**(param))
-                    except:
-                        self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
-                        raise ValueError("Error loading integrator")
 
             ############### MODEL ###############
             #Create a list with the added models. This is used afterwards to apply model operations
@@ -302,6 +278,29 @@ class VLMP:
                         self.logger.error(f"[VLMP] Error loading model extension \"{name}\"")
                         raise ValueError("Error loading model extension")
 
+            ############## INTEGRATOR ##############
+
+            #Check if integrator section is present
+            if "integrator" not in simulationInfo.keys():
+                self.logger.error("[VLMP] Integrator section not found")
+                raise ValueError("Integrator section not found")
+            else:
+
+                for integrator in simulationInfo["integrator"]:
+
+                    typ, name, param = self.__checkComponent(integrator,"integrator",simulationBuffer)
+                    self.logger.debug(f"[VLMP] Adding integrator \"{name}\"")
+
+                    #Check if typ is part of "_integrators"
+                    if typ not in dir(_integrators):
+                        self.logger.error(f"[VLMP] Integrator \"{typ}\" not found")
+                        raise ValueError("Integrator not found")
+
+                    try:
+                        simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,units=units,**(param))
+                    except:
+                        self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
+                        raise ValueError("Error loading integrator")
 
             ############### SIMULATION STEPS ###############
 
@@ -334,11 +333,13 @@ class VLMP:
             self.logger.debug("[VLMP] Merging components into a single simulation")
 
             sim = None
-            for component in simulationBuffer.values():
+            for componentName,component in simulationBuffer.items():
+                self.logger.debug(f"[VLMP] Merging component \"{componentName}\"")
                 if sim is None:
                     sim = component.getSimulation(DEBUG_MODE)
                 else:
-                    sim.append(component.getSimulation(DEBUG_MODE),mode="mdl")
+                    sim.append(component.getSimulation(DEBUG_MODE),mode="modelId")
+                self.logger.debug(f"[VLMP] Component \"{componentName}\" merged")
             #Simulation creation finished
 
             #Store the simulation
@@ -346,7 +347,7 @@ class VLMP:
 
     def splitSimulationPool(self,*mode):
 
-        availableModes = ["upperLimit","property","none"]
+        availableModes = ["none","one","upperLimit","property"]
 
         if len(self.simulations) >= 1:
             modeName = mode[0]
@@ -359,7 +360,11 @@ class VLMP:
             raise ValueError("Split mode not available")
         else:
             #Switch to the selected mode
-            if modeName == "upperLimit":
+            if  modeName == "none":
+                self.simulations = [self.simulations]
+            elif modeName == "one":
+                self.simulations = [[sim] for sim in self.simulations]
+            elif modeName == "upperLimit":
                 self.logger.debug("[VLMP] Splitting simulation pool using upper limit")
                 availableScoringProperties = ["numberOfParticles"]
 
@@ -408,9 +413,6 @@ class VLMP:
                 #Split the simulation pool
                 self.simulations = self.__splitSimulationPoolByProperty(propertyPath)
 
-            elif modeName == "none":
-                self.simulations = [self.simulations]
-
     def aggregateSimulationPool(self):
         #If the simulation pool has not been split into sets, then is a list of simulations.
         #At this point we need the simulation pool to be a list of lists of simulations.
@@ -427,7 +429,7 @@ class VLMP:
                 if sim is None:
                     sim = self.simulations[i][j]
                 else:
-                    sim.append(self.simulations[i][j],mode="sim")
+                    sim.append(self.simulations[i][j],mode="simulationId")
             self.simulations[i] = sim
 
     def setUpSimulation(self,simulationName:str):

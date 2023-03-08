@@ -51,7 +51,7 @@ class unitsBase(metaclass=abc.ABCMeta):
             self.logger.error(f"[Units] Units key for UAMMD not set")
             raise ValueError(f"Units key for UAMMD not set")
 
-        return simulation({"global":{"units":self.unitsUAMMD}},DEBUG_MODE)
+        return simulation({"global":{"parameters":copy.deepcopy({"units":self.unitsUAMMD})}},DEBUG_MODE)
 
     @classmethod
     def __subclasshook__(cls, subclass):

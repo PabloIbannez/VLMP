@@ -21,4 +21,5 @@ class constantForce(modelExtensionBase):
                          availableParameters  = {"force"},
                          compulsoryParameters = {"force"},
                          **kwargs)
+        self.extension = {}
         print("constantForce.__init__")

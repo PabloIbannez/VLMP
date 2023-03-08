@@ -22,8 +22,8 @@ class simulationStepBase(metaclass=abc.ABCMeta):
 
         self.units  = units
 
-        self.availableParameters  = availableParameters.copy()
-        self.compulsoryParameters = compulsoryParameters.copy()
+        self.availableParameters  = availableParameters.copy().union({"intervalStep"})
+        self.compulsoryParameters = compulsoryParameters.copy().union({"intervalStep"})
 
         # Check if all parameters given by kwargs are available
         for key in kwargs:
@@ -53,8 +53,6 @@ class simulationStepBase(metaclass=abc.ABCMeta):
     def getSimulation(self,DEBUG_MODE = False):
 
         sim = {}
-
-        sim["simulationStep"] = {}
         sim["simulationStep"] = self.getSimulationStep()
 
         return simulation(copy.deepcopy(sim),DEBUG_MODE)

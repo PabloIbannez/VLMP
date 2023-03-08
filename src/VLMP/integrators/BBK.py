@@ -34,6 +34,9 @@ class BBK(integratorBase):
         self.timeStep         = kwargs["timeStep"]
         self.frictionConstant = kwargs["frictionConstant"]
 
+        self.integratorParameters = {"timeStep":self.timeStep,
+                                     "frictionConstant":self.frictionConstant}
+
         self.totalIntegrationTime = kwargs["totalIntegrationTime"]
 
         ###################  Units Conversion  ####################
