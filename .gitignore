@@ -14,3 +14,6 @@
 # Ignore `scripts/__pycache__` dir
 __pycache__/
 
+*.sp
+*.json
+

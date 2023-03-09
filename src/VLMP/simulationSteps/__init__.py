@@ -41,7 +41,12 @@ class simulationStepBase(metaclass=abc.ABCMeta):
 
         ########################################################
 
+        self.sharedAccrossSimulations = False
+
         self.simulationStep = None
+
+    def isSharedAccrossSimulations(self):
+        return self.sharedAccrossSimulations
 
     def getSimulationStep(self):
         if self.simulationStep == None:

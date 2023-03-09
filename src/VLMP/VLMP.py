@@ -1,3 +1,4 @@
+import os
 import logging
 
 from collections import OrderedDict
@@ -8,6 +9,9 @@ DEBUG_MODE = True
 
 ################### DEBUG MODE ##################
 
+from .utils import getValuesAndPaths
+
+import VLMP.system          as _system
 import VLMP.units           as _units
 import VLMP.globals         as _globals
 import VLMP.models          as _models
@@ -18,7 +22,7 @@ import VLMP.simulationSteps as _simulationSteps
 
 class VLMP:
 
-    #Spling functions
+    #Split functions
 
     def __splitSimulationPoolByMaxNumberOfParticles(self,maxNumberOfParticles):
         simulationSets = []
@@ -113,14 +117,47 @@ class VLMP:
 
             simulationBuffer = OrderedDict()
 
+            ############## SYSTEM ##############
+
+            #Check if system section is present
+            if "system" not in simulationInfo.keys():
+                self.logger.error("[VLMP] System section not found")
+                raise ValueError("System section not found")
+            else:
+
+                #Check there is one (and only one) system component of type "simulationName"
+                simNameComponents = [component for component in simulationInfo["system"] if component["type"] == "simulationName"]
+                if len(simNameComponents) == 0:
+                    self.logger.error("[VLMP] Simulation name not specified")
+                    raise ValueError("Simulation name not specified")
+                elif len(simNameComponents) > 1:
+                    self.logger.error("[VLMP] More than one simulation name specified")
+                    raise ValueError("More than one simulation name specified")
+
+                for system in simulationInfo["system"]:
+
+                    typ, name, param = self.__checkComponent(system,"system",simulationBuffer)
+                    self.logger.debug(f"[VLMP] Adding system \"{name}\"")
+
+                    #Check if typ is part of "_system"
+                    if typ not in dir(_system):
+                        self.logger.error(f"[VLMP] System \"{typ}\" not found")
+                        raise ValueError("System not found")
+
+                    try:
+                        system = eval(f"_system.{typ}")(name=name,**param)
+                        simulationBuffer["system_"+name] = system
+                    except:
+                        self.logger.error(f"[VLMP] Error loading system \"{name}\" ({typ})")
+                        raise ValueError("Error loading system")
+
+
             ############## UNITS ##############
 
             #Check if units section is present
             if "units" not in simulationInfo.keys():
-                self.logger.warning("[VLMP] Units section not found, using default units (\"none\")")
-                units = eval("_units.none")(**{},name="none")
-                self.logger.debug(f"[VLMP] Selected units: \"none\"")
-                simulationBuffer["units_none"] = units
+                self.logger.error("[VLMP] Units section not found")
+                raise ValueError("Units section not found")
             else:
                 #Only one unit system can be specified
                 if len(simulationInfo["units"]) > 1:
@@ -342,6 +379,33 @@ class VLMP:
                 self.logger.debug(f"[VLMP] Component \"{componentName}\" merged")
             #Simulation creation finished
 
+            ###############################################
+
+            #Create the simulation folder and update:
+            # - outputFilePath -> simulations/simulationFolder/outputFilePath
+
+            #Create the simulation folder
+            currentWorkingDirectory = os.getcwd()
+            simulationName = sim["system"]["parameters"]["name"]
+
+            #Check if other simulation with the same name has been already created
+            if simulationName in [s["system"]["parameters"]["name"] for s in self.simulations]:
+                self.logger.error(f"[VLMP] Simulation with name \"{simulationName}\" already exists")
+                raise ValueError("Simulation already exists")
+
+            simulationFolder = os.path.join(currentWorkingDirectory,"results",simulationName)
+
+            if not os.path.exists(simulationFolder):
+                os.makedirs(simulationFolder)
+
+            #Updating file path
+            outputFilePaths = getValuesAndPaths(sim,"outputFilePath")
+            for fName,fSimPath in outputFilePaths:
+                sim.setValue(fSimPath,os.path.join(simulationFolder,fName))
+            #Simulation folder created
+
+            ###############################################
+
             #Store the simulation
             self.simulations.append(sim)
 
@@ -421,9 +485,50 @@ class VLMP:
         if not isinstance(self.simulations[0],list):
             self.simulations = [self.simulations]
 
+        #Create scratch folder
+
         #Generate a simulation merging all simulations in each set
         for i in range(len(self.simulations)):
             self.logger.debug("[VLMP] Generating simulation set %d",i)
+
+            #Update simulationsStep for each simulation in the simulation set
+            #This ensures the simulation step is applied over particles for the
+            #same simulationId
+            #We assume that simulationId is 0 (not set) for each independent simulation
+            #Check it
+            for s in self.simulations[i]:
+                structureLabels = s["topology"]["structure"]["labels"]
+                if "simulationId" in structureLabels:
+                    self.logger.error("[VLMP] SimulationId already set, for a single simulation. Cannot aggregate simulations")
+                    raise ValueError("SimulationId already set")
+
+            for j,s in enumerate(self.simulations[i]): #j is the simulationId
+
+                if len(self.simulations[i]) > 1:
+                    groupDefinitionRequired = False
+                    if "simulationStep" in s.keys():
+                        keysToRename = []
+                        for simStep in s["simulationStep"].keys():
+                            simStepType = s["simulationStep"][simStep]["type"][0]
+                            if "UtilsStep" not in simStepType:
+                                self.simulations[i][j]["simulationStep"][simStep]["parameters"]["group"] = f"simId_{j}"
+                                keysToRename.append(simStep)
+                                groupDefinitionRequired = True
+
+                        for k in keysToRename:
+                            self.simulations[i][j]["simulationStep"][k+f"_{j}"] = self.simulations[i][j]["simulationStep"].pop(k)
+
+                    if groupDefinitionRequired:
+                        if "groups_simulationId" not in s["simulationStep"].keys():
+                            self.simulations[i][j]["simulationStep"]["groups_simulationId"] = {
+                                "type": ["Groups","GroupsList"],
+                                "parameters": {},
+                                "labels":["name","type","selection"],
+                                "data":[
+                                    [f"simId_{j}","simulationId","0"],
+                                ]
+                            }
+
             sim = None
             for j in range(len(self.simulations[i])):
                 if sim is None:

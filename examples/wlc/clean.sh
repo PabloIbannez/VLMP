@@ -1,1 +1,1 @@
-rm -rf __pycache__ *.json
+rm -rf __pycache__ *.json *.sp results scratch
