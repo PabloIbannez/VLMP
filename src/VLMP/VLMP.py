@@ -111,6 +111,7 @@ class VLMP:
         self.logger.info("[VLMP] Starting VLMP")
         self.simulations = []
 
+
     def loadSimulationPool(self,simulationPool:dict):
 
         for simulationInfo in simulationPool:
@@ -382,7 +383,7 @@ class VLMP:
             ###############################################
 
             #Create the simulation folder and update:
-            # - outputFilePath -> simulations/simulationFolder/outputFilePath
+            # - outputFilePath -> results/simulationFolder/outputFilePath
 
             #Create the simulation folder
             currentWorkingDirectory = os.getcwd()
@@ -477,6 +478,7 @@ class VLMP:
                 #Split the simulation pool
                 self.simulations = self.__splitSimulationPoolByProperty(propertyPath)
 
+
     def aggregateSimulationPool(self):
         #If the simulation pool has not been split into sets, then is a list of simulations.
         #At this point we need the simulation pool to be a list of lists of simulations.
@@ -484,8 +486,6 @@ class VLMP:
         #This list has only one element, which is a list with all the simulations.
         if not isinstance(self.simulations[0],list):
             self.simulations = [self.simulations]
-
-        #Create scratch folder
 
         #Generate a simulation merging all simulations in each set
         for i in range(len(self.simulations)):
@@ -525,7 +525,7 @@ class VLMP:
                                 "parameters": {},
                                 "labels":["name","type","selection"],
                                 "data":[
-                                    [f"simId_{j}","simulationId","0"],
+                                    [f"simId_{j}","SimIds",[0]],
                                 ]
                             }
 
@@ -537,15 +537,31 @@ class VLMP:
                     sim.append(self.simulations[i][j],mode="simulationId")
             self.simulations[i] = sim
 
-    def setUpSimulation(self,simulationName:str):
+    def setUpSimulation(self):
+        self.logger.debug("[VLMP] Setting up simulation")
         #If simulation is not a list, make it a list
         if not isinstance(self.simulations,list):
             self.simulations = [self.simulations]
 
         #Write each simulation set
-        for i in range(len(self.simulations)):
-            self.logger.debug("[VLMP] Writing simulation set %d",i)
-            self.simulations[i].write(simulationName + "_" + str(i) + ".json")
+        with open("simulationSets.dat","w") as f:
+            for i in range(len(self.simulations)):
+                self.logger.debug("[VLMP] Writing simulation set %d",i)
+
+                currentWorkingDirectory = os.getcwd()
+
+                simulationSetName   = f"simulationSet_{i}"
+                simulationSetFolder = os.path.join(currentWorkingDirectory,"scratch",simulationSetName)
+
+                if not os.path.exists(simulationSetFolder):
+                    os.makedirs(simulationSetFolder)
+
+                simulationSetFile = os.path.join(simulationSetFolder,simulationSetName+".json")
+                self.simulations[i].write(simulationSetFile)
+
+                f.write(f"{simulationSetName} {simulationSetFolder}/ {simulationSetFile}\n")
+
+        self.logger.debug("[VLMP] Simulation set up finished")
 
 
 

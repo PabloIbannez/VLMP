@@ -24,7 +24,7 @@ for i in range(copies):
 vlmp = VLMP.VLMP()
 
 vlmp.loadSimulationPool(simulationPool)
-vlmp.splitSimulationPool("upperLimit","numberOfParticles",200)
+vlmp.splitSimulationPool("upperLimit","numberOfParticles",400)
 vlmp.aggregateSimulationPool()
-vlmp.setUpSimulation("test_sim")
+vlmp.setUpSimulation()
 
