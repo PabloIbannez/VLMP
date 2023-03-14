@@ -1,0 +1,123 @@
+#!/home/pablo/py3/bin/python
+import sys,os
+
+import json
+
+import itertools
+
+import logging
+
+import psutil
+import signal
+
+import multiprocessing
+import subprocess
+
+import time
+import datetime
+
+################
+
+gpuIDList = []
+
+if os.uname()[1] == "pablo-HOME":
+    gpuIDList = [0]
+if os.uname()[1] == "compute-new":
+    gpuIDList = [0,1,2,3,5]
+
+#################
+
+def signalHandler(sig,frame):
+    logging.info("Signal {} detected. Exiting ...".format(sig))
+
+    mainProcess = psutil.Process(os.getpid())
+    for child in mainProcess.children(recursive=True):
+        child.kill()
+
+    sys.exit(0)
+
+def associateCPUtoGPU(gpuIDList):
+    cpuName = multiprocessing.current_process().name
+    try:
+        cpuID = int(cpuName[cpuName.find('-') + 1:]) - 1
+    except:
+        cpuID = 0
+    gpuID = gpuIDList[cpuID % len(gpuIDList)]
+    return gpuID
+
+def runSimulation(info, gpuIDList):
+
+    name, folder, options = info
+
+    gpuId = associateCPUtoGPU(gpuIDList)
+    cudaFlag = 'CUDA_VISIBLE_DEVICES={}'.format(gpuId)
+
+    fout = open(folder+"/stdout.log","w")
+    ferr = open(folder+"/stderr.log","w")
+
+    sst = time.time()
+
+    sim = " ".join([cudaFlag, " ".join(["UAMMDlauncher",options])])
+    simReturn = subprocess.run(sim, stdout=fout, stderr=ferr, shell=True, cwd=folder)
+
+    logging.info("Simulation {} finished. Total time: {}".format(folder,
+                                                                 str(datetime.timedelta(seconds=(time.time() - sst)))))
+
+    fout.close()
+    ferr.close()
+
+    return simReturn
+
+def runSimulationSets(logging,simulationSets, gpuIDList):
+
+    with multiprocessing.Pool(processes=len(gpuIDList)) as pool:
+        out = list(pool.starmap(runSimulation,
+                    zip(simulationSets,
+                        itertools.repeat(gpuIDList))))
+
+    return out
+
+def main(simulationSetsInfo):
+
+    with open(simulationSetsInfo,"r") as f:
+        simulationSetsInfo = json.load(f)
+
+    simulationName = simulationSetsInfo["name"]
+    simulationSets = simulationSetsInfo["sets"]
+
+    logging.basicConfig(filename=f'{simulationName}.log',
+                        filemode='w',
+                        level=0,
+                        format='%(asctime)s %(levelname)s: %(message)s',
+                        datefmt='%m/%d/%Y %H:%M:%S')
+
+    logging.info("Start")
+    logging.info("pid: {}".format(os.getpid()))
+
+    signal.signal(signal.SIGINT,signalHandler)
+    signal.signal(signal.SIGTERM,signalHandler)
+
+    st = time.time()
+    out = runSimulationSets(logging,simulationSets,gpuIDList)
+    logging.info("Simulation sets finished. Total time: {}".format(str(datetime.timedelta(seconds=(time.time() - st)))))
+
+    for i in out:
+        if(i.returncode!=0):
+            logging.error("Something went wrong for simulation: {}".format(i))
+
+    logging.info("End")
+
+if __name__ == "__main__":
+
+    if len(sys.argv) < 2:
+        print("Usage: VLMPlauncher <simulationSetsInfo>")
+        sys.exit(1)
+
+    simulationSetsInfo = sys.argv[1]
+
+    child_pid = os.fork()
+
+    if child_pid == 0:
+        main(simulationSetsInfo)
+    else:
+        sys.exit(0)

@@ -4,13 +4,9 @@ import logging
 
 import json
 
-import numpy as np
+################### DEBUG MODE ##################
 
-#################################################
-
-from .VLMP  import DEBUG_MODE
-from .VLMP  import VLMP
-from .utils import *
+DEBUG_MODE = True
 
 ################# SET UP LOGGER #################
 
@@ -51,4 +47,8 @@ else:
 clogger.setFormatter(CustomFormatter())
 logger.addHandler(clogger)
 
-print("__init__ VLMP !!!!!!!!!!!!!!!!!!!!!")
+#################################################
+
+from .VLMP  import VLMP
+from .utils import *
+

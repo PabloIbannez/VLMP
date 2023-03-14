@@ -1,3 +1,5 @@
+import logging
+import copy
 
 def getLabelIndex(l,labels):
     logger = logging.getLogger("VLMP")
@@ -26,4 +28,31 @@ def getValuesAndPaths(d, key, path=None):
             values.extend(getValuesAndPaths(v, key, new_path))
 
     return values
+
+def getSelections(models,requiredSelections,**param):
+
+    selections = {}
+
+    for sel in [s for s in param.keys() if s in requiredSelections]:
+        selections[sel] = []
+
+        if "models" in param[sel]:
+            selectedModels = [ m for m in models if m.getName() in param[sel]["models"]]
+        else:
+            selectedModels = models
+
+        for mdl in selectedModels:
+            if "expression" in param[sel]:
+                mdlSelIds = mdl.getSelection(**param[sel]["expression"])
+            else:
+                mdlSelIds = mdl.getSelection()
+
+            offSet = mdl.getIdOffset()
+            mdlSelIds = [i+offSet for i in mdlSelIds]
+
+            selections[sel] += mdlSelIds
+        selections[sel] = list(set(selections[sel]))
+
+    return copy.deepcopy(selections)
+
 

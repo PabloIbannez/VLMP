@@ -1,41 +1,41 @@
 import os
 import logging
 
+import json
+import jsbeautifier
+
 from collections import OrderedDict
 
-################### DEBUG MODE ##################
-
-DEBUG_MODE = True
-
-################### DEBUG MODE ##################
-
+from . import DEBUG_MODE
 from .utils import getValuesAndPaths
 
-import VLMP.system          as _system
-import VLMP.units           as _units
-import VLMP.globals         as _globals
-import VLMP.models          as _models
-import VLMP.modelOperations as _modelOperations
-import VLMP.modelExtensions as _modelExtensions
-import VLMP.integrators     as _integrators
-import VLMP.simulationSteps as _simulationSteps
+import VLMP.components.system          as _system
+import VLMP.components.units           as _units
+import VLMP.components.globals         as _globals
+import VLMP.components.models          as _models
+import VLMP.components.modelOperations as _modelOperations
+import VLMP.components.modelExtensions as _modelExtensions
+import VLMP.components.integrators     as _integrators
+import VLMP.components.simulationSteps as _simulationSteps
 
 class VLMP:
 
-    #Split functions
+    #Distribute functions
 
-    def __splitSimulationPoolByMaxNumberOfParticles(self,maxNumberOfParticles):
+    def __distributeSimulationPoolByMaxNumberOfParticles(self,maxNumberOfParticles):
+
         simulationSets = []
+
         currentSet     = []
         currentSetSize = 0
 
-        for sim in self.simulations:
+        for simIndex,sim in enumerate(self.simulations):
             if currentSetSize + sim.getNumberOfParticles() > maxNumberOfParticles:
                 simulationSets.append(currentSet)
                 currentSet     = []
                 currentSetSize = 0
 
-            currentSet.append(sim)
+            currentSet.append(simIndex)
             currentSetSize += sim.getNumberOfParticles()
 
         if len(currentSet) > 0:
@@ -44,14 +44,17 @@ class VLMP:
         #Print the number of simulations and the number of particles in each set
         for i in range(len(simulationSets)):
             self.logger.debug("[VLMP] Simulation set %d has %d simulations and %d particles (max %d)",
-                              i,len(simulationSets[i]),sum([sim.getNumberOfParticles() for sim in simulationSets[i]]),maxNumberOfParticles)
+                              i,len(simulationSets[i]),
+                              sum([self.simulations[simIndex].getNumberOfParticles() for simIndex in simulationSets[i]]),
+                              maxNumberOfParticles)
 
         return simulationSets
 
-    def __splitSimulationPoolByProperty(self,propertyPath):
+    def __distributeSimulationPoolByProperty(self,propertyPath):
+
         simulationSets = {}
 
-        for sim in self.simulations:
+        for simIndex,sim in enumerate(self.simulations):
             #Get the property value
             try:
                 propertyValue = sim[propertyPath[0]]
@@ -64,7 +67,7 @@ class VLMP:
             if propertyValue not in simulationSets.keys():
                 simulationSets[propertyValue] = []
 
-            simulationSets[propertyValue].append(sim)
+            simulationSets[propertyValue].append(simIndex)
 
         #Print the number of simulations and the property value in each set
         for propertyValue in simulationSets.keys():
@@ -109,7 +112,9 @@ class VLMP:
         self.logger = logging.getLogger("VLMP")
 
         self.logger.info("[VLMP] Starting VLMP")
-        self.simulations = []
+
+        self.simulations    = []
+        self.simulationSets = []
 
 
     def loadSimulationPool(self,simulationPool:dict):
@@ -231,6 +236,13 @@ class VLMP:
                         self.logger.error(f"[VLMP] Error loading model \"{name}\"")
                         raise ValueError("Error loading model")
 
+            #Set idOffset for each model
+            idOffset = 0
+            for mdl in models:
+                simulationBuffer[mdl].setIdOffset(idOffset)
+                idOffset += max(simulationBuffer[mdl].getIds()) + 1
+
+
 
             ############### MODEL OPERATIONS ###############
 
@@ -254,24 +266,11 @@ class VLMP:
                         self.logger.error(f"[VLMP] Model operation \"{name}\" not found")
                         raise ValueError("Model operation not found")
 
-                    targetModels = []
-                    if "applyOnModel" in param.keys():
-                        for mdl in param["applyOnModel"]:
-                            if "model_"+mdl in models:
-                                targetModels.append(simulationBuffer["model_"+mdl])
-                            else:
-                                self.logger.error(f"[VLMP] Model operation \"{name}\" cannot be applied on model \"{mdl}\", model not found")
-                                raise ValueError("Model operation cannot be applied on model, model not found")
-                    else:
-                        targetModels = [simulationBuffer[mdl] for mdl in models]
-
-
                     try:
-                        operation = eval("_modelOperations." + typ)(name=name,
-                                                                    units=units,
-                                                                    models=targetModels,
+                        operation = eval("_modelOperations." + typ)(name   = name,
+                                                                    units  = units,
+                                                                    models = [simulationBuffer[model] for model in models],
                                                                     **(param))
-                        operation.apply()
                         appliedOperations.append("modelOperations_"+name)
 
                     except:
@@ -295,21 +294,10 @@ class VLMP:
                         self.logger.error(f"[VLMP] Model extension \"{name}\" not found")
                         raise ValueError("Model extension not found")
 
-                    targetModels = []
-                    if "applyOnModel" in param.keys():
-                        for mdl in param["applyOnModel"]:
-                            if "model_"+mdl in models:
-                                targetModels.append(simulationBuffer["model_"+mdl])
-                            else:
-                                self.logger.error(f"[VLMP] Model extension \"{name}\" cannot added to model \"{mdl}\", model not found")
-                                raise ValueError("Model extension cannot be added to model, model not found")
-                    else:
-                        targetModels = [simulationBuffer[mdl] for mdl in models]
-
                     try:
-                        simulationBuffer["modelExtensions_"+name] = eval("_modelExtensions." + typ)(name=name,
-                                                                                                    units=units,
-                                                                                                    models=targetModels,
+                        simulationBuffer["modelExtensions_"+name] = eval("_modelExtensions." + typ)(name   = name,
+                                                                                                    units  = units,
+                                                                                                    models = [simulationBuffer[model] for model in models],
                                                                                                     **(param))
 
                     except:
@@ -382,11 +370,7 @@ class VLMP:
 
             ###############################################
 
-            #Create the simulation folder and update:
-            # - outputFilePath -> results/simulationFolder/outputFilePath
-
-            #Create the simulation folder
-            currentWorkingDirectory = os.getcwd()
+            #Check name is unique
             simulationName = sim["system"]["parameters"]["name"]
 
             #Check if other simulation with the same name has been already created
@@ -394,43 +378,39 @@ class VLMP:
                 self.logger.error(f"[VLMP] Simulation with name \"{simulationName}\" already exists")
                 raise ValueError("Simulation already exists")
 
-            simulationFolder = os.path.join(currentWorkingDirectory,"results",simulationName)
-
-            if not os.path.exists(simulationFolder):
-                os.makedirs(simulationFolder)
-
-            #Updating file path
-            outputFilePaths = getValuesAndPaths(sim,"outputFilePath")
-            for fName,fSimPath in outputFilePaths:
-                sim.setValue(fSimPath,os.path.join(simulationFolder,fName))
-            #Simulation folder created
-
             ###############################################
 
             #Store the simulation
             self.simulations.append(sim)
 
-    def splitSimulationPool(self,*mode):
+    def distributeSimulationPool(self,*mode):
 
         availableModes = ["none","one","upperLimit","property"]
 
-        if len(self.simulations) >= 1:
-            modeName = mode[0]
+        #Check at least one simulations has been loaded
+        if len(self.simulations) == 0:
+            self.logger.error("[VLMP] No simulations loaded")
+            raise ValueError("No simulations loaded")
+
+        #Check mode
+        if len(mode) == 0:
+            self.logger.warning("[VLMP] No mode specified, using \"none\"")
+            modeName = "none"
         else:
-            self.logger.error("[VLMP] No mode specified")
-            raise ValueError("No mode specified")
+            modeName = mode[0]
+            self.logger.debug(f"[VLMP] Distributing simulation pool using mode \"{modeName}\"")
 
         if modeName not in availableModes:
-            self.logger.error("[VLMP] Split mode \"%s\" not available, available modes are: %s",modeName,availableModes)
-            raise ValueError("Split mode not available")
+            self.logger.error("[VLMP] Distribute mode \"%s\" not available, available modes are: %s",modeName,availableModes)
+            raise ValueError("Distribute mode not available")
         else:
             #Switch to the selected mode
             if  modeName == "none":
-                self.simulations = [self.simulations]
+                self.simulationSets = [[i] for i in range(len(self.simulations))]
             elif modeName == "one":
-                self.simulations = [[sim] for sim in self.simulations]
+                self.simulationSets = list(range(len(self.simulations)))
             elif modeName == "upperLimit":
-                self.logger.debug("[VLMP] Splitting simulation pool using upper limit")
+                self.logger.debug("[VLMP] Distributing simulation pool using upper limit")
                 availableScoringProperties = ["numberOfParticles"]
 
                 if len(mode) >= 2:
@@ -446,19 +426,19 @@ class VLMP:
                 else:
                     #Switch to the selected scoring property
                     if scoringPropertyName == "numberOfParticles":
-                        self.logger.debug("[VLMP] Splitting simulation pool using number of particles")
+                        self.logger.debug("[VLMP] Distributing simulation pool using number of particles")
                         if len(mode) >= 3:
                             maxNumberOfParticles = mode[2]
                         else:
                             self.logger.error("[VLMP] No particle limit specified")
                             raise ValueError("No upper limit specified")
 
-                        #Split the simulation pool
-                        self.simulations = self.__splitSimulationPoolByMaxNumberOfParticles(maxNumberOfParticles)
+                        #Distribute the simulation pool
+                        self.simulationSets = self.__distributeSimulationPoolByMaxNumberOfParticles(maxNumberOfParticles)
                     #Scoring property switch finished
 
             elif modeName == "property":
-                self.logger.debug("[VLMP] Splitting simulation pool using property")
+                self.logger.debug("[VLMP] Distributing simulation pool using property")
 
                 if len(mode) >= 2:
                     propertyPath = mode[1]
@@ -475,91 +455,153 @@ class VLMP:
                     self.logger.error("[VLMP] No property path specified")
                     raise ValueError("No scoring property specified")
 
-                #Split the simulation pool
-                self.simulations = self.__splitSimulationPoolByProperty(propertyPath)
+                #Distribute the simulation pool
+                self.simulationSets = self.__distributeSimulationPoolByProperty(propertyPath)
 
+        #Check all the simulations have been distributed.
+        #simulationSets is a list of lists which contains the indexes of the simulations
+        #in the simulation pool
 
-    def aggregateSimulationPool(self):
-        #If the simulation pool has not been split into sets, then is a list of simulations.
-        #At this point we need the simulation pool to be a list of lists of simulations.
-        #So in this case, we convert the simulation pool into a list of lists of simulations.
-        #This list has only one element, which is a list with all the simulations.
-        if not isinstance(self.simulations[0],list):
-            self.simulations = [self.simulations]
+        simulationIndexes       = list(range(len(self.simulations)))
+        simulationIndexesInSets = [ i for s in self.simulationSets for i in s]
+
+        #Both must be equal
+        if simulationIndexes != simulationIndexesInSets:
+            self.logger.error("[VLMP] Simulation distribution failed")
+            raise ValueError("Simulation distribution failed")
+
+    def aggregateSimulationSets(self):
 
         #Generate a simulation merging all simulations in each set
         for i in range(len(self.simulations)):
             self.logger.debug("[VLMP] Generating simulation set %d",i)
 
-            #Update simulationsStep for each simulation in the simulation set
-            #This ensures the simulation step is applied over particles for the
-            #same simulationId
+    def setUpSimulation(self, sessionName):
+        self.logger.debug("[VLMP] Setting up simulation")
+
+        if len(self.simulationSets) == 0:
+            self.logger.error("[VLMP] Simulation pool not distributed")
+            raise ValueError("Simulation pool not distributed")
+
+        ################################################
+
+        #Create folder named sessionName
+        if not os.path.exists(sessionName):
+            os.makedirs(sessionName)
+
+        ################################################
+
+        #Create folder sessionName/simulationSets
+        if not os.path.exists(os.path.join(sessionName,"simulationSets")):
+            os.makedirs(os.path.join(sessionName,"simulationSets"))
+
+        simSetsInfo = {"name":sessionName}
+        simSetsInfo["simulations"] = []
+        simSetsInfo["sets"] = []
+        for simSetIndex,simSet in enumerate(self.simulationSets):
+            #Create folder sessionName/simulationSets/simulationSet_i
+            simulationSetName   = f"simulationSet_{simSetIndex}"
+            simulationSetFolder = os.path.join(sessionName,"simulationSets",simulationSetName)
+
+            if not os.path.exists(simulationSetFolder):
+                os.makedirs(simulationSetFolder)
+
+            #For each simulation in the simulation set. Create a folder sessionName/simulationSets/simulationSetName/simulationName/
+            for simIndex in simSet:
+                simulationName = self.simulations[simIndex]["system"]["parameters"]["name"]
+                simulationFolder = os.path.join(sessionName,"simulationSets",simulationSetName,simulationName)
+
+                if not os.path.exists(simulationFolder):
+                    os.makedirs(simulationFolder)
+
+                #Update output files for each simulation in simSet
+                sim = self.simulations[simIndex]
+
+                #Relative path to the simulation folder
+                relativePath = os.path.relpath(simulationFolder,simulationSetFolder)
+
+                simSetsInfo["simulations"].append([simulationName,simulationFolder])
+
+                #Updating file path
+                outputFilePaths = getValuesAndPaths(sim,"outputFilePath")
+                for fName,fSimPath in outputFilePaths:
+                    sim.setValue(fSimPath,os.path.join(relativePath,fName))
+
+            ################################################
+            #Aggregate simulations in simulation sets
+
             #We assume that simulationId is 0 (not set) for each independent simulation
             #Check it
-            for s in self.simulations[i]:
-                structureLabels = s["topology"]["structure"]["labels"]
+            for simIndex in simSet:
+                structureLabels = self.simulations[simIndex]["topology"]["structure"]["labels"]
                 if "simulationId" in structureLabels:
                     self.logger.error("[VLMP] SimulationId already set, for a single simulation. Cannot aggregate simulations")
                     raise ValueError("SimulationId already set")
 
-            for j,s in enumerate(self.simulations[i]): #j is the simulationId
+            #Update simulationsStep for each simulation in the simulation set
+            #This ensures the simulation step is applied over particles for the
+            #same simulationId
+            for simIndex in simSet:
 
-                if len(self.simulations[i]) > 1:
+                #simIndex is equivalent to simulationId
+
+                sim = self.simulations[simIndex]
+                if len(simSet) > 1:
                     groupDefinitionRequired = False
-                    if "simulationStep" in s.keys():
+                    if "simulationStep" in sim.keys():
                         keysToRename = []
-                        for simStep in s["simulationStep"].keys():
-                            simStepType = s["simulationStep"][simStep]["type"][0]
-                            if "UtilsStep" not in simStepType:
-                                self.simulations[i][j]["simulationStep"][simStep]["parameters"]["group"] = f"simId_{j}"
+                        for simStep in sim["simulationStep"].keys():
+                            simStepType = sim["simulationStep"][simStep]["type"][0]
+                            if "UtilsStep" not in simStepType: #Ignore UtilsStep types
+                                sim["simulationStep"][simStep]["parameters"]["group"] = f"simId_{simIndex}"
                                 keysToRename.append(simStep)
                                 groupDefinitionRequired = True
 
                         for k in keysToRename:
-                            self.simulations[i][j]["simulationStep"][k+f"_{j}"] = self.simulations[i][j]["simulationStep"].pop(k)
+                            sim["simulationStep"][k+f"_{simIndex}"] = sim["simulationStep"].pop(k)
 
                     if groupDefinitionRequired:
-                        if "groups_simulationId" not in s["simulationStep"].keys():
-                            self.simulations[i][j]["simulationStep"]["groups_simulationId"] = {
+                        if "groups_simulationId" not in sim["simulationStep"].keys():
+                            sim["simulationStep"]["groups_simulationId"] = {
                                 "type": ["Groups","GroupsList"],
                                 "parameters": {},
                                 "labels":["name","type","selection"],
                                 "data":[
-                                    [f"simId_{j}","SimIds",[0]],
+                                    [f"simId_{simIndex}","SimIds",[0]],
                                 ]
                             }
-
-            sim = None
-            for j in range(len(self.simulations[i])):
-                if sim is None:
-                    sim = self.simulations[i][j]
+                        else:
+                            self.logger.error("[VLMP] groups_simulationId already defined")
+                            raise ValueError("groups_simulationId already defined")
                 else:
-                    sim.append(self.simulations[i][j],mode="simulationId")
-            self.simulations[i] = sim
+                    #Only one simulation in the set, do nothing
+                    pass
 
-    def setUpSimulation(self):
-        self.logger.debug("[VLMP] Setting up simulation")
-        #If simulation is not a list, make it a list
-        if not isinstance(self.simulations,list):
-            self.simulations = [self.simulations]
+            #Perform aggregation
+            self.logger.debug("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)
 
-        #Write each simulation set
-        with open("simulationSets.dat","w") as f:
-            for i in range(len(self.simulations)):
-                self.logger.debug("[VLMP] Writing simulation set %d",i)
+            aggregatedSimulation = None
+            for simIndex in simSet:
+                if aggregatedSimulation is None:
+                    aggregatedSimulation = self.simulations[simIndex]
+                else:
+                    aggregatedSimulation.append(self.simulations[simIndex],mode="simulationId")
 
-                currentWorkingDirectory = os.getcwd()
+            #Aggregated simulation is ready
+            ################################################
 
-                simulationSetName   = f"simulationSet_{i}"
-                simulationSetFolder = os.path.join(currentWorkingDirectory,"scratch",simulationSetName)
+            ################################################
+            #Write aggregated simulation to file
 
-                if not os.path.exists(simulationSetFolder):
-                    os.makedirs(simulationSetFolder)
+            aggregatedSimulation.write(os.path.join(simulationSetFolder,f"simulationSet_{simSetIndex}.json"))
 
-                simulationSetFile = os.path.join(simulationSetFolder,simulationSetName+".json")
-                self.simulations[i].write(simulationSetFile)
+            #Relative path to the simulation folder
+            relativePath = os.path.relpath(simulationSetFolder,sessionName)
+            simSetsInfo["sets"].append([simulationSetName,f"{relativePath}",f"simulationSet_{simSetIndex}.json"])
 
-                f.write(f"{simulationSetName} {simulationSetFolder}/ {simulationSetFile}\n")
+        with open(os.path.join(sessionName,"simulationSets.json"),"w") as simSetsFile:
+            #Write simulation sets file using jsbeautifier
+            simSetsFile.write(jsbeautifier.beautify(json.dumps(simSetsInfo)))
 
         self.logger.debug("[VLMP] Simulation set up finished")
 
