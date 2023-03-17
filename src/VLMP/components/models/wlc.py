@@ -31,9 +31,9 @@ class wlc(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters  = {"N","mass","b","Kb","Ka","typeName"},
-                         requiredParameters = {"N"},
-                         availableSelectors   = {"particleId","polymerIndex"},
+                         availableParameters = {"N","mass","b","Kb","Ka","typeName"},
+                         requiredParameters  = {"N"},
+                         availableSelectors  = {"particleId","polymerIndex"},
                          **params)
 
         ############################################################

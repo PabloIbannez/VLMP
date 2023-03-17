@@ -1,6 +1,8 @@
 import os
 import logging
 
+from tqdm import tqdm
+
 import json
 import jsbeautifier
 
@@ -240,7 +242,9 @@ class VLMP:
             idOffset = 0
             for mdl in models:
                 simulationBuffer[mdl].setIdOffset(idOffset)
-                idOffset += max(simulationBuffer[mdl].getIds()) + 1
+                ids = simulationBuffer[mdl].getIds()
+                if len(ids) != 0:
+                    idOffset += max(ids) + 1
 
 
 
@@ -581,7 +585,7 @@ class VLMP:
             self.logger.debug("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)
 
             aggregatedSimulation = None
-            for simIndex in simSet:
+            for simIndex in tqdm(simSet):
                 if aggregatedSimulation is None:
                     aggregatedSimulation = self.simulations[simIndex]
                 else:

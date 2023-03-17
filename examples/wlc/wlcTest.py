@@ -7,7 +7,7 @@ for i in range(copies):
     print("testSimulation_"+str(i))
     simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":"testSimulation_"+str(i)}},
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
-                           "units":[{"type":"KcalMol_A"}],
+                           "units":[{"type":"none"}],
                            "global":[{"type":"NVT","parameters":{"box":[1000.0,1000.0,1000.0],"temperature":1.0}}],
                            "integrator":[{"type":"BBK","parameters":{"timeStep":0.001,"frictionConstant":1.0,"integrationSteps":1000000}}],
                            "model":[{"name":"modelTest1",

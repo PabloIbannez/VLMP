@@ -25,7 +25,7 @@ class modelBase(metaclass=abc.ABCMeta):
         self._type = _type
         self._name = _name
 
-        self.units = units
+        self._units = units
 
         self.availableParameters = availableParameters.copy()
         self.requiredParameters  = requiredParameters.copy()
@@ -115,6 +115,8 @@ class modelBase(metaclass=abc.ABCMeta):
         return len(self.getState()["data"])
 
     def getIds(self):
+        if self._state is None:
+            return []
         ids = []
         idIndex = getLabelIndex("id",self.getState()["labels"])
         for entry in self.getState()["data"]:
@@ -138,12 +140,16 @@ class modelBase(metaclass=abc.ABCMeta):
 
         sim = {}
 
-        sim["global"] = self.getTypes()
-        sim["state"]  = self.getState()
+        if self._types is not None:
+            sim["global"] = self.getTypes()
+        if self._state is not None:
+            sim["state"]  = self.getState()
 
         sim["topology"] = {}
-        sim["topology"]["structure"]  = self.getStructure()
-        sim["topology"]["forceField"] = self.getForceField()
+        if self._structure is not None:
+            sim["topology"]["structure"]  = self.getStructure()
+        if self._forceField is not None:
+            sim["topology"]["forceField"] = self.getForceField()
 
         return simulation(copy.deepcopy(sim),DEBUG_MODE)
 
