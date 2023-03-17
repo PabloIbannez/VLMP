@@ -1,6 +1,6 @@
 import VLMP
 
-copies = 100
+copies = 10
 
 ps2AKMA = 20/0.978
 
@@ -14,7 +14,8 @@ for i in range(copies):
                            "integrator":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0,"integrationSteps":1000000}}],
                            "model":[{"name":"madnaTest",
                                      "type":"MADna",
-                                     "parameters":{"sequence":"GATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACA"}}],
+                                     "parameters":{"sequence":"GATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACA",
+                                                   "version":"fast"}}],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                                                 "outputFilePath":"test",
                                                                                 "outputFormat":"sp"}},

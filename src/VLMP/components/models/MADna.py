@@ -4,7 +4,11 @@ import json
 
 import logging
 
+import itertools
+
 from . import modelBase
+
+import math
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -104,8 +108,12 @@ class MADna(modelBase):
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
-                         _name= name,
-                         availableParameters = {"sequence","inputModelData","debyeLength","dielectricConstant"},
+                         _name = name,
+                         availableParameters = {"sequence",
+                                                "inputModelData",
+                                                "debyeLength","dielectricConstant",
+                                                "debyeFactor","fastFactor",
+                                                "version"},
                          requiredParameters  = {"sequence"},
                          availableSelectors  = {"type","strand","basePairIndex","basePairType"},
                          **params)
@@ -136,8 +144,12 @@ class MADna(modelBase):
         self.debyeLength        = params.get("debyeLength",10.8)
         self.dielectricConstant = params.get("dielectricConstant",78.3)
 
-        self.__generateCoordinatesAndTopology()
+        self.debyeFactor = params.get("debyeFactor",4.0)
+        self.fastFactor  = params.get("fastFactor",1)
 
+        self.version = params.get("version", "standard")
+
+        self.__generateCoordinatesAndTopology()
 
     def processSelection(self,**selection):
 
@@ -755,7 +767,7 @@ class MADna(modelBase):
         #DH
         forceField["DH"] = {}
         forceField["DH"]["type"]       = ["NonBonded", "DebyeHuckel"]
-        forceField["DH"]["parameters"] = {"cutOffFactor": 4.0,
+        forceField["DH"]["parameters"] = {"cutOffFactor": self.debyeFactor,
                                           "debyeLength":self.debyeLength,
                                           "dielectricConstant":self.dielectricConstant,
                                           "condition":"nonExcluded"}
@@ -797,6 +809,43 @@ class MADna(modelBase):
                                                     self.model["DIHEDRALS"][dih["type"]]["K"],
                                                     self.model["DIHEDRALS"][dih["type"]]["phi0"]])
 
+        #######################################################
+        ####################### VERSION #######################
+
+        if self.version != "standard":
+
+            if self.version == "fast":
+
+                del forceField["WCA"]
+                del forceField["DH"]
+
+                PHOSPHATE_DISTANCE = 3.4
+
+                cutOff      = self.debyeFactor*self.debyeLength
+                madnafast_n = math.ceil(self.fastFactor*(cutOff/PHOSPHATE_DISTANCE))
+
+                phosphateIndex_basePair = []
+                for bp in range(self.seqLen):
+                    index = self.processSelection(**{"basePairIndex":bp+1,"type":"P"})
+                    phosphateIndex_basePair+=[[i,bp+1] for i in index]
+
+                forceField["BONDS_DH"] = {}
+                forceField["BONDS_DH"]["type"]       = ["Bond2", "DebyeHuckel"]
+                forceField["BONDS_DH"]["parameters"] = {}
+                forceField["BONDS_DH"]["labels"]     = ["id_i", "id_j", "chgProduct", "dielectricConstant", "debyeLength", "cutOff"]
+                forceField["BONDS_DH"]["data"]       = []
+
+                chgProduct = self.model["TYPES"]["P"]["charge"]
+                chgProduct = chgProduct*chgProduct
+                for ph1,ph2 in itertools.combinations(phosphateIndex_basePair,2):
+                    if(abs(ph1[1]-ph2[1])<madnafast_n):
+                        forceField["BONDS_DH"]["data"].append([ph1[0],ph2[0],chgProduct,self.dielectricConstant,self.debyeLength,cutOff])
+
+            else:
+                self.logger.error(f"Version \"{self.version}\" not available")
+                raise Exception("Version not available")
+
+        ##################### VERSION END #####################
         #######################################################
 
         self.setTypes(types)
