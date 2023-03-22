@@ -8,8 +8,8 @@ import numpy as np
 
 class wlc(modelBase):
     """
-    Component name: BBK
-    Component type: integrator
+    Component name: wlc
+    Component type: model
 
     Author: Pablo Ibáñez-Freire
     Date: 13/03/2023

@@ -14,8 +14,30 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 class MADna(modelBase):
+    """
+    Component name: MADna
+    Component type: model
 
-    defaultModelData="./data/madna.json"
+    Author: Pablo Ibáñez-Freire
+    Date: 17/03/2023
+
+    MADna model for DNA. See https://pubs.acs.org/doi/pdf/10.1021/acs.jctc.2c00138
+
+    :param sequence: DNA sequence
+    :type sequence: str
+    :param inputModelData: Path to the model data file
+    :type inputModelData: str, optional. Default: "./data/madna.json"
+    :param debyeLength: Debye length
+    :type debyeLength: float, optional. Default: 10.8
+    :param dielectricConstant: Dielectric constant
+    :type dielectricConstant: float, optional. Default: 78.3
+    :param debyeFactor: Debye factor
+    :type debyeFactor: float, optional. Default: 4.0
+    :param fastFactor: Fast factor
+    :type fastFactor: float, optional. Default: 1.0
+    :param version: Version of the model. Options: "standard" or "fast"
+    :type version: str, optional. Default: "standard"
+    """
 
     def __alignBasePairs(self,ref,mobile):
 
@@ -130,7 +152,7 @@ class MADna(modelBase):
 
         ############################################################
 
-        self.modelData = params.get("inputModelData",self.defaultModelData)
+        self.modelData = params.get("inputModelData","./data/madna.json")
         self.modelData = os.path.join(os.path.dirname(os.path.realpath(__file__)),self.modelData)
 
         with open(self.modelData,"r") as f:

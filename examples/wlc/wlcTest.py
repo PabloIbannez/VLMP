@@ -1,5 +1,8 @@
 import VLMP
 
+import json
+import jsbeautifier
+
 copies = 10
 
 simulationPool = []
@@ -12,10 +15,7 @@ for i in range(copies):
                            "integrator":[{"type":"BBK","parameters":{"timeStep":0.001,"frictionConstant":1.0,"integrationSteps":1000000}}],
                            "model":[{"name":"modelTest1",
                                      "type":"wlc",
-                                     "parameters":{"N":100,"b":1.0,"Kb":100.0,"Ka":50.0}},
-                                    {"name":"modelTest2",
-                                     "type":"wlc",
-                                     "parameters":{"N":100,"b":1.0,"Kb":100.0,"Ka":50.0,"mass":2.0,"typeName":"B"}}],
+                                     "parameters":{"N":100,"b":1.0,"Kb":100.0,"Ka":50.0}}],
                            "modelOperations":[{"type":"setCenterOfMassPosition",
                                                "parameters":{"position":[10,10,10],
                                                              "selection":{"models":["modelTest1"]}}
@@ -35,10 +35,12 @@ for i in range(copies):
 
                            })
 
+with open("wlc.json","w") as f:
+    json.dump(simulationPool,f)
 
 vlmp = VLMP.VLMP()
 
 vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("upperLimit","numberOfParticles",400)
+vlmp.distributeSimulationPool("upperLimit","numberOfParticles",100)
 vlmp.setUpSimulation("TEST")
 
