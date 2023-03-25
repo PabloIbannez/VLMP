@@ -6,9 +6,9 @@ from . import modelBase
 
 import numpy as np
 
-class wlc(modelBase):
+class WLC(modelBase):
     """
-    Component name: wlc
+    Component name: WLC
     Component type: model
 
     Author: Pablo Ibáñez-Freire

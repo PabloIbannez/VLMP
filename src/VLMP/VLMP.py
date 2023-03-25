@@ -33,7 +33,8 @@ class VLMP:
 
         for simIndex,sim in enumerate(self.simulations):
             if currentSetSize + sim.getNumberOfParticles() > maxNumberOfParticles:
-                simulationSets.append(currentSet)
+                if len(currentSet) > 0:
+                    simulationSets.append(currentSet)
                 currentSet     = []
                 currentSetSize = 0
 
