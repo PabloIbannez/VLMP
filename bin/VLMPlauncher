@@ -1,6 +1,8 @@
-#!/home/pablo/anaconda3/bin/python
+#!/home/pablo/py3/bin/python
 import sys,os
 import shutil
+
+import argparse
 
 import json
 
@@ -25,6 +27,15 @@ if os.uname()[1] == "pablo-HOME":
     gpuIDList = [0]
 if os.uname()[1] == "compute-new":
     gpuIDList = [0,1,2,3,5]
+
+nodeGPUList = []
+if os.uname()[1] == "pablo-HOME":
+    #Order matters
+    nodeGPUList = itertools.cycle([1,2,3,4,5,6,7,8])
+if os.uname()[1] == "compute-new":
+    #Order matters
+    #nodeGPUList = itertools.cycle([7,7,7,7,9,9,9,9,10,10,10,10,12,12,12,8,8,8,8])
+    nodeGPUList = itertools.cycle([7,7,7,7,9,9,9,9,10,10,10,10,12,12,12])
 
 #################
 
@@ -101,7 +112,7 @@ def runSimulationSets(logging, simulationsInfo, simulationSets, gpuIDList):
 
     return out
 
-def main(simulationSetsInfo):
+def mainLocal(simulationSetsInfo):
 
     with open(simulationSetsInfo,"r") as f:
         simulationSetsInfo = json.load(f)
@@ -116,7 +127,7 @@ def main(simulationSetsInfo):
                         format='%(asctime)s %(levelname)s: %(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S')
 
-    logging.info("Start")
+    logging.info("Start local ...")
     logging.info("pid: {}".format(os.getpid()))
 
     signal.signal(signal.SIGINT,signalHandler)
@@ -132,18 +143,99 @@ def main(simulationSetsInfo):
 
     logging.info("End")
 
+def mainLiquid(simulationSetsInfo):
+
+    user = os.environ.get("USER")
+
+    with open(simulationSetsInfo,"r") as f:
+        simulationSetsInfo = json.load(f)
+
+    simulationName  = simulationSetsInfo["name"]
+    simulationsInfo = simulationSetsInfo["simulations"]
+    simulationSets  = simulationSetsInfo["simulationSets"]
+
+    logging.basicConfig(filename=f'{simulationName}.log',
+                        filemode='w',
+                        level=0,
+                        format='%(asctime)s %(levelname)s: %(message)s',
+                        datefmt='%m/%d/%Y %H:%M:%S')
+
+    logging.info("Starting liquid ...")
+
+    for jobIndex,[simSetName,simSetFolder,simSetOptions,simSetComponents] in enumerate(simulationSets):
+        nodeId = next(nodeGPUList)
+        jobName = f"{simulationName}_{simSetName}"
+
+        logging.info(f'Launching simulation ...\n\
+                          Job name: \"{jobName}\"\n\
+                          Simulation folder: \"{simSetFolder}\"\n\
+                          Binary: \"UAMMDlauncher\"\n\
+                          Simulation options: \"{simSetOptions}\"\n\
+                          Node: compute-0-{nodeId}')
+
+        ############################################################
+
+        cwd = os.getcwd()
+        os.chdir(simSetFolder)
+
+        with open("./.job","w") as f:
+            batch = f"""#!/bin/bash
+#$ -S /bin/bash
+#$ -N {jobName}
+#$ -cwd
+#$ -o stdout.log
+#$ -e stderr.log
+#$ -l gpu=1
+#$ -V
+
+cd /scratch/{user}/{jobName}-$JOB_ID
+
+module load gcc/8.4 cuda/10.2
+
+UAMMDlauncher {simSetOptions}
+
+"""
+            f.write(batch)
+
+        subprocess.run(["bsub","-q","gpu.q","-l",f"hostname=compute-0-{nodeId}","-o",f"{os.getcwd()}/stdout.log","-e",f"{os.getcwd()}/stderr.log",".job"])
+        time.sleep(1.0)
+        os.chdir(cwd)
+        
+        ############################################################
+
+
 if __name__ == "__main__":
 
-    if len(sys.argv) < 2:
-        print("Usage: VLMPlauncher <simulationSetsInfo>")
-        sys.exit(1)
-    else:
-        print("Starting VLMP ...")
+    #Create argument parser
+    parser = argparse.ArgumentParser(description='Run a set of simulations')
+
+    #Add arguments
+    parser.add_argument('-s', '--simulationSetsInfo', type=str, help='Simulation sets info file', required=True)
+
+    #There are two simualtions options, local and liquid (cluster lsf). If none is selected, local is used.
+    #Add mutually exclusive group
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-l', '--local', action='store_true', help='Run simulations locally')
+    group.add_argument('-q', '--liquid', action='store_true', help='Run simulations in liquid cluster')
+
+    #Parse arguments
+    args = parser.parse_args()
+
+    #Start VLMP
+
+    print("Starting VLMP ...")
 
     child_pid = os.fork()
 
     if child_pid == 0:
-        simulationSetsInfo = sys.argv[1]
-        main(simulationSetsInfo)
+        if args.local:
+            print("Running simulations locally ...")
+            mainLocal(args.simulationSetsInfo)
+        elif args.liquid:
+            print("Running simulations in liquid cluster ...")
+            mainLiquid(args.simulationSetsInfo)
+        else:
+            print("Running simulations locally ...")
+            mainLocal(args.simulationSetsInfo)
     else:
         sys.exit(0)
