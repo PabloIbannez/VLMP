@@ -191,5 +191,3 @@ for m in models:
         exec(f"from .{m} import *")
     except:
         logging.getLogger("VLMP").error(f"[Model] Error importing model type component {m}")
-        raise ImportError(f"Error importing model type component")
-
