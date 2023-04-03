@@ -500,9 +500,13 @@ class VLMP:
         if not os.path.exists(os.path.join(sessionName,"simulationSets")):
             os.makedirs(os.path.join(sessionName,"simulationSets"))
 
-        simSetsInfo = {"name":sessionName}
-        simSetsInfo["simulations"] = []
-        simSetsInfo["sets"] = []
+        #Create folder sessionName/results
+        if not os.path.exists(os.path.join(sessionName,"results")):
+            os.makedirs(os.path.join(sessionName,"results"))
+
+        VLMPsession = {"name":sessionName}
+        VLMPsession["simulations"] = []
+        VLMPsession["simulationSets"] = []
         for simSetIndex,simSet in enumerate(self.simulationSets):
             #Create folder sessionName/simulationSets/simulationSet_i
             simulationSetName   = f"simulationSet_{simSetIndex}"
@@ -513,11 +517,16 @@ class VLMP:
 
             #For each simulation in the simulation set. Create a folder sessionName/simulationSets/simulationSetName/simulationName/
             for simIndex in simSet:
-                simulationName = self.simulations[simIndex]["system"]["parameters"]["name"]
-                simulationFolder = os.path.join(sessionName,"simulationSets",simulationSetName,simulationName)
+                simulationName         = self.simulations[simIndex]["system"]["parameters"]["name"]
+
+                simulationFolder       = os.path.join(sessionName,"simulationSets",simulationSetName,simulationName)
+                simulationResultFolder = os.path.join(sessionName,"results",simulationName)
 
                 if not os.path.exists(simulationFolder):
                     os.makedirs(simulationFolder)
+
+                if not os.path.exists(simulationResultFolder):
+                    os.makedirs(simulationResultFolder)
 
                 #Update output files for each simulation in simSet
                 sim = self.simulations[simIndex]
@@ -525,7 +534,9 @@ class VLMP:
                 #Relative path to the simulation folder
                 relativePath = os.path.relpath(simulationFolder,simulationSetFolder)
 
-                simSetsInfo["simulations"].append([simulationName,simulationFolder])
+                VLMPsession["simulations"].append([simulationName,
+                                                   os.path.join(*simulationFolder.split("/")[1:]),
+                                                   os.path.join(*simulationResultFolder.split("/")[1:])])
 
                 #Updating file path
                 outputFilePaths = getValuesAndPaths(sim,"outputFilePath")
@@ -585,6 +596,9 @@ class VLMP:
             #Perform aggregation
             self.logger.debug("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)
 
+            #Store names of simulations in simulation set
+            simInSimSetNames = [self.simulations[simIndex]["system"]["parameters"]["name"] for simIndex in simSet]
+
             aggregatedSimulation = None
             for simIndex in tqdm(simSet):
                 if aggregatedSimulation is None:
@@ -602,11 +616,14 @@ class VLMP:
 
             #Relative path to the simulation folder
             relativePath = os.path.relpath(simulationSetFolder,sessionName)
-            simSetsInfo["sets"].append([simulationSetName,f"{relativePath}",f"simulationSet_{simSetIndex}.json"])
+            VLMPsession["simulationSets"].append([simulationSetName,
+                                                  f"{relativePath}",
+                                                  f"simulationSet_{simSetIndex}.json",
+                                                  simInSimSetNames])
 
-        with open(os.path.join(sessionName,"simulationSets.json"),"w") as simSetsFile:
+        with open(os.path.join(sessionName,"VLMPsession.json"),"w") as simSetsFile:
             #Write simulation sets file using jsbeautifier
-            simSetsFile.write(jsbeautifier.beautify(json.dumps(simSetsInfo)))
+            simSetsFile.write(jsbeautifier.beautify(json.dumps(VLMPsession)))
 
         self.logger.debug("[VLMP] Simulation set up finished")
 

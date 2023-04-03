@@ -1,5 +1,6 @@
-#!/home/pablo/py3/bin/python
+#!/home/pablo/anaconda3/bin/python
 import sys,os
+import shutil
 
 import json
 
@@ -45,9 +46,9 @@ def associateCPUtoGPU(gpuIDList):
     gpuID = gpuIDList[cpuID % len(gpuIDList)]
     return gpuID
 
-def runSimulation(info, gpuIDList):
+def runSimulation(simulationsInfo, setInfo, gpuIDList):
 
-    name, folder, options = info
+    name, folder, options, components = setInfo
 
     gpuId = associateCPUtoGPU(gpuIDList)
     cudaFlag = 'CUDA_VISIBLE_DEVICES={}'.format(gpuId)
@@ -60,20 +61,43 @@ def runSimulation(info, gpuIDList):
     sim = " ".join([cudaFlag, " ".join(["UAMMDlauncher",options])])
     simReturn = subprocess.run(sim, stdout=fout, stderr=ferr, shell=True, cwd=folder)
 
-    logging.info("Simulation {} finished. Total time: {}".format(folder,
-                                                                 str(datetime.timedelta(seconds=(time.time() - sst)))))
-
     fout.close()
     ferr.close()
 
+    if simReturn.returncode == 0:
+        logging.info("Simulation {} finished. Total time: {}".format(folder,
+                                                                     str(datetime.timedelta(seconds=(time.time() - sst)))))
+        logging.info("Moving simulations to results ...")
+
+        output2results = {sim:{"output":output,"results":results} for [sim,output,results] in simulationsInfo}
+
+        for comp in components:
+            output  = output2results[comp]["output"]+"/"
+            results = output2results[comp]["results"]+"/"
+
+            if not os.path.exists(results):
+                logging.error(f"Results folder does no exist for \"{comp}\"")
+                continue
+
+            for fileName in os.listdir(output):
+                sourceFile = os.path.join(output, fileName)
+                destinationFile = os.path.join(results, fileName)
+                if os.path.exists(destinationFile):
+                    if os.path.getmtime(destinationFile) < os.path.getmtime(sourceFile):
+                        shutil.move(sourceFile, destinationFile)
+                else:
+                    shutil.move(sourceFile, destinationFile)
+    else:
+        logging.info("Simulation {} finished with errors. Error code: {}. Total time: {}".format(folder,
+                                                                                                 simReturn.returncode,
+                                                                                                 str(datetime.timedelta(seconds=(time.time() - sst)))))
     return simReturn
 
-def runSimulationSets(logging,simulationSets, gpuIDList):
+def runSimulationSets(logging, simulationsInfo, simulationSets, gpuIDList):
 
     with multiprocessing.Pool(processes=len(gpuIDList)) as pool:
-        out = list(pool.starmap(runSimulation,
-                    zip(simulationSets,
-                        itertools.repeat(gpuIDList))))
+        simSetGPU = tuple(zip(itertools.repeat(simulationsInfo.copy()),simulationSets,itertools.repeat(gpuIDList)))
+        out = list(pool.starmap(runSimulation,simSetGPU))
 
     return out
 
@@ -82,8 +106,9 @@ def main(simulationSetsInfo):
     with open(simulationSetsInfo,"r") as f:
         simulationSetsInfo = json.load(f)
 
-    simulationName = simulationSetsInfo["name"]
-    simulationSets = simulationSetsInfo["sets"]
+    simulationName  = simulationSetsInfo["name"]
+    simulationsInfo = simulationSetsInfo["simulations"]
+    simulationSets  = simulationSetsInfo["simulationSets"]
 
     logging.basicConfig(filename=f'{simulationName}.log',
                         filemode='w',
@@ -98,7 +123,7 @@ def main(simulationSetsInfo):
     signal.signal(signal.SIGTERM,signalHandler)
 
     st = time.time()
-    out = runSimulationSets(logging,simulationSets,gpuIDList)
+    out = runSimulationSets(logging,simulationsInfo,simulationSets,gpuIDList)
     logging.info("Simulation sets finished. Total time: {}".format(str(datetime.timedelta(seconds=(time.time() - st)))))
 
     for i in out:
