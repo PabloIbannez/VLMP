@@ -594,7 +594,7 @@ class VLMP:
                     pass
 
             #Perform aggregation
-            self.logger.debug("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)
+            self.logger.info("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)
 
             #Store names of simulations in simulation set
             simInSimSetNames = [self.simulations[simIndex]["system"]["parameters"]["name"] for simIndex in simSet]

@@ -7,7 +7,7 @@ copies = 10
 
 simulationPool = []
 for i in range(copies):
-    print("testSimulation_"+str(i))
+    #print("testSimulation_"+str(i))
     simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":"testSimulation_"+str(i)}},
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"none"}],

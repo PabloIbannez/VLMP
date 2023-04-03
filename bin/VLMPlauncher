@@ -1,4 +1,5 @@
-#!/home/pablo/py3/bin/python
+#!/home/pablo/anaconda3/bin/python
+#####!/home/pablo/py3/bin/python
 import sys,os
 import shutil
 
@@ -32,7 +33,7 @@ nodeGPUList = []
 if os.uname()[1] == "pablo-HOME":
     #Order matters
     nodeGPUList = itertools.cycle([1,2,3,4,5,6,7,8])
-if os.uname()[1] == "compute-new":
+if os.uname()[1] == "liquid.ftmc.uam.es":
     #Order matters
     #nodeGPUList = itertools.cycle([7,7,7,7,9,9,9,9,10,10,10,10,12,12,12,8,8,8,8])
     nodeGPUList = itertools.cycle([7,7,7,7,9,9,9,9,10,10,10,10,12,12,12])
@@ -193,14 +194,13 @@ cd /scratch/{user}/{jobName}-$JOB_ID
 module load gcc/8.4 cuda/10.2
 
 UAMMDlauncher {simSetOptions}
-
 """
             f.write(batch)
 
-        subprocess.run(["bsub","-q","gpu.q","-l",f"hostname=compute-0-{nodeId}","-o",f"{os.getcwd()}/stdout.log","-e",f"{os.getcwd()}/stderr.log",".job"])
+        job_result = subprocess.run(["bsub","-N",jobName,"-q","gpu.q","-l",f"hostname=compute-0-{nodeId}","-o",f"{os.getcwd()}/stdout.log","-e",f"{os.getcwd()}/stderr.log",".job"])
         time.sleep(1.0)
         os.chdir(cwd)
-        
+
         ############################################################
 
 
@@ -225,17 +225,14 @@ if __name__ == "__main__":
 
     print("Starting VLMP ...")
 
-    child_pid = os.fork()
+    if args.local or not args.liquid:
+        print("Running simulations locally ...")
+        child_pid = os.fork()
 
-    if child_pid == 0:
-        if args.local:
-            print("Running simulations locally ...")
+        if child_pid == 0:
             mainLocal(args.simulationSetsInfo)
-        elif args.liquid:
-            print("Running simulations in liquid cluster ...")
-            mainLiquid(args.simulationSetsInfo)
         else:
-            print("Running simulations locally ...")
-            mainLocal(args.simulationSetsInfo)
+            sys.exit(0)
     else:
-        sys.exit(0)
+        print("Running simulations in liquid cluster ...")
+        mainLiquid(args.simulationSetsInfo)
