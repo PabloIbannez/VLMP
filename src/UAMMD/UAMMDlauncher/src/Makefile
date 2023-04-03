@@ -1,11 +1,30 @@
-ARCH=86
-CXX=g++
+HOSTNAME=$(shell hostname)
 
-CUDA_ROOT=/usr/local/cuda
-NVCC=$(CUDA_ROOT)/bin/nvcc
+ifeq ($(HOSTNAME), pablo-HOME)
+	ARCH=86
+	CXX=g++
+	
+	CUDA_ROOT=/usr/local/cuda
+	NVCC=$(CUDA_ROOT)/bin/nvcc
+	
+	UAMMD_ROOT=/home/pablo/Desktop/UAMMD/
+	UAMMD_STRUCTURED_ROOT=$(UAMMD_ROOT)/extensions/structured/
+	
+	INCLUDE_FLAGS= -I$(CUDA_ROOT)/include -I$(UAMMD_ROOT)/src/ -I$(UAMMD_ROOT)/src/third_party/ -I$(UAMMD_STRUCTURED_ROOT)
+	LIBRARIES=
+else ifeq ($(HOSTNAME), liquid.ftmc.uam.es)
+	ARCH=60 61 75
+	CXX=g++
 
-UAMMD_ROOT=/home/pablo/Desktop/UAMMD
-UAMMD_STRUCTURED_ROOT=$(UAMMD_ROOT)/extensions/structured/
+	CUDA_ROOT=/usr/local/cuda
+	NVCC=nvcc
+	
+	UAMMD_ROOT=/home/pablo/UAMMD/
+	UAMMD_STRUCTURED_ROOT=$(UAMMD_ROOT)/extensions/structured/
+	
+	INCLUDE_FLAGS= -I$(CUDA_ROOT)/include -I$(UAMMD_ROOT)/src/ -I$(UAMMD_ROOT)/src/third_party/ -I$(UAMMD_STRUCTURED_ROOT)
+	LIBRARIES=-lstdc++fs
+endif
 
 #Uncomment to compile in double precision mode, single by default
 #DOUBLE_PRECISION=-DDOUBLE_PRECISION
@@ -27,5 +46,5 @@ INCLUDE_FLAGS= -I$(CUDA_ROOT)/include -I$(UAMMD_ROOT)/src/ -I$(UAMMD_ROOT)/src/t
 LIBRARIES=
 
 launcher:
-	$(NVCC) --expt-relaxed-constexpr --expt-extended-lambda -std=c++17 -O3 $(OPTIONS) -ccbin="$(CXX)" -Xcompiler="$(CPU)" $(GENCODE_FLAGS) UAMMDlauncher.cu $(INCLUDE_FLAGS) $(LIBRARIES) -o UAMMDlauncher
+	$(NVCC) --expt-relaxed-constexpr --expt-extended-lambda -std=c++14 -O3 $(OPTIONS) -ccbin="$(CXX)" -Xcompiler="$(CPU)" $(GENCODE_FLAGS) UAMMDlauncher.cu $(INCLUDE_FLAGS) $(LIBRARIES) -o UAMMDlauncher
 	mv UAMMDlauncher ../../../../bin/

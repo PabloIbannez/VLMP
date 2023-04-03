@@ -137,12 +137,13 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: VLMPlauncher <simulationSetsInfo>")
         sys.exit(1)
-
-    simulationSetsInfo = sys.argv[1]
+    else:
+        print("Starting VLMP ...")
 
     child_pid = os.fork()
 
     if child_pid == 0:
+        simulationSetsInfo = sys.argv[1]
         main(simulationSetsInfo)
     else:
         sys.exit(0)

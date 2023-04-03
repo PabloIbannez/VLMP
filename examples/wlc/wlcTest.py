@@ -14,7 +14,7 @@ for i in range(copies):
                            "global":[{"type":"NVT","parameters":{"box":[1000.0,1000.0,1000.0],"temperature":1.0}}],
                            "integrator":[{"type":"BBK","parameters":{"timeStep":0.001,"frictionConstant":1.0,"integrationSteps":1000000}}],
                            "model":[{"name":"modelTest1",
-                                     "type":"wlc",
+                                     "type":"WLC",
                                      "parameters":{"N":100,"b":1.0,"Kb":100.0,"Ka":50.0}}],
                            "modelOperations":[{"type":"setCenterOfMassPosition",
                                                "parameters":{"position":[10,10,10],
@@ -35,12 +35,12 @@ for i in range(copies):
 
                            })
 
-with open("wlc.json","w") as f:
-    json.dump(simulationPool,f)
+#with open("wlc.json","w") as f:
+#    json.dump(simulationPool,f)
 
 vlmp = VLMP.VLMP()
 
 vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("upperLimit","numberOfParticles",100)
+vlmp.distributeSimulationPool("upperLimit","numberOfParticles",200)
 vlmp.setUpSimulation("TEST")
 
