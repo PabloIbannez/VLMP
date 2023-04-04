@@ -79,26 +79,6 @@ def runSimulation(simulationsInfo, setInfo, gpuIDList):
     if simReturn.returncode == 0:
         logging.info("Simulation {} finished. Total time: {}".format(folder,
                                                                      str(datetime.timedelta(seconds=(time.time() - sst)))))
-        logging.info("Moving simulations to results ...")
-
-        output2results = {sim:{"output":output,"results":results} for [sim,output,results] in simulationsInfo}
-
-        for comp in components:
-            output  = output2results[comp]["output"]+"/"
-            results = output2results[comp]["results"]+"/"
-
-            if not os.path.exists(results):
-                logging.error(f"Results folder does no exist for \"{comp}\"")
-                continue
-
-            for fileName in os.listdir(output):
-                sourceFile = os.path.join(output, fileName)
-                destinationFile = os.path.join(results, fileName)
-                if os.path.exists(destinationFile):
-                    if os.path.getmtime(destinationFile) < os.path.getmtime(sourceFile):
-                        shutil.move(sourceFile, destinationFile)
-                else:
-                    shutil.move(sourceFile, destinationFile)
     else:
         logging.info("Simulation {} finished with errors. Error code: {}. Total time: {}".format(folder,
                                                                                                  simReturn.returncode,
@@ -180,28 +160,32 @@ def mainLiquid(simulationSetsInfo):
         os.chdir(simSetFolder)
 
         with open("./.job","w") as f:
-            batch = f"""#!/bin/bash
-#$ -S /bin/bash
-#$ -N {jobName}
-#$ -cwd
-#$ -o stdout.log
-#$ -e stderr.log
-#$ -l gpu=1
-#$ -V
+            batch = ("#!/bin/bash\n"
+                     "#$ -S /bin/bash\n"
+                     f"#$ -N {jobName}\n"
+                     "#$ -cwd\n"
+                     "#$ -o stdout.log\n"
+                     "#$ -e stderr.log\n"
+                     "#$ -l gpu=1\n"
+                     "#$ -V\n"
+                     f"cd /scratch/{user}/{jobName}-$JOB_ID\n"
+                     "module load gcc/8.4 cuda/10.2\n"
+                     f"UAMMDlauncher {simSetOptions}\n")
 
-cd /scratch/{user}/{jobName}-$JOB_ID
-
-module load gcc/8.4 cuda/10.2
-
-UAMMDlauncher {simSetOptions}
-"""
             f.write(batch)
 
-        job_result = subprocess.run(["bsub","-N",jobName,"-q","gpu.q","-l",f"hostname=compute-0-{nodeId}","-o",f"{os.getcwd()}/stdout.log","-e",f"{os.getcwd()}/stderr.log",".job"])
+        subprocess.run(["bsub","-N",jobName,
+                        "-q","gpu.q",
+                        "-l",f"hostname=compute-0-{nodeId}",
+                        "-o",f"{os.getcwd()}/stdout.log",
+                        "-e",f"{os.getcwd()}/stderr.log",
+                        ".job"])
         time.sleep(1.0)
         os.chdir(cwd)
 
         ############################################################
+    
+    logging.info("All simulation sets job have been submitted")
 
 
 if __name__ == "__main__":

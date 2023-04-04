@@ -525,8 +525,8 @@ class VLMP:
                 if not os.path.exists(simulationFolder):
                     os.makedirs(simulationFolder)
 
-                if not os.path.exists(simulationResultFolder):
-                    os.makedirs(simulationResultFolder)
+                if not os.path.islink(simulationResultFolder):
+                    os.symlink(os.path.relpath(simulationFolder, "/".join(simulationResultFolder.split("/")[:-1])), simulationResultFolder)
 
                 #Update output files for each simulation in simSet
                 sim = self.simulations[simIndex]
