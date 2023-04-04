@@ -31,10 +31,10 @@ class backup(systemBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters  = ["backupIntervalStep",
+                         availableParameters  = {"backupIntervalStep",
                                                  "backupStartStep","backupEndStep",
-                                                 "backupFilePath"],
-                         requiredParameters = ["backupIntervalStep"],
+                                                 "backupFilePath"},
+                         requiredParameters = {"backupIntervalStep"},
                          **params)
 
         ############################################################

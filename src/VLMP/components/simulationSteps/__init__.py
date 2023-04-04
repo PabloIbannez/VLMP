@@ -83,5 +83,6 @@ simulationSteps = [ m.split("/")[-1].split(".")[0] for m in simulationSteps ]
 for s in simulationSteps:
     try:
         exec(f"from .{s} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[SimulationStep] Error importing simulationStep type {s}")

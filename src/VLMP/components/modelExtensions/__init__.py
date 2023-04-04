@@ -109,5 +109,6 @@ extensions = [ m.split("/")[-1].split(".")[0] for m in extensions ]
 for e in extensions:
     try:
         exec(f"from .{e} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[ModelExtension] Error importing model extension type component {e}")

@@ -139,5 +139,6 @@ operations = [ m.split("/")[-1].split(".")[0] for m in operations ]
 for o in operations:
     try:
         exec(f"from .{o} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[ModelOperation] Error importing model operation type component {o}")

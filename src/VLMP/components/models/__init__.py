@@ -189,5 +189,6 @@ models = [ m.split("/")[-1].split(".")[0] for m in models]
 for m in models:
     try:
         exec(f"from .{m} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[Model] Error importing model type component {m}")

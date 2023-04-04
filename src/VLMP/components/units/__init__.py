@@ -88,5 +88,6 @@ units = [ u.split("/")[-1].split(".")[0] for u in units ]
 for u in units:
     try:
         exec(f"from .{u} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[Units] Error importing units type component {u}")

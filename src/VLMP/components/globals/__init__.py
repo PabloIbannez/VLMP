@@ -82,5 +82,6 @@ globals_ = [ m.split("/")[-1].split(".")[0] for m in globals_]
 for g in globals_:
     try:
         exec(f"from .{g} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[Global] Error importing global type component \"{g}\"")

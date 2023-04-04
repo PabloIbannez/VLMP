@@ -25,8 +25,8 @@ class NVT(globalBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters  = {"box","temperature"},
-                         requiredParameters = {"box","temperature"},
+                         availableParameters = {"box","temperature"},
+                         requiredParameters  = {"box","temperature"},
                          **params)
 
         ############################################################

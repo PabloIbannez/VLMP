@@ -103,5 +103,6 @@ integrators = [ m.split("/")[-1].split(".")[0] for m in integrators]
 for i in integrators:
     try:
         exec(f"from .{i} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[Integrator] Error importing integrator type component {i}")

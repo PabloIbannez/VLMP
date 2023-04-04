@@ -74,6 +74,7 @@ systems = [ u.split("/")[-1].split(".")[0] for u in systems ]
 for s in systems:
     try:
         exec(f"from .{s} import *")
-    except:
+    except Exception as e:
+        logging.getLogger("VLMP").error(e)
         logging.getLogger("VLMP").error(f"[System] Error importing system type component \"{s}\"")
 

@@ -26,7 +26,7 @@ class MADna(modelBase):
     :param sequence: DNA sequence
     :type sequence: str
     :param inputModelData: Path to the model data file
-    :type inputModelData: str, optional. Default: "./data/madna.json"
+    :type inputModelData: str, optional. Default: "./data/MADna.json"
     :param debyeLength: Debye length
     :type debyeLength: float, optional. Default: 10.8
     :param dielectricConstant: Dielectric constant
@@ -152,7 +152,7 @@ class MADna(modelBase):
 
         ############################################################
 
-        self.modelData = params.get("inputModelData","./data/madna.json")
+        self.modelData = params.get("inputModelData","./data/MADna.json")
         self.modelData = os.path.join(os.path.dirname(os.path.realpath(__file__)),self.modelData)
 
         with open(self.modelData,"r") as f:

@@ -20,8 +20,8 @@ class KcalMol_A(unitsBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters  = [],
-                         requiredParameters = [],
+                         availableParameters = {},
+                         requiredParameters  = {},
                          **params)
 
         ############################################################
@@ -29,6 +29,7 @@ class KcalMol_A(unitsBase):
         ############################################################
 
         self.availableConstants = {
+            "kT": 0.593,
             "KBOLTZ":1.987191E-03,
             "ELECOEF":332.0716
         }
