@@ -6,16 +6,16 @@ import numpy as np
 
 from . import modelExtensionBase
 
-class constantForce(modelExtensionBase):
+class constantForceOverCenterOfMass(modelExtensionBase):
 
     """
-    Component name: constantForce
+    Component name: constantForceOverCenterOfMass
     Component type: modelExtension
 
     Author: Pablo Ibáñez-Freire
-    Date: 14/03/2023
+    Date: 04/04/2023
 
-    Constant force applied to a set of particles
+    Applies a constant force over the center of mass of a selection of particles.
 
     :param selection: Selection of particles where the force is applied
     :type selection: list of dictionaries
@@ -38,19 +38,21 @@ class constantForce(modelExtensionBase):
         ############################################################
 
         force = params.get("force")
+        #Check if the force is a list of floats
+        if not isinstance(force,list):
+            raise ValueError("The force must be a list of floats")
 
         extension = {}
 
         extension[name] = {}
-        extension[name]["type"] = ["Bond1","ConstantForce"]
+        extension[name]["type"] = ["Set1","ConstantForceOverCenterOfMass"]
         extension[name]["parameters"] = {}
-        extension[name]["labels"] = ["id_i","force"]
+        extension[name]["labels"] = ["idSet_i","force"]
         extension[name]["data"]   = []
 
         selectedIds = self.getSelection("selection")
 
-        for id_i in selectedIds:
-            extension[name]["data"].append([id_i,force])
+        extension[name]["data"].append([selectedIds,force])
 
         ############################################################
 

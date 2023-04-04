@@ -3,7 +3,7 @@ import VLMP
 import json
 import jsbeautifier
 
-copies = 10
+copies = 1
 
 ps2AKMA = 20/0.978
 
@@ -15,6 +15,13 @@ for i in range(copies):
                            "global":[{"type":"NVT","parameters":{"box":[2000.0,2000.0,4000.0],"temperature":300.0}}],
                            "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.1*ps2AKMA,"viscosity":1.0/ps2AKMA,"integrationSteps":1000000}}],
                            "model":[{"type":"CORONAVIRUS","parameters":{"nSpikes":40,"surface":True}}],
+                           "modelExtensions":[{"type":"constantTorqueOverCenterOfMass",
+                                               "parameters":{
+                                                             "torque":[0.0,0.0,-100.0],
+                                                             "selection":{"expression":{"type":"lipids"}}
+                                                            },
+
+                                               }],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                                                 "outputFilePath":"test",
                                                                                 "outputFormat":"sp"}},

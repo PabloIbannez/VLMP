@@ -168,9 +168,6 @@ class modelBase(metaclass=abc.ABCMeta):
         # If no selection is given, select all particles
         if len(params) == 0:
             return self.getIds()
-        if len(params) == 1:
-            if params.pars()[0] == "all":
-                return self.getIds()
         # Check if all selectors given by params are available
         for par in params:
             if par not in self.availableSelectors:

@@ -48,7 +48,7 @@ class CORONAVIRUS(modelBase):
                                                 "surfacePosition",
                                                 "inputModelData"},
                          requiredParameters  = {},
-                         availableSelectors  = {"particleId"},
+                         availableSelectors  = {"particleId","type"},
                          **params)
 
         self.logger = logging.getLogger("VLMP")
@@ -112,10 +112,26 @@ class CORONAVIRUS(modelBase):
 
     def processSelection(self,**params):
 
-        sel = []
+        sel = set()
 
         if "particleId" in params:
-            sel += params["particleId"]
+            sel.add(params["particleId"])
+
+        if "type" in params:
+            structure = self.getStructure()
+            typeIndex = getLabelIndex("type"  ,structure["labels"])
+
+            if params["type"] == "lipids":
+                for d in structure["data"]:
+                    if d[typeIndex] in ["LV","LP"]:
+                        sel.add(d[0])
+            elif params["type"] == "proteins":
+                for d in structure["data"]:
+                    if d[typeIndex] not in ["LV","LP"]:
+                        sel.add(d[0])
+            else:
+                self.logger.error(f"[CORONAVIRUS] Unknown type {params['type']}")
+                raise Exception("Unknown type")
 
         return sel
 

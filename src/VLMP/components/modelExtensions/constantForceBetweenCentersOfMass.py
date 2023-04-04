@@ -6,21 +6,23 @@ import numpy as np
 
 from . import modelExtensionBase
 
-class constantForce(modelExtensionBase):
+class constantForceBetweenCentersOfMass(modelExtensionBase):
 
     """
-    Component name: constantForce
+    Component name: constantForceBetweenCentersOfMass
     Component type: modelExtension
 
     Author: Pablo Ibáñez-Freire
-    Date: 14/03/2023
+    Date: 04/04/2023
 
-    Constant force applied to a set of particles
+    Constant force between centers of mass of selected particles
 
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
+    :param selection1: Selection for the first particle group
+    :type selection1: list of dictionaries
+    :param selection2: Selection for the second particle group
+    :type selection2: list of dictionaries
     :param force: Force applied to the particles
-    :type force: list of floats
+    :type force: float
 
     ...
     """
@@ -30,7 +32,7 @@ class constantForce(modelExtensionBase):
                          _name = name,
                          availableParameters = {"force"},
                          requiredParameters  = {"force"},
-                         requiredSelections  = {"selection"},
+                         requiredSelections  = {"selection1","selection2"},
                          **params)
 
         ############################################################
@@ -38,19 +40,22 @@ class constantForce(modelExtensionBase):
         ############################################################
 
         force = params.get("force")
+        # Check if the force is a float
+        if not isinstance(force,float):
+            raise TypeError("The force must be a float")
 
         extension = {}
 
         extension[name] = {}
-        extension[name]["type"] = ["Bond1","ConstantForce"]
+        extension[name]["type"] = ["Set2","ConstantForceBetweenCentersOfMass"]
         extension[name]["parameters"] = {}
-        extension[name]["labels"] = ["id_i","force"]
+        extension[name]["labels"] = ["idSet_i","idSet_j","force"]
         extension[name]["data"]   = []
 
-        selectedIds = self.getSelection("selection")
+        selectedIds1 = self.getSelection("selection1")
+        selectedIds2 = self.getSelection("selection2")
 
-        for id_i in selectedIds:
-            extension[name]["data"].append([id_i,force])
+        extension[name]["data"].append([selectedIds1,selectedIds2,force])
 
         ############################################################
 

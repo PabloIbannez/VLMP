@@ -6,21 +6,21 @@ import numpy as np
 
 from . import modelExtensionBase
 
-class constantForce(modelExtensionBase):
+class constantTorqueOverCenterOfMass(modelExtensionBase):
 
     """
-    Component name: constantForce
+    Component name: constantTorqueOverCenterOfMass
     Component type: modelExtension
 
     Author: Pablo Ibáñez-Freire
-    Date: 14/03/2023
+    Date: 04/04/2023
 
-    Constant force applied to a set of particles
+    Constant torque over center of mass
 
     :param selection: Selection of particles where the force is applied
     :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
+    :param torque: Torque applied to the center of mass
+    :type torque: list of floats
 
     ...
     """
@@ -28,8 +28,8 @@ class constantForce(modelExtensionBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"force"},
-                         requiredParameters  = {"force"},
+                         availableParameters = {"torque"},
+                         requiredParameters  = {"torque"},
                          requiredSelections  = {"selection"},
                          **params)
 
@@ -37,20 +37,22 @@ class constantForce(modelExtensionBase):
         ############################################################
         ############################################################
 
-        force = params.get("force")
+        torque = params.get("torque")
+        # Check if the torque is a list of floats
+        if not isinstance(torque,list):
+            raise ValueError("Torque must be a list of floats")
 
         extension = {}
 
         extension[name] = {}
-        extension[name]["type"] = ["Bond1","ConstantForce"]
+        extension[name]["type"] = ["Set1","ConstantTorqueOverCenterOfMass"]
         extension[name]["parameters"] = {}
-        extension[name]["labels"] = ["id_i","force"]
+        extension[name]["labels"] = ["idSet_i","torque"]
         extension[name]["data"]   = []
 
         selectedIds = self.getSelection("selection")
 
-        for id_i in selectedIds:
-            extension[name]["data"].append([id_i,force])
+        extension[name]["data"].append([selectedIds,torque])
 
         ############################################################
 
