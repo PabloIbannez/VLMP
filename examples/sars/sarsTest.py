@@ -16,13 +16,13 @@ for i in range(copies):
                            "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.1*ps2AKMA,"viscosity":1.0/ps2AKMA,"integrationSteps":1000000}}],
                            "model":[{"type":"CORONAVIRUS","parameters":{"nSpikes":40,"surface":True}}],
                            "modelExtensions":[{"type":"constantTorqueOverCenterOfMass",
-                                               "parameters":{
-                                                             "torque":[0.0,0.0,-100.0],
+                                               "parameters":{"torque":[0.0,0.0,-100.0],
                                                              "selection":{"expression":{"type":"lipids"}}
                                                             },
 
                                                }],
-                           "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
+                           "simulationSteps":[{"type":"saveState","parameters":{"startStep":10000,
+                                                                                "intervalStep":10000,
                                                                                 "outputFilePath":"test",
                                                                                 "outputFormat":"sp"}},
                                               {"type":"info","parameters":{"intervalStep":10000}}]

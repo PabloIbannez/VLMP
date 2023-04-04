@@ -22,8 +22,10 @@ class simulationStepBase(metaclass=abc.ABCMeta):
 
         self._units = units
 
-        self.availableParameters  = availableParameters.copy()
-        self.requiredParameters = requiredParameters.copy()
+        self.availableParameters = availableParameters.copy()
+        self.availableParameters.update({"startStep","endStep"})
+
+        self.requiredParameters  = requiredParameters.copy()
 
         # Check if all parameters given by params are available
         for par in params:
@@ -38,6 +40,11 @@ class simulationStepBase(metaclass=abc.ABCMeta):
                 raise ValueError(f"Required parameter not given")
 
         self.logger.info(f"[SimulationStep] ({self._type}) Using simulation step {self._name}")
+
+        ########################################################
+
+        self._startStep = params.get("startStep",None)
+        self._endStep   = params.get("endStep",None)
 
         ########################################################
 
@@ -60,6 +67,12 @@ class simulationStepBase(metaclass=abc.ABCMeta):
         if self._simulationStep is None:
             self.logger.error(f"[SimulationStep] ({self._type}) Simulation step {self._name} not initialized")
             raise ValueError(f"Simulation step not initialized")
+
+        if self._startStep is not None:
+            self._simulationStep[self.getName()]["parameters"]["startStep"] = self._startStep
+        if self._endStep is not None:
+            self._simulationStep[self.getName()]["parameters"]["endStep"]   = self._endStep
+
         return self._simulationStep
 
     ########################################################

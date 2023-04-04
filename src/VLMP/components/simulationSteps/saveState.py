@@ -60,7 +60,7 @@ class saveState(simulationStepBase):
             parameters["endStep"]   = params.get("endStep")
 
         simulationStep = {
-            "saveState":{
+            name:{
               "type":["WriteStep","WriteStep"],
               "parameters":{**parameters}
             }

@@ -23,16 +23,18 @@ class modelExtensionBase:
         self._type = _type
         self._name = _name
 
-        self._units = units
+        self._units  = units
         self._models = models
 
         self.logger.debug(f"[ModelExtension] ({self._type}) Extending models: "+
                           " ".join([m.getName() for m in self._models])+
                           ". For model extension: "+self._name)
 
-        self.availableParameters = availableParameters.copy()
-        self.requiredParameters  = requiredParameters.copy()
-        self.requiredSelections  = requiredSelections.copy()
+        self.availableParameters =  availableParameters.copy()
+        self.availableParameters.update({"startStep","endStep"})
+
+        self.requiredParameters  =  requiredParameters.copy()
+        self.requiredSelections  =  requiredSelections.copy()
 
         # Check if all parameters given by params are available
         for par in params:
@@ -50,10 +52,15 @@ class modelExtensionBase:
 
         ########################################################
 
+        self._startStep = params.get("startStep",None)
+        self._endStep   = params.get("endStep",None)
+
+        ########################################################
+
         #Process selections
         self._selection = getSelections(self._models,
-                                       self.requiredSelections,
-                                       **params)
+                                        self.requiredSelections,
+                                        **params)
 
         ########################################################
 
@@ -76,6 +83,11 @@ class modelExtensionBase:
         if self._extension is None:
             self.logger.error(f"[ModelExtension] ({self._type}) Extension not initialized")
             raise ValueError(f"Extension not initialized")
+
+        if self._startStep is not None:
+            self._extension[self.getName()]["parameters"]["startStep"] = self._startStep
+        if self._endStep is not None:
+            self._extension[self.getName()]["parameters"]["endStep"]   = self._endStep
 
         return self._extension
 

@@ -25,7 +25,7 @@ class info(simulationStepBase):
     """
 
     def __init__(self,name,**params):
-        super().__init__(_type="Info",
+        super().__init__(_type= self.__class__.__name__,
                          _name= name,
                          availableParameters = {"intervalStep","startStep","endStep"},
                          requiredParameters  = {"intervalStep"},
@@ -45,9 +45,9 @@ class info(simulationStepBase):
             parameters["endStep"]   = params.get("endStep")
 
         simulationStep = {
-            "info":{
-                "type":["UtilsStep","InfoStep"],
-                "parameters":{**parameters}
+            name:{
+                  "type":["UtilsStep","InfoStep"],
+                  "parameters":{**parameters}
             }
         }
 
