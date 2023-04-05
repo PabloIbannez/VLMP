@@ -6,6 +6,11 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 from pyquaternion import Quaternion
 
+#Units utils
+
+def picosecond2KcalMol_A_time():
+    return 20/0.978
+
 #Geometry utils
 
 def getEz(q):

@@ -413,7 +413,7 @@ class VLMP:
             if  modeName == "none":
                 self.simulationSets = [[i] for i in range(len(self.simulations))]
             elif modeName == "one":
-                self.simulationSets = list(range(len(self.simulations)))
+                self.simulationSets = [list(range(len(self.simulations)))]
             elif modeName == "upperLimit":
                 self.logger.debug("[VLMP] Distributing simulation pool using upper limit")
                 availableScoringProperties = ["numberOfParticles"]

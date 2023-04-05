@@ -568,7 +568,7 @@ class CORONAVIRUS(modelBase):
 
         forceField["verletList"] = {}
         forceField["verletList"]["type"]       = ["VerletConditionalListSet", "nonExclIntra_nonExclInter"]
-        forceField["verletList"]["parameters"] = {"cutOffVerletFactor":1.5}
+        forceField["verletList"]["parameters"] = {"cutOffVerletFactor":1.2}
         forceField["verletList"]["labels"]     = ["id","id_list"]
         forceField["verletList"]["data"]       = []
 

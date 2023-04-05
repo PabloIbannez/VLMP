@@ -1,40 +1,37 @@
 import VLMP
 
-import json
-import jsbeautifier
+from VLMP.experiments.SurfaceUmbrellaSampling import SurfaceUmbrellaSampling
 
-copies = 1
+#############################################################################################################################
 
-ps2AKMA = 20/0.978
+ps2AKMA = VLMP.utils.picosecond2KcalMol_A_time()
 
-simulationPool = []
-for i in range(copies):
-    simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":"TGEV_"+str(i)}},
-                                     {"type":"backup","parameters":{"backupIntervalStep":100000}}],
-                           "units":[{"type":"KcalMol_A"}],
-                           "global":[{"type":"NVT","parameters":{"box":[2000.0,2000.0,4000.0],"temperature":300.0}}],
-                           "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.1*ps2AKMA,"viscosity":1.0/ps2AKMA,"integrationSteps":1000000}}],
-                           "model":[{"type":"CORONAVIRUS","parameters":{"nSpikes":40,"surface":True}}],
-                           "modelExtensions":[{"type":"constantTorqueOverCenterOfMass",
-                                               "parameters":{"torque":[0.0,0.0,-100.0],
-                                                             "selection":{"expression":{"type":"lipids"}}
-                                                            },
+parameters = {"umbrella":{"nWindows":66,
+                          "windowsStartPosition":135.0,
+                          "windowsEndPosition":735.0,
+                          "K":[0.001,0.05],
+                          "Ksteps":[15000000,150000000]},
+              "simulation":{"units":"KcalMol_A",
+                            "temperature":300.0,
+                            "box":[2000.0, 2000.0, 4000.0],
+                            "models":[],
+                            "selection":{"type":"lipids"},
+                            "integrator":{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.1*ps2AKMA,"viscosity":1.0/ps2AKMA}}},
+              "output":{"infoIntervalStep":10000,
+                        "saveStateIntervalStep":100000,
+                        "saveStateOutputFilePath":"output",
+                        "saveStateOutputFormat":"sp"}
+              }
 
-                                               }],
-                           "simulationSteps":[{"type":"saveState","parameters":{"startStep":10000,
-                                                                                "intervalStep":10000,
-                                                                                "outputFilePath":"test",
-                                                                                "outputFormat":"sp"}},
-                                              {"type":"info","parameters":{"intervalStep":10000}}]
+for i in range(1):
+    parameters["simulation"]["models"].append({"type":"CORONAVIRUS","parameters":{"nSpikes":40,"surface":True}})
 
-                           })
-
-#with open("wlc.json","w") as f:
-#    json.dump(simulationPool,f)
+surfUmbrella = SurfaceUmbrellaSampling(parameters)
 
 vlmp = VLMP.VLMP()
 
-vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("upperLimit","numberOfParticles",25000)
+vlmp.loadSimulationPool(surfUmbrella.generateSimulationPool())
+#vlmp.distributeSimulationPool("upperLimit","numberOfParticles",40000)
+vlmp.distributeSimulationPool("one")
 vlmp.setUpSimulation("TEST")
 
