@@ -6,12 +6,14 @@ from VLMP.experiments.SurfaceUmbrellaSampling import SurfaceUmbrellaSampling
 
 ps2AKMA = VLMP.utils.picosecond2KcalMol_A_time()
 
-parameters = {"umbrella":{"nWindows":66,
+parameters = {"umbrella":{"nWindows":2,
                           "windowsStartPosition":135.0,
                           "windowsEndPosition":735.0,
                           "K":[0.001,0.05],
-                          "Ksteps":[15000000,150000000]},
-              "simulation":{"units":"KcalMol_A",
+                          "Ksteps":[150000,150000000],
+                          "measurementsIntervalStep":1000},
+              "simulation":{"backupIntervalStep":100000,
+                            "units":"KcalMol_A",
                             "temperature":300.0,
                             "box":[2000.0, 2000.0, 4000.0],
                             "models":[],

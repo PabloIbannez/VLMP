@@ -22,6 +22,12 @@ class unitsBase(metaclass=abc.ABCMeta):
         self.availableParameters = availableParameters.copy()
         self.requiredParameters  = requiredParameters.copy()
 
+        # Check all required parameters are available parameters
+        if not self.requiredParameters.issubset(self.availableParameters):
+            notAvailable = self.requiredParameters.difference(self.availableParameters)
+            self.logger.error(f"[Units] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for units {self._name}")
+            raise ValueError(f"Required paramaters are not available parameters")
+
         # Check if all parameters given by params are available
         for par in params:
             if par not in self.availableParameters:

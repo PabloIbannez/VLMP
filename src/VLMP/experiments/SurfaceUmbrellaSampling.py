@@ -38,10 +38,14 @@ class SurfaceUmbrellaSampling:
             self.logger.error("[SurfaceUmbrellaSampling] K and Ksteps must have the same length!")
             raise Exception("K and Ksteps must have the same length!")
 
+        #Measurements
+        self.measurementsIntervalStep = parameters["umbrella"]["measurementsIntervalStep"]
+
         self.logger.info((f"[SurfaceUmbrellaSampling] Number of windows: {self.nWindows}, "
                           f"windows start position: {self.windowsStartPosition}, "
                           f"windows end position: {self.windowsEndPosition}, "
-                          f"windows size: {round(self.windowsSize,2)}"))
+                          f"windows size: {round(self.windowsSize,2)}",
+                          f"measurements interval step: {self.measurementsIntervalStep}"))
 
         self.windowPositions = []
         for i in range(self.nWindows):
@@ -133,8 +137,20 @@ class SurfaceUmbrellaSampling:
                     stepsSum = 0
                     for ik,steps in enumerate(self.Ksteps):
                         sim["modelExtensions"][ik]["parameters"]["startStep"] = stepsSum
-                        sim["modelExtensions"][ik]["parameters"]["endStep"]   = stepsSum + steps
+                        if ik != len(self.Ksteps)-1:
+                            sim["modelExtensions"][ik]["parameters"]["endStep"]   = stepsSum + steps
                         stepsSum += steps
+
+                #Add measures
+                measureStartStep = 0
+                #Iterate over all Ksteps but the last one
+                for ik,steps in enumerate(self.Ksteps[:-1]):
+                    measureStartStep += steps
+
+                sim["simulationSteps"].append({"type":"centerOfMassMeasurement","parameters":{"outputFilePath":f"constraint_{center}.dat",
+                                                                                              "intervalStep":self.measurementsIntervalStep,
+                                                                                              "startStep":measureStartStep,
+                                                                                              "selection":{"expression":self.selection}}})
 
                 #Add backup
                 if self.backupIntervalStep is not None:
@@ -147,8 +163,8 @@ class SurfaceUmbrellaSampling:
                 #Add save state
                 if self.saveState:
                     sim["simulationSteps"].append({"type":"saveState","parameters":{"intervalStep":self.saveStateIntervalStep,
-                                                                                   "outputFilePath":self.saveStateOutputFilePath,
-                                                                                   "outputFormat":self.saveStateOutputFormat}})
+                                                                                    "outputFilePath":self.saveStateOutputFilePath,
+                                                                                    "outputFormat":self.saveStateOutputFormat}})
 
                 self.simulationPool.append(sim.copy())
 

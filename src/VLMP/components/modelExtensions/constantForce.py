@@ -30,6 +30,7 @@ class constantForce(modelExtensionBase):
                          _name = name,
                          availableParameters = {"force"},
                          requiredParameters  = {"force"},
+                         availableSelections = {"selection"},
                          requiredSelections  = {"selection"},
                          **params)
 

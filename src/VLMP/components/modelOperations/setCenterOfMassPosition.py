@@ -18,6 +18,7 @@ class setCenterOfMassPosition(modelOperationBase):
                          _name = name,
                          availableParameters = {"position"},
                          requiredParameters  = {"position"},
+                         availableSelections = {"selection"},
                          requiredSelections  = {"selection"},
                          **params)
 

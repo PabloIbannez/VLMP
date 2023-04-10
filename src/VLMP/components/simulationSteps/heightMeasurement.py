@@ -4,38 +4,29 @@ import logging
 
 from . import simulationStepBase
 
-class saveState(simulationStepBase):
+class heightMeasurement(simulationStepBase):
     """
-    Component name: saveState
+    Component name: heightMeasurement
     Component type: simulationStep
 
     Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
+    Date: 09/04/2023
 
-    This component is used to save the state of the simulation.
-    Availble formats are:
-        - .coord
-        - .sp
-        - .xyz
-        - .pdb
-        - .itpv
-        - .itpd
-        - .dcd
-        - .lammpstrj
-        - .vel
+    This component measures the height of the particles selected.
+    The height is the average of the N particles with the highest z coordinate.
 
     :param outputFilePath: Path to the output file
     :type outputFilePath: str
-    :param outputFormat: Format of the output file
-    :type outputFormat: str
+    :param particleNumberAverage: Number of particles to average the height
+    :type particleNumberAverage: int
 
     """
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath","outputFormat",},
-                         requiredParameters  = {"outputFilePath","outputFormat",},
+                         availableParameters = {"outputFilePath","particleNumberAverage"},
+                         requiredParameters  = {"outputFilePath"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
@@ -47,11 +38,13 @@ class saveState(simulationStepBase):
         parameters = {}
 
         parameters["outputFilePath"] = params.get("outputFilePath")
-        parameters["outputFormat"]   = params.get("outputFormat")
+
+        if "particleNumberAverage" in params:
+            parameters["particleNumberAverage"] = params.get("particleNumberAverage")
 
         simulationStep = {
             name:{
-              "type":["WriteStep","WriteStep"],
+              "type":["GeometricalMeasure","Height"],
               "parameters":{**parameters}
             }
         }

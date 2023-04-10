@@ -353,6 +353,7 @@ class VLMP:
                     try:
                         simulationBuffer["simulationSteps_"+name] = eval("_simulationSteps." + typ)(name=name,
                                                                                                     units=units,
+                                                                                                    models = [simulationBuffer[model] for model in models],
                                                                                                     **(param))
                     except:
                         self.logger.error(f"[VLMP] Error loading simulation step \"{name}\"")
@@ -563,32 +564,48 @@ class VLMP:
 
                 sim = self.simulations[simIndex]
                 if len(simSet) > 1:
-                    groupDefinitionRequired = False
                     if "simulationStep" in sim.keys():
+                        groupDefinitionRequired = False
+
                         keysToRename = []
                         for simStep in sim["simulationStep"].keys():
                             simStepType = sim["simulationStep"][simStep]["type"][0]
-                            if "UtilsStep" not in simStepType: #Ignore UtilsStep types
-                                sim["simulationStep"][simStep]["parameters"]["group"] = f"simId_{simIndex}"
+                            if "UtilsStep" not in simStepType and "Groups" not in simStepType: # Ignore UtilsStep and Groups
+                                #Each simulationStep apply to a simulationId group
+                                if "group" not in sim["simulationStep"][simStep]["parameters"].keys():
+                                    sim["simulationStep"][simStep]["parameters"]["group"] = f"simId_{simIndex}"
+                                    groupDefinitionRequired = True
                                 keysToRename.append(simStep)
-                                groupDefinitionRequired = True
+
+                            if "Groups" in simStepType:
+                                #We rename all groups declared
+                                for i in range(len(sim["simulationStep"][simStep]["data"])):
+                                    oldName = sim["simulationStep"][simStep]["data"][i][0]
+                                    newName = oldName + f"_{simIndex}"
+                                    sim["simulationStep"][simStep]["data"][i][0] = newName
+
+                                    #Rename all references to the group
+                                    for simStep2rename in sim["simulationStep"].keys():
+                                        if "group" in sim["simulationStep"][simStep2rename]["parameters"].keys():
+                                            if sim["simulationStep"][simStep2rename]["parameters"]["group"] == oldName:
+                                                sim["simulationStep"][simStep2rename]["parameters"]["group"] = newName
 
                         for k in keysToRename:
                             sim["simulationStep"][k+f"_{simIndex}"] = sim["simulationStep"].pop(k)
 
-                    if groupDefinitionRequired:
-                        if "groups_simulationId" not in sim["simulationStep"].keys():
-                            sim["simulationStep"]["groups_simulationId"] = {
-                                "type": ["Groups","GroupsList"],
-                                "parameters": {},
-                                "labels":["name","type","selection"],
-                                "data":[
-                                    [f"simId_{simIndex}","SimIds",[0]],
-                                ]
-                            }
-                        else:
-                            self.logger.error("[VLMP] groups_simulationId already defined")
-                            raise ValueError("groups_simulationId already defined")
+                        if groupDefinitionRequired:
+                            if "groups_simulationId" not in sim["simulationStep"].keys():
+                                sim["simulationStep"]["groups_simulationId"] = {
+                                    "type": ["Groups","GroupsList"],
+                                    "parameters": {},
+                                    "labels":["name","type","selection"],
+                                    "data":[
+                                        [f"simId_{simIndex}","SimIds",[0]],
+                                    ]
+                                }
+                            else:
+                                self.logger.error("[VLMP] groups_simulationId already defined")
+                                raise ValueError("groups_simulationId already defined")
                 else:
                     #Only one simulation in the set, do nothing
                     pass

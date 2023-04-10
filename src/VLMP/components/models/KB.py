@@ -28,7 +28,7 @@ class KB(modelBase):
                                                 "SASA",
                                                 "aggregateChains"},
                          requiredParameters  = {"PDB"},
-                         availableSelectors  = {"particleId"},
+                         definedSelections   = {"particleId"},
                          **params)
 
         ############################################################

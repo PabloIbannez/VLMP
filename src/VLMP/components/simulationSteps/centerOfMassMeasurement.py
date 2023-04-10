@@ -4,38 +4,26 @@ import logging
 
 from . import simulationStepBase
 
-class saveState(simulationStepBase):
+class centerOfMassMeasurement(simulationStepBase):
     """
-    Component name: saveState
+    Component name: centerOfMassMeasurement
     Component type: simulationStep
 
     Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
+    Date: 09/04/2023
 
-    This component is used to save the state of the simulation.
-    Availble formats are:
-        - .coord
-        - .sp
-        - .xyz
-        - .pdb
-        - .itpv
-        - .itpd
-        - .dcd
-        - .lammpstrj
-        - .vel
+    This component measures the center of mass of the particles in the simulation.
 
     :param outputFilePath: Path to the output file
     :type outputFilePath: str
-    :param outputFormat: Format of the output file
-    :type outputFormat: str
 
     """
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath","outputFormat",},
-                         requiredParameters  = {"outputFilePath","outputFormat",},
+                         availableParameters = {"outputFilePath"},
+                         requiredParameters  = {"outputFilePath"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
@@ -47,17 +35,17 @@ class saveState(simulationStepBase):
         parameters = {}
 
         parameters["outputFilePath"] = params.get("outputFilePath")
-        parameters["outputFormat"]   = params.get("outputFormat")
 
         simulationStep = {
             name:{
-              "type":["WriteStep","WriteStep"],
+              "type":["GeometricalMeasure","CenterOfMassPosition"],
               "parameters":{**parameters}
             }
         }
 
         ############################################################
 
+        self.setGroup("selection")
         self.setSimulationStep(simulationStep)
 
 

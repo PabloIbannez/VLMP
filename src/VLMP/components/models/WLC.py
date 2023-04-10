@@ -33,7 +33,7 @@ class WLC(modelBase):
                          _name= name,
                          availableParameters = {"N","mass","b","Kb","Ka","typeName"},
                          requiredParameters  = {"N"},
-                         availableSelectors  = {"particleId","polymerIndex"},
+                         definedSelections   = {"particleId","polymerIndex"},
                          **params)
 
         ############################################################

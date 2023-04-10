@@ -47,8 +47,8 @@ class CORONAVIRUS(modelBase):
                                                 "surface",
                                                 "surfacePosition",
                                                 "inputModelData"},
-                         requiredParameters  = {},
-                         availableSelectors  = {"particleId","type"},
+                         requiredParameters  = set(),
+                         definedSelections   = {"particleId","type"},
                          **params)
 
         self.logger = logging.getLogger("VLMP")

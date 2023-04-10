@@ -34,6 +34,7 @@ class harmonicBondBetweenCentersOfMass(modelExtensionBase):
                          _name = name,
                          availableParameters = {"K","r0"},
                          requiredParameters  = {"K","r0"},
+                         availableSelections = {"selection1","selection2"},
                          requiredSelections  = {"selection1","selection2"},
                          **params)
 

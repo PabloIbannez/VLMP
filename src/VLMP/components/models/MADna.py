@@ -137,7 +137,7 @@ class MADna(modelBase):
                                                 "debyeFactor","fastFactor",
                                                 "version"},
                          requiredParameters  = {"sequence"},
-                         availableSelectors  = {"type","strand","basePairIndex","basePairType"},
+                         definedSelections   = {"type","strand","basePairIndex","basePairType"},
                          **params)
 
         ############################################################

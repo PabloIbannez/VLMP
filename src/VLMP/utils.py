@@ -73,11 +73,11 @@ def getValuesAndPaths(d, key, path=None):
 
     return values
 
-def getSelections(models,requiredSelections,**param):
+def getSelections(models,selectionsList,**param):
 
     selections = {}
 
-    for sel in [s for s in param.keys() if s in requiredSelections]:
+    for sel in [s for s in param.keys() if s in selectionsList]:
         selections[sel] = []
 
         if "models" in param[sel]:
@@ -98,5 +98,3 @@ def getSelections(models,requiredSelections,**param):
         selections[sel] = list(set(selections[sel]))
 
     return copy.deepcopy(selections)
-
-

@@ -17,7 +17,7 @@ class modelBase(metaclass=abc.ABCMeta):
                  units,
                  availableParameters:set,
                  requiredParameters:set,
-                 availableSelectors:set,
+                 definedSelections:set,
                  **params):
 
         self.logger = logging.getLogger("VLMP")
@@ -29,7 +29,13 @@ class modelBase(metaclass=abc.ABCMeta):
 
         self.availableParameters = availableParameters.copy()
         self.requiredParameters  = requiredParameters.copy()
-        self.availableSelectors  = availableSelectors.copy()
+        self.definedSelections    = definedSelections.copy()
+
+        # Check all required parameters are available parameters
+        if not self.requiredParameters.issubset(self.availableParameters):
+            notAvailable = self.requiredParameters.difference(self.availableParameters)
+            self.logger.error(f"[Model] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for model {self._name}")
+            raise ValueError(f"Required paramaters are not available parameters")
 
         # Check if all parameters given by params are available
         for par in params:
@@ -170,7 +176,7 @@ class modelBase(metaclass=abc.ABCMeta):
             return self.getIds()
         # Check if all selectors given by params are available
         for par in params:
-            if par not in self.availableSelectors:
+            if par not in self.definedSelections:
                 self.logger.error(f"[Model] ({self._type}) Selector {par} not available for model {self._name}")
                 raise ValueError(f"Selector not available")
         return self.processSelection(**params)

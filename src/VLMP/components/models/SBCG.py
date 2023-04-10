@@ -30,7 +30,7 @@ class SBCG(modelBase):
                                                 "SASA",
                                                 "aggregateChains"},
                          requiredParameters  = {"PDB","resolution","steps","bondsModel","nativeContactsModel"},
-                         availableSelectors  = {"particleId"},
+                         definedSelections   = {"particleId"},
                          **params)
 
         ############################################################

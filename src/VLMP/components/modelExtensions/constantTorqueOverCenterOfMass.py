@@ -30,6 +30,7 @@ class constantTorqueOverCenterOfMass(modelExtensionBase):
                          _name = name,
                          availableParameters = {"torque"},
                          requiredParameters  = {"torque"},
+                         availableSelections = {"selection"},
                          requiredSelections  = {"selection"},
                          **params)
 

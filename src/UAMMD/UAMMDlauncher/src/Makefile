@@ -3,6 +3,7 @@ HOSTNAME=$(shell hostname)
 ifeq ($(HOSTNAME), pablo-HOME)
 	ARCH=86
 	CXX=g++
+	STD=17
 	
 	CUDA_ROOT=/usr/local/cuda
 	NVCC=$(CUDA_ROOT)/bin/nvcc
@@ -15,6 +16,7 @@ ifeq ($(HOSTNAME), pablo-HOME)
 else ifeq ($(HOSTNAME), liquid.ftmc.uam.es)
 	ARCH=60 61 75
 	CXX=g++
+	STD=14
 
 	CUDA_ROOT=/usr/local/cuda
 	NVCC=nvcc
@@ -46,5 +48,5 @@ INCLUDE_FLAGS= -I$(CUDA_ROOT)/include -I$(UAMMD_ROOT)/src/ -I$(UAMMD_ROOT)/src/t
 LIBRARIES=
 
 launcher:
-	$(NVCC) --expt-relaxed-constexpr --expt-extended-lambda -std=c++14 -O3 $(OPTIONS) -ccbin="$(CXX)" -Xcompiler="$(CPU)" $(GENCODE_FLAGS) UAMMDlauncher.cu $(INCLUDE_FLAGS) $(LIBRARIES) -o UAMMDlauncher
+	$(NVCC) --expt-relaxed-constexpr --expt-extended-lambda -std=c++$(STD) -O3 $(OPTIONS) -ccbin="$(CXX)" -Xcompiler="$(CPU)" $(GENCODE_FLAGS) UAMMDlauncher.cu $(INCLUDE_FLAGS) $(LIBRARIES) -o UAMMDlauncher
 	mv UAMMDlauncher ../../../../bin/
