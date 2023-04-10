@@ -584,6 +584,7 @@ class CORONAVIRUS(modelBase):
         forceField["lipidsLipids"]["data"]   = [
             ["LV","LV",self.lipidRadius,self.epsilonLipids,self.muLipids,self.chiLipids,self.thetaLipids],
             ["LV","LP",self.lipidRadius,self.epsilonLipidWithProtein,self.muLipidWithProtein,self.chiLipidWithProtein,self.thetaLipidWithProtein],
+            ["LP","LV",self.lipidRadius,self.epsilonLipidWithProtein,self.muLipidWithProtein,self.chiLipidWithProtein,self.thetaLipidWithProtein],
             ["LP","LP",self.lipidRadius,self.epsilonLipidWithProtein,self.muLipidWithProtein,self.chiLipidWithProtein,self.thetaLipidWithProtein]
         ]
 
