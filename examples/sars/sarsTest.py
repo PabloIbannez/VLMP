@@ -6,7 +6,7 @@ from VLMP.experiments.SurfaceUmbrellaSampling import SurfaceUmbrellaSampling
 
 ps2AKMA = VLMP.utils.picosecond2KcalMol_A_time()
 
-parameters = {"umbrella":{"nWindows":2,
+parameters = {"umbrella":{"nWindows":66,
                           "windowsStartPosition":135.0,
                           "windowsEndPosition":735.0,
                           "K":[0.001,0.05],

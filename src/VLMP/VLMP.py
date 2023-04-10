@@ -53,6 +53,31 @@ class VLMP:
 
         return simulationSets
 
+    def __distributeSimulationPoolBySize(self,size):
+        simulationSets = []
+
+        currentSet     = []
+        currentSetSize = 0
+        for simIndex,sim in enumerate(self.simulations):
+            if currentSetSize + 1 > size:
+                if len(currentSet) > 0:
+                    simulationSets.append(currentSet)
+                currentSet     = []
+                currentSetSize = 0
+
+            currentSet.append(simIndex)
+            currentSetSize += 1
+
+        if len(currentSet) > 0:
+            simulationSets.append(currentSet)
+
+        #Print the number of simulations and the number of particles in each set
+        for i in range(len(simulationSets)):
+            self.logger.debug("[VLMP] Simulation set %d has %d simulations",
+                              i,len(simulationSets[i]))
+
+        return simulationSets
+
     def __distributeSimulationPoolByProperty(self,propertyPath):
 
         simulationSets = {}
@@ -122,7 +147,16 @@ class VLMP:
 
     def loadSimulationPool(self,simulationPool:dict):
 
+        availableComponents = ["system","units","global","model","modelOperations","modelExtensions","integrator","simulationSteps"]
+
         for simulationInfo in simulationPool:
+
+            #Check all keys are available components
+            for key in simulationInfo.keys():
+                if key not in availableComponents:
+                    self.logger.error("[VLMP] Unknown component \"%s\"",key)
+                    self.logger.error("[VLMP] Available components are: %s",availableComponents)
+                    raise ValueError("Unknown component")
 
             simulationBuffer = OrderedDict()
 
@@ -391,7 +425,7 @@ class VLMP:
 
     def distributeSimulationPool(self,*mode):
 
-        availableModes = ["none","one","upperLimit","property"]
+        availableModes = ["none","one","upperLimit","size","property"]
 
         #Check at least one simulations has been loaded
         if len(self.simulations) == 0:
@@ -411,10 +445,10 @@ class VLMP:
             raise ValueError("Distribute mode not available")
         else:
             #Switch to the selected mode
-            if  modeName == "none":
-                self.simulationSets = [[i] for i in range(len(self.simulations))]
-            elif modeName == "one":
+            if modeName == "none":
                 self.simulationSets = [list(range(len(self.simulations)))]
+            elif  modeName == "one":
+                self.simulationSets = [[i] for i in range(len(self.simulations))]
             elif modeName == "upperLimit":
                 self.logger.debug("[VLMP] Distributing simulation pool using upper limit")
                 availableScoringProperties = ["numberOfParticles"]
@@ -442,6 +476,17 @@ class VLMP:
                         #Distribute the simulation pool
                         self.simulationSets = self.__distributeSimulationPoolByMaxNumberOfParticles(maxNumberOfParticles)
                     #Scoring property switch finished
+            elif modeName == "size":
+                self.logger.debug("[VLMP] Distributing simulation pool using size")
+
+                if len(mode) >= 2:
+                    size = mode[1]
+                else:
+                    self.logger.error("[VLMP] No size specified")
+                    raise ValueError("No size specified")
+
+                #Distribute the simulation pool
+                self.simulationSets = self.__distributeSimulationPoolBySize(size)
 
             elif modeName == "property":
                 self.logger.debug("[VLMP] Distributing simulation pool using property")
@@ -463,6 +508,7 @@ class VLMP:
 
                 #Distribute the simulation pool
                 self.simulationSets = self.__distributeSimulationPoolByProperty(propertyPath)
+
 
         #Check all the simulations have been distributed.
         #simulationSets is a list of lists which contains the indexes of the simulations
