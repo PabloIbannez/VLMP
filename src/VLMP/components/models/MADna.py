@@ -782,10 +782,9 @@ class MADna(modelBase):
         forceField["WCA"]["labels"] = ["name_i", "name_j", "epsilon", "sigma"]
         forceField["WCA"]["data"]   = []
 
-        for t1,t2 in itertools.combinations(self.model["TYPES"],r=2):
-            info1 = self.model["TYPES"][t1]
-            info2 = self.model["TYPES"][t2]
-            forceField["WCA"]["data"].append([t1,t2,1.0,info1["radius"]+info2["radius"]])
+        for t1,info1 in self.model["TYPES"].items():
+            for t2,info2 in self.model["TYPES"].items():
+                forceField["WCA"]["data"].append([t1,t2,1.0,info1["radius"]+info2["radius"]])
 
         #DH
         forceField["DH"] = {}

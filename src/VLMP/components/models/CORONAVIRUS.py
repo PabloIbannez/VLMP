@@ -593,22 +593,22 @@ class CORONAVIRUS(modelBase):
         forceField["nonPolar"]["labels"] = ["name_i", "name_j", "epsilon", "sigma"]
         forceField["nonPolar"]["data"]   = []
 
-        for t1,t2 in itertools.combinations(tpy2radius.keys(),r=2):
+        for t1 in tpy2radius.keys():
+            for t2 in tpy2radius.keys():
+                is1lipid = t1 in ["LV","LP"]
+                is2lipid = t2 in ["LV","LP"]
 
-            is1lipid = t1 in ["LV","LP"]
-            is2lipid = t2 in ["LV","LP"]
+                r1 = tpy2radius[t1]
+                r2 = tpy2radius[t2]
 
-            r1 = tpy2radius[t1]
-            r2 = tpy2radius[t2]
-
-            if is1lipid and is2lipid:
-                forceField["nonPolar"]["data"].append([t1,t2,0.0,0.0])
-            if is1lipid and not is2lipid:
-                forceField["nonPolar"]["data"].append([t1,t2,self.proteinLipidEpsilon,r1+r2])
-            if not is1lipid and is2lipid:
-                forceField["nonPolar"]["data"].append([t1,t2,self.proteinLipidEpsilon,r1+r2])
-            if not is1lipid and not is2lipid:
-                forceField["nonPolar"]["data"].append([t1,t2,self.proteinProteinEpsilon,r1+r2])
+                if is1lipid and is2lipid:
+                    forceField["nonPolar"]["data"].append([t1,t2,0.0,0.0])
+                if is1lipid and not is2lipid:
+                    forceField["nonPolar"]["data"].append([t1,t2,self.proteinLipidEpsilon,r1+r2])
+                if not is1lipid and is2lipid:
+                    forceField["nonPolar"]["data"].append([t1,t2,self.proteinLipidEpsilon,r1+r2])
+                if not is1lipid and not is2lipid:
+                    forceField["nonPolar"]["data"].append([t1,t2,self.proteinProteinEpsilon,r1+r2])
 
         #Bonds
         if self.nSpikes > 0:
