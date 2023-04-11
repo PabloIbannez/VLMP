@@ -144,7 +144,6 @@ class VLMP:
         self.simulations    = []
         self.simulationSets = []
 
-
     def loadSimulationPool(self,simulationPool:dict):
 
         availableComponents = ["system","units","global","model","modelOperations","modelExtensions","integrator","simulationSteps"]
@@ -521,12 +520,6 @@ class VLMP:
         if simulationIndexes != simulationIndexesInSets:
             self.logger.error("[VLMP] Simulation distribution failed")
             raise ValueError("Simulation distribution failed")
-
-    def aggregateSimulationSets(self):
-
-        #Generate a simulation merging all simulations in each set
-        for i in range(len(self.simulations)):
-            self.logger.debug("[VLMP] Generating simulation set %d",i)
 
     def setUpSimulation(self, sessionName):
         self.logger.debug("[VLMP] Setting up simulation")

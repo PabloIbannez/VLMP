@@ -1,14 +1,24 @@
-import copy
+import VLMP
 
+import VLMP.components.units as _units
+
+import os
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+import json
+import jsbeautifier
+
+import copy
 import logging
 
-class SurfaceUmbrellaSampling:
+class SurfaceUmbrellaSampling(VLMP.VLMP):
 
     def __init__(self,parameters):
+        super().__init__()
 
         requiredParameters = ["nWindows","windowsStartPosition","windowsEndPosition","K","Ksteps"]
-
-        self.logger = logging.getLogger("VLMP")
 
         self.logger.info("[SurfaceUmbrellaSampling] Initializing ...")
 
@@ -110,12 +120,36 @@ class SurfaceUmbrellaSampling:
 
     def generateSimulationPool(self):
 
-        self.simulationPool = []
+        self.umbrellaInfo = {}
 
-        for i,mdl in enumerate(self.models):
-            for j,center in enumerate(self.windowPositions):
+        ########################################
 
-                sim = {"system":[{"type":"simulationName","parameters":{"simulationName":mdl["type"]+"_"+str(i)+"_"+str(j)}}],
+        unitsComponent = eval(f"_units.{self.units}")(name="units")
+
+        ########################################
+
+        simulationPool = []
+
+        mdlNames = []
+        for mdl in self.models:
+            if "name" not in mdl.keys():
+                self.logger.error("[SurfaceUmbrellaSampling] Model name not found! (Model: %s)" % mdl)
+                raise Exception("Model name not found")
+
+            if mdl["name"] in mdlNames:
+                self.logger.error("[SurfaceUmbrellaSampling] Model with the same name found! (Model: %s)" % mdl)
+                raise Exception("Model with the same name found")
+            else:
+                mdlNames.append(mdl["name"])
+
+        for mdl in self.models:
+            self.umbrellaInfo[mdl["name"]] = {}
+            self.umbrellaInfo[mdl["name"]]["kT"] = unitsComponent.getConstant("KBOLTZ")*self.temperature
+            self.umbrellaInfo[mdl["name"]]["K"]  = self.K[-1]
+            self.umbrellaInfo[mdl["name"]]["centers"] = {}
+            for i,center in enumerate(self.windowPositions):
+
+                sim = {"system":[{"type":"simulationName","parameters":{"simulationName":mdl["name"]+"_"+str(i)}}],
                        "units":[{"type":self.units}],
                        "global":[{"type":"NVT","parameters":{"box":self.box,"temperature":self.temperature}}],
                        "integrator":[self.integrator],
@@ -147,10 +181,13 @@ class SurfaceUmbrellaSampling:
                 for ik,steps in enumerate(self.Ksteps[:-1]):
                     measureStartStep += steps
 
-                sim["simulationSteps"].append({"type":"centerOfMassMeasurement","parameters":{"outputFilePath":f"constraint_{center}.dat",
+                centerOutputFilePath = f"constraint_{center}.dat"
+                sim["simulationSteps"].append({"type":"centerOfMassMeasurement","parameters":{"outputFilePath":centerOutputFilePath,
                                                                                               "intervalStep":self.measurementsIntervalStep,
                                                                                               "startStep":measureStartStep,
                                                                                               "selection":{"expression":self.selection}}})
+
+                self.umbrellaInfo[mdl["name"]]["centers"][center] = "results/{}/{}".format(mdl["name"]+"_"+str(i),centerOutputFilePath)
 
                 #Add backup
                 if self.backupIntervalStep is not None:
@@ -166,6 +203,144 @@ class SurfaceUmbrellaSampling:
                                                                                     "outputFilePath":self.saveStateOutputFilePath,
                                                                                     "outputFormat":self.saveStateOutputFormat}})
 
-                self.simulationPool.append(sim.copy())
+                simulationPool.append(sim.copy())
 
-        return copy.deepcopy(self.simulationPool)
+        self.loadSimulationPool(copy.deepcopy(simulationPool))
+
+    def setUpSimulation(self, sessionName):
+        super().setUpSimulation(sessionName)
+
+        #Write umbrella info
+        with open(os.path.join(sessionName,"surfaceUmbrella.json"),"w") as f:
+            f.write(jsbeautifier.beautify(json.dumps(self.umbrellaInfo)))
+
+class AnalysisSurfaceUmbrellaSampling():
+
+    def __computePotential(self,centers,data,beta,K,outputFolderPath):
+
+        from WHAM import binless
+        from WHAM.lib import potentials
+
+        outputPlot      = os.path.join(outputFolderPath,"histogram.png")
+        outputPotential = os.path.join(outputFolderPath,"potential.dat")
+
+        fig, (ax1, ax2) = plt.subplots(2,1)
+
+        potMin = np.amin(np.array(data).flatten())
+        potMax = np.amax(np.array(data).flatten())
+
+        ######### HISTOGRAM ########
+
+        cmap = plt.get_cmap('spring')
+        ax1.set_prop_cycle(color=[cmap(1.*i/len(centers)) for i in range(len(centers))])
+
+        for i,x_0 in enumerate(centers):
+            traj = data[i]
+            bins = 100
+            ax1.hist(traj, bins=bins, alpha=0.8,density=True)
+
+        ax1.set_xlabel("z")
+        ax1.set_xlim(potMin, potMax)
+        ax1.set_ylabel("Counts")
+
+        ######### POTENTIAL ########
+
+        x_it = []
+        u_i  = []
+        for i,x_0 in enumerate(centers):
+            traj = data[i]
+            x_it.append(traj)
+            u_i.append(potentials.harmonic(K, x_0))
+
+        x_bin = np.linspace(potMin,potMax,1001)
+
+        calc_binless = binless.Calc1D()
+        bF, _, _ = calc_binless.compute_betaF_profile(x_it, x_bin, u_i, beta=beta)
+
+        bF = bF - np.min(bF)
+
+        ax2.plot(x_bin, bF)
+
+        ax2.set_xlabel("z")
+        ax2.set_xlim(potMin, potMax)
+        ax2.set_ylabel(r"Free energy ($k_B T$)")
+
+        with open(outputPotential,"w") as fpot:
+            for x,e in zip(x_bin, bF):
+                fpot.write(f"{x} {e}\n")
+
+        fig.set_size_inches(24, 17)
+        fig.savefig(outputPlot, dpi=300)
+
+    def __init__(self,infoFilePath,skip=0):
+
+        self.logger = logging.getLogger("VLMP")
+
+        with open(infoFilePath,"r") as f:
+            self.info = json.load(f)
+        #Path from current file to infoFilePath
+        self.sessionPath = os.path.dirname(infoFilePath)
+
+        self.skip = skip + 1
+
+        ########################################################
+
+    def run(self):
+
+        for mdlName in self.info.keys():
+
+            self.logger.info(f"Processing {mdlName}")
+
+            kT   = self.info[mdlName]["kT"]
+            beta = 1.0/kT
+
+            K = self.info[mdlName]["K"]
+
+            centers = []
+            data    = []
+            for center,file in self.info[mdlName]["centers"].items():
+                #Check if file exists
+                if not os.path.isfile(os.path.join(self.sessionPath,file)):
+                    self.logger.error(f"[AnalysisSurfaceUmbrellaSampling] Center file not found! (File: {file})")
+                    raise Exception("File not found")
+
+                centers.append(float(center))
+                data.append(np.loadtxt(os.path.join(self.sessionPath,file),skiprows=self.skip)[:,3])
+
+            outputFolderPath = os.path.join(self.sessionPath,"results",mdlName+"_surfaceUmbrella")
+            #Create output directory if it does not exist
+            if not os.path.isdir(outputFolderPath):
+                os.makedirs(outputFolderPath)
+
+            self.__computePotential(centers,data,beta,K,outputFolderPath)
+
+            self.logger.info(f"[AnalysisSurfaceUmbrellaSampling] Results for model {mdlName} saved in {outputFolderPath}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
