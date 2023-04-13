@@ -75,6 +75,18 @@ def getValuesAndPaths(d, key, path=None):
 
 def getSelections(models,selectionsList,**param):
 
+    logger = logging.getLogger("VLMP")
+
+    #Check params
+    for p in param.keys():
+        if p not in selectionsList:
+            continue
+        else:
+            for k in param[p].keys():
+                if k not in ["models","expression"]:
+                    logger.error(f"[getSelections] Parameter {k} not recognized for selection {p}, available parameters are: models, expression")
+                    raise Exception("Unknown parameter")
+
     selections = {}
 
     for sel in [s for s in param.keys() if s in selectionsList]:

@@ -51,6 +51,7 @@ class heightMeasurement(simulationStepBase):
 
         ############################################################
 
+        self.setGroup("selection")
         self.setSimulationStep(simulationStep)
 
 
