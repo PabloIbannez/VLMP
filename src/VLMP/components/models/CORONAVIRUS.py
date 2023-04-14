@@ -73,7 +73,7 @@ class CORONAVIRUS(modelBase):
 
         self.nSpikes     = params.get("nSpikes",0)
 
-        self.epsilonLipids = params.get("epsilonLipids_kT",5.0*units.getConstant("kT"))
+        self.epsilonLipids = params.get("epsilonLipids_kT",5.0)
         self.muLipids      = params.get("muLipids",3.0)
         self.chiLipids     = params.get("chiLipids",7.0)
         self.thetaLipids   = params.get("thetaLipids",0.0)
@@ -83,15 +83,23 @@ class CORONAVIRUS(modelBase):
         self.chiLipidWithProtein     = params.get("chiLipidWithProtein",self.chiLipids)
         self.thetaLipidWithProtein   = params.get("thetaLipidWithProtein",self.thetaLipids)
 
-        self.proteinProteinEpsilon = params.get("proteinProteinEpsilon_kT",1.0*units.getConstant("kT"))
-        self.proteinLipidEpsilon   = params.get("proteinLipidEpsilon_kT",1.0*units.getConstant("kT"))
+        self.proteinProteinEpsilon = params.get("proteinProteinEpsilon_kT",1.0)
+        self.proteinLipidEpsilon   = params.get("proteinLipidEpsilon_kT",1.0)
 
-        self.proteinSurfaceEpsilon     = params.get("proteinSurfaceEpsilon_kT",1.0*units.getConstant("kT"))
+        self.proteinSurfaceEpsilon     = params.get("proteinSurfaceEpsilon_kT",1.0)
         self.proteinPeakSurfaceEpsilon = params.get("proteinPeakSurfaceEpsilon_kT",self.proteinSurfaceEpsilon)
 
         self.peakProteins = params.get("peakProtein",["S10"])
 
-        self.lipidSurfaceEpsilon = params.get("lipidSurfaceEpsilon_kT",1.0*units.getConstant("kT"))
+        self.lipidSurfaceEpsilon = params.get("lipidSurfaceEpsilon_kT",1.0)
+
+        self.epsilonLipids             *= units.getConstant("kT")
+        self.epsilonLipidWithProtein   *= units.getConstant("kT")
+        self.proteinProteinEpsilon     *= units.getConstant("kT")
+        self.proteinLipidEpsilon       *= units.getConstant("kT")
+        self.proteinSurfaceEpsilon     *= units.getConstant("kT")
+        self.proteinPeakSurfaceEpsilon *= units.getConstant("kT")
+        self.lipidSurfaceEpsilon       *= units.getConstant("kT")
 
         self.surface = params.get("surface",False)
         if self.surface:

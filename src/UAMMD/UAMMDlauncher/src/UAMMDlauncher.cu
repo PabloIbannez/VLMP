@@ -9,7 +9,8 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    startSelfStartingSimulation(argv[1]);
+    std::string inputFilePath = argv[1];
+    startSelfStartingSimulation(inputFilePath);
 
     return EXIT_SUCCESS;
 }
