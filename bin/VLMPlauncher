@@ -1,5 +1,5 @@
-#!/home/pablo/py3/bin/python
-####!/home/pablo/anaconda3/bin/python
+#!/home/pablo/anaconda3/bin/python
+####!/home/pablo/py3/bin/python
 import sys,os
 import shutil
 

@@ -78,6 +78,11 @@ class CORONAVIRUS(modelBase):
         self.chiLipids     = params.get("chiLipids",7.0)
         self.thetaLipids   = params.get("thetaLipids",0.0)
 
+        self.epsilonLipidLipidWithProtein = params.get("epsilonLipidLipidWithProtein_kT",self.epsilonLipids)
+        self.muLipidLipidWithProtein      = params.get("muLipidLipidWithProtein",self.muLipids)
+        self.chiLipidLipidWithProtein     = params.get("chiLipidLipidWithProtein",self.chiLipids)
+        self.thetaLipidLipidWithProtein   = params.get("thetaLipidLipidWithProtein",self.thetaLipids)
+
         self.epsilonLipidWithProtein = params.get("epsilonLipidWithProtein_kT",self.epsilonLipids)
         self.muLipidWithProtein      = params.get("muLipidWithProtein",self.muLipids)
         self.chiLipidWithProtein     = params.get("chiLipidWithProtein",self.chiLipids)
@@ -93,13 +98,14 @@ class CORONAVIRUS(modelBase):
 
         self.lipidSurfaceEpsilon = params.get("lipidSurfaceEpsilon_kT",1.0)
 
-        self.epsilonLipids             *= units.getConstant("kT")
-        self.epsilonLipidWithProtein   *= units.getConstant("kT")
-        self.proteinProteinEpsilon     *= units.getConstant("kT")
-        self.proteinLipidEpsilon       *= units.getConstant("kT")
-        self.proteinSurfaceEpsilon     *= units.getConstant("kT")
-        self.proteinPeakSurfaceEpsilon *= units.getConstant("kT")
-        self.lipidSurfaceEpsilon       *= units.getConstant("kT")
+        self.epsilonLipids                *= units.getConstant("kT")
+        self.epsilonLipidLipidWithProtein *= units.getConstant("kT")
+        self.epsilonLipidWithProtein      *= units.getConstant("kT")
+        self.proteinProteinEpsilon        *= units.getConstant("kT")
+        self.proteinLipidEpsilon          *= units.getConstant("kT")
+        self.proteinSurfaceEpsilon        *= units.getConstant("kT")
+        self.proteinPeakSurfaceEpsilon    *= units.getConstant("kT")
+        self.lipidSurfaceEpsilon          *= units.getConstant("kT")
 
         self.surface = params.get("surface",False)
         if self.surface:
@@ -591,8 +597,8 @@ class CORONAVIRUS(modelBase):
         forceField["lipidsLipids"]["labels"] = ["name_i", "name_j", "radius", "epsilon", "mu", "chi", "theta"]
         forceField["lipidsLipids"]["data"]   = [
             ["LV","LV",self.lipidRadius,self.epsilonLipids,self.muLipids,self.chiLipids,self.thetaLipids],
-            ["LV","LP",self.lipidRadius,self.epsilonLipidWithProtein,self.muLipidWithProtein,self.chiLipidWithProtein,self.thetaLipidWithProtein],
-            ["LP","LV",self.lipidRadius,self.epsilonLipidWithProtein,self.muLipidWithProtein,self.chiLipidWithProtein,self.thetaLipidWithProtein],
+            ["LV","LP",self.lipidRadius,self.epsilonLipidLipidWithProtein,self.muLipidLipidWithProtein,self.chiLipidLipidWithProtein,self.thetaLipidLipidWithProtein],
+            ["LP","LV",self.lipidRadius,self.epsilonLipidLipidWithProtein,self.muLipidLipidWithProtein,self.chiLipidLipidWithProtein,self.thetaLipidLipidWithProtein],
             ["LP","LP",self.lipidRadius,self.epsilonLipidWithProtein,self.muLipidWithProtein,self.chiLipidWithProtein,self.thetaLipidWithProtein]
         ]
 
