@@ -28,6 +28,10 @@ if os.uname()[1] == "pablo-HOME":
     gpuIDList = [0]
 if os.uname()[1] == "compute-new":
     gpuIDList = [0,1,2,3,5]
+if os.uname()[1] == "compute-0-3.local":
+    gpuIDList = [0,1,2,3]
+if os.uname()[1] == "compute-0-4.local":
+    gpuIDList = [0,1,2,3]
 
 nodeGPUList = []
 if os.uname()[1] == "pablo-HOME":

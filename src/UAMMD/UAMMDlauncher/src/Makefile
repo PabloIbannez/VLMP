@@ -26,6 +26,19 @@ else ifeq ($(HOSTNAME), liquid.ftmc.uam.es)
 	
 	INCLUDE_FLAGS= -I$(CUDA_ROOT)/include -I$(UAMMD_ROOT)/src/ -I$(UAMMD_ROOT)/src/third_party/ -I$(UAMMD_STRUCTURED_ROOT)
 	LIBRARIES=-lstdc++fs
+else ifeq ($(HOSTNAME), mustang.ftmc.uam.es)
+	ARCH=35 60 61 75
+	CXX=g++
+	STD=17
+
+	CUDA_ROOT=/usr/local/cuda
+	NVCC=nvcc
+	
+	UAMMD_ROOT=$(UAMMDPATH)
+	UAMMD_STRUCTURED_ROOT=$(UAMMD_ROOT)/extensions/structured/
+	
+	INCLUDE_FLAGS= -I$(CUDA_ROOT)/include -I$(UAMMD_ROOT)/src/ -I$(UAMMD_ROOT)/src/third_party/ -I$(UAMMD_STRUCTURED_ROOT)
+	LIBRARIES=-lstdc++fs
 endif
 
 #Uncomment to compile in double precision mode, single by default
