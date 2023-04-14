@@ -37,6 +37,7 @@ class CORONAVIRUS(modelBase):
                                                 "center",
                                                 "nSpikes",
                                                 "epsilonLipids_kT","muLipids","chiLipids","thetaLipids",
+                                                "epsilonLipidLipidWithProtein_kT","muLipidLipidWithProtein","chiLipidLipidWithProtein","thetaLipidLipidWithProtein",
                                                 "epsilonLipidWithProtein_kT","muLipidWithProtein","chiLipidWithProtein","thetaLipidWithProtein",
                                                 "proteinProteinEpsilon_kT",
                                                 "proteinLipidEpsilon_kT",
