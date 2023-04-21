@@ -218,16 +218,21 @@ class AnalysisSurfaceUmbrellaSampling():
 
     def __computePotential(self,centers,data,beta,K,outputFolderPath):
 
-        from WHAM import binless
-        from WHAM.lib import potentials
-
         outputPlot      = os.path.join(outputFolderPath,"histogram.png")
         outputPotential = os.path.join(outputFolderPath,"potential.dat")
 
+        #Check if histogram.png and potential.dat already exist
+        if os.path.exists(outputPlot) and os.path.exists(outputPotential):
+            self.logger.info("[AnalysisSurfaceUmbrellaSampling] Histogram and potential already computed")
+            return
+
+        from WHAM import binless
+        from WHAM.lib import potentials
+
         fig, (ax1, ax2) = plt.subplots(2,1)
 
-        potMin = np.amin(np.array(data).flatten())
-        potMax = np.amax(np.array(data).flatten())
+        potMin = np.amin(np.array([np.amin(np.array(d)) for d in data]).flatten())
+        potMax = np.amax(np.array([np.amin(np.array(d)) for d in data]).flatten())
 
         ######### HISTOGRAM ########
 
@@ -252,7 +257,15 @@ class AnalysisSurfaceUmbrellaSampling():
             x_it.append(traj)
             u_i.append(potentials.harmonic(K, x_0))
 
-        x_bin = np.linspace(potMin,potMax,1001)
+        #Check all traj in x_it have the same length
+        if not all(len(x_it[0]) == len(x) for x in x_it):
+            self.logger.warning("[AnalysisSurfaceUmbrellaSampling] Not all trajectories have the same length.")
+
+        #Smamllest center -> potMin
+        #Largest center  -> potMax
+        #potMin = np.amin(centers)
+        potMax = np.amax(centers)
+        x_bin  = np.linspace(potMin,potMax,1001)
 
         calc_binless = binless.Calc1D()
         bF, _, _ = calc_binless.compute_betaF_profile(x_it, x_bin, u_i, beta=beta)
@@ -298,14 +311,20 @@ class AnalysisSurfaceUmbrellaSampling():
 
             centers = []
             data    = []
+
+            process = True
             for center,file in self.info[mdlName]["centers"].items():
                 #Check if file exists
                 if not os.path.isfile(os.path.join(self.sessionPath,file)):
                     self.logger.error(f"[AnalysisSurfaceUmbrellaSampling] Center file not found! (File: {file})")
-                    raise Exception("File not found")
+                    process = False
+                    break
 
                 centers.append(float(center))
                 data.append(np.loadtxt(os.path.join(self.sessionPath,file),skiprows=self.skip)[:,3])
+
+            if not process:
+                continue
 
             outputFolderPath = os.path.join(self.sessionPath,"results",mdlName+"_surfaceUmbrella")
             #Create output directory if it does not exist
@@ -315,32 +334,5 @@ class AnalysisSurfaceUmbrellaSampling():
             self.__computePotential(centers,data,beta,K,outputFolderPath)
 
             self.logger.info(f"[AnalysisSurfaceUmbrellaSampling] Results for model {mdlName} saved in {outputFolderPath}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
