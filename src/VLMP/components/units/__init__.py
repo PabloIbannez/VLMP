@@ -4,7 +4,7 @@ import copy
 ################ UNITS INTERFACE ################
 
 import abc
-from UAMMD.simulation import simulation
+from pyUAMMD import simulation
 
 class unitsBase(metaclass=abc.ABCMeta):
 

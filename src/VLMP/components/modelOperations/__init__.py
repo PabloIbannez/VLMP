@@ -3,7 +3,7 @@ import copy
 
 ################ MODEL INTERFACE ################
 
-from UAMMD.simulation import simulation
+from pyUAMMD import simulation
 
 from ...utils import getLabelIndex
 from ...utils import getSelections

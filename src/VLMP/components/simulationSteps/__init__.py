@@ -4,7 +4,7 @@ import copy
 ################ SIMULATION STEP INTERFACE ################
 
 import abc
-from UAMMD.simulation import simulation
+from pyUAMMD import simulation
 
 from ...utils import getSelections
 

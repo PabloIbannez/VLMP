@@ -3,7 +3,7 @@ import copy
 
 ################ GLOBALS INTERFACE ################
 
-from UAMMD.simulation import simulation
+from pyUAMMD import simulation
 
 class globalBase:
 

@@ -6,7 +6,7 @@ import logging
 ################ MODEL INTERFACE ################
 
 import abc
-from UAMMD.simulation import simulation
+from pyUAMMD import simulation
 
 from ...utils import getLabelIndex
 

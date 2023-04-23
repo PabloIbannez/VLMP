@@ -3,7 +3,7 @@ import copy
 
 ################ SYSTEM INTERFACE ################
 
-from UAMMD.simulation import simulation
+from pyUAMMD import simulation
 
 class systemBase:
 

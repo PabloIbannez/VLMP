@@ -3,8 +3,7 @@ import copy
 
 ################ INTEGRATORS INTERFACE ################
 
-
-from UAMMD.simulation import simulation
+from pyUAMMD import simulation
 
 class integratorBase:
 
