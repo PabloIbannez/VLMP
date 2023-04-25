@@ -3,10 +3,9 @@ import copy
 
 ################ UNITS INTERFACE ################
 
-import abc
 from pyUAMMD import simulation
 
-class unitsBase(metaclass=abc.ABCMeta):
+class unitsBase:
 
     def __init__(self,
                  _type:str,_name:str,
@@ -45,6 +44,7 @@ class unitsBase(metaclass=abc.ABCMeta):
         ########################################################
 
         self._unitsUAMMD = None
+        self._constants  = None
 
     ########################################################
 
@@ -56,32 +56,35 @@ class unitsBase(metaclass=abc.ABCMeta):
 
     ########################################################
 
-    def setUnits(self, unitsUAMMD):
+    def setUnitsName(self, unitsUAMMD):
         self._unitsUAMMD = unitsUAMMD
 
-    def getUnits(self):
+    def getUnitsName(self):
         if self._unitsUAMMD is None:
             self.logger.error(f"[Units] ({self._type}) Units not set for units {self._name}")
             raise ValueError(f"Units not set")
         return self._unitsUAMMD
 
+    def addConstant(self, constName, constValue):
+        if self._constants is None:
+            self._constants = {}
+        if constName in self._constants.keys():
+            self.logger.warning(f"[Units] ({self._type}) Constant {constName} already add for units {self._name}")
+        self._constants[constName] = constValue
+
+    def getConstant(self, constName):
+        if self._constants is None:
+            self.logger.error(f"[Units] ({self._type}) No constants added for units {self._name}")
+            raise ValueError(f"No constants added")
+        if constName not in self._constants.keys():
+            self.logger.error(f"[Units] ({self._type}) Constant {constName} not added for units {self._name}")
+            raise ValueError(f"Constant not added")
+        return self._constants[constName]
+
     ########################################################
 
     def getSimulation(self,DEBUG_MODE = False):
-        return simulation({"global":{"parameters":copy.deepcopy({"units":self.getUnits()})}},DEBUG_MODE)
-
-    ########################################################
-
-    @classmethod
-    def __subclasshook__(cls, subclass):
-        return (hasattr(subclass, 'getConstant') and
-                callable(subclass.getConstant)   and
-                NotImplemented)
-
-    @abc.abstractmethod
-    def getConstant(self, constantName):
-        """ Get physical constant in units of this system """
-        raise NotImplementedError
+        return simulation({"global":{"parameters":copy.deepcopy({"units":self.getUnitsName()})}},DEBUG_MODE)
 
 ############### IMPORT ALL UNITS ###############
 

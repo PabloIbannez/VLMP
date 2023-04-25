@@ -8,15 +8,15 @@ from . import modelBase
 
 import pyGrained.models.AlphaCarbon as proteinModel
 
-class KB(modelBase):
+class SOP(modelBase):
     """
-    Component name: KB
+    Component name: SOP
     Component type: model
 
     Author: Pablo Ibáñez-Freire
-    Date: 25/03/2023
+    Date: 24/03/2023
 
-    Karanicolas Brooks.
+    Self organized polymer.
 
     """
 
@@ -45,21 +45,26 @@ class KB(modelBase):
         else:
             raise NotImplementedError("PDB ID download not implemented yet.")
 
-        kbParams = {"SASA":params.get("SASA",False),
-                    "centerInput":params.get("centerInput",True),
-                    "aggregateChains":params.get("aggregateChains",True),
-                    "parameters": copy.deepcopy(params)}
+        sopParams = {"SASA":params.get("SASA",False),
+                      "centerInput":params.get("centerInput",True),
+                      "aggregateChains":params.get("aggregateChains",True),
+                      "parameters": copy.deepcopy(params)}
 
-        kb = proteinModel.KaranicolasBrooks(name = name,
-                                            inputPDBfilePath = inputPDBfilePath,
-                                            params = kbParams)
+        sop = proteinModel.SelfOrganizedPolymer(name = name,
+                                                inputPDBfilePath = inputPDBfilePath,
+                                                params = sopParams)
 
         ########################################################
 
-        self.setTypes(kb.getTypes())
-        self.setState(kb.getState())
-        self.setStructure(kb.getStructure())
-        self.setForceField(kb.getForceField())
+        types = self.getTypes()
+        modelTypes = sop.getTypes()
+
+        for _,t in modelTypes.items():
+            types.addType(**t)
+
+        self.setState(sop.getState())
+        self.setStructure(sop.getStructure())
+        self.setForceField(sop.getForceField())
 
 
     def processSelection(self,**params):

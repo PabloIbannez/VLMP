@@ -11,7 +11,7 @@ class modelExtensionBase:
 
     def __init__(self,
                  _type:str,_name:str,
-                 units,
+                 units,types,
                  models,
                  availableParameters:set,
                  requiredParameters:set,
@@ -25,6 +25,7 @@ class modelExtensionBase:
         self._name = _name
 
         self._units  = units
+        self._types  = types
         self._models = models
 
         self.logger.debug(f"[ModelExtension] ({self._type}) Extending models: "+
@@ -116,6 +117,9 @@ class modelExtensionBase:
 
     def getUnits(self):
         return self._units
+
+    def getTypes(self):
+        return self._types
 
     def getSelection(self,selectionName):
         return self._selection[selectionName]

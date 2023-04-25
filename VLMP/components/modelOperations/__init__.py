@@ -12,7 +12,7 @@ class modelOperationBase:
 
     def __init__(self,
                  _type:str,_name:str,
-                 units,
+                 units,types,
                  models,
                  availableParameters:set,
                  requiredParameters:set,
@@ -26,6 +26,8 @@ class modelOperationBase:
         self._name = _name
 
         self._units = units
+        self._types = types
+
         self._models = models
 
         self.logger.debug(f"[ModelOperation] ({self._type}) Operating on models: "+
@@ -104,6 +106,9 @@ class modelOperationBase:
     def getUnits(self):
         return self._units
 
+    def getTypes(self):
+        return self._types
+
     def getSelection(self,selectionName):
         return self._selection[selectionName]
 
@@ -116,12 +121,7 @@ class modelOperationBase:
              typeIndex = getLabelIndex("type",self._models[mdl].getStructure()["labels"])
              itype     = self._models[mdl].getStructure()["data"][self.id2mdlId[i]][typeIndex]
 
-             nameIndex = getLabelIndex("name",self._models[mdl].getTypes()["labels"])
-             propIndex = getLabelIndex(propertyName,self._models[mdl].getTypes()["labels"])
-             for t in self._models[mdl].getTypes()["data"]:
-                 if itype == t[nameIndex]:
-                     idProp.append(t[propIndex])
-                     break
+             idProp.append(self._models[mdl].getTypes().getTypes()[itype][propertyName])
 
          return idProp
 

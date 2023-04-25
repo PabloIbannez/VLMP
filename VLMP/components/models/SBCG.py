@@ -4,19 +4,20 @@ import copy
 
 import logging
 
+from ... import DEBUG_MODE
 from . import modelBase
 
-import pyGrained.models.AlphaCarbon as proteinModel
+import pyGrained.models.SBCG as proteinModel
 
-class SOP(modelBase):
+class SBCG(modelBase):
     """
-    Component name: SOP
+    Component name: SBCG
     Component type: model
 
     Author: Pablo Ibáñez-Freire
-    Date: 24/03/2023
+    Date: 23/03/2023
 
-    Self organized polymer.
+    Shape Based Coarse Grained.
 
     """
 
@@ -24,10 +25,12 @@ class SOP(modelBase):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
                          availableParameters = {"PDB",
+                                                "resolution","steps",
+                                                "bondsModel","nativeContactsModel",
                                                 "centerInput",
                                                 "SASA",
                                                 "aggregateChains"},
-                         requiredParameters  = {"PDB"},
+                         requiredParameters  = {"PDB","resolution","steps","bondsModel","nativeContactsModel"},
                          definedSelections   = {"particleId"},
                          **params)
 
@@ -45,21 +48,27 @@ class SOP(modelBase):
         else:
             raise NotImplementedError("PDB ID download not implemented yet.")
 
-        sopParams = {"SASA":params.get("SASA",False),
+        sbcgParams = {"SASA":params.get("SASA",True),
                       "centerInput":params.get("centerInput",True),
                       "aggregateChains":params.get("aggregateChains",True),
                       "parameters": copy.deepcopy(params)}
 
-        sop = proteinModel.SelfOrganizedPolymer(name = name,
-                                                inputPDBfilePath = inputPDBfilePath,
-                                                params = sopParams)
+        sbcg = proteinModel.SBCG(name = name,
+                                 inputPDBfilePath = inputPDBfilePath,
+                                 params = sbcgParams,
+                                 debug = DEBUG_MODE)
 
         ########################################################
 
-        self.setTypes(sop.getTypes())
-        self.setState(sop.getState())
-        self.setStructure(sop.getStructure())
-        self.setForceField(sop.getForceField())
+        types = self.getTypes()
+        modelTypes = sbcg.getTypes()
+
+        for _,t in modelTypes.items():
+            types.addType(**t)
+
+        self.setState(sbcg.getState())
+        self.setStructure(sbcg.getStructure())
+        self.setForceField(sbcg.getForceField())
 
 
     def processSelection(self,**params):

@@ -3,16 +3,15 @@ import copy
 
 ################ SIMULATION STEP INTERFACE ################
 
-import abc
 from pyUAMMD import simulation
 
 from ...utils import getSelections
 
-class simulationStepBase(metaclass=abc.ABCMeta):
+class simulationStepBase:
 
     def __init__(self,
                  _type:str,_name:str,
-                 units,
+                 units,types,
                  models,
                  availableParameters:set,
                  requiredParameters:set,
@@ -26,6 +25,8 @@ class simulationStepBase(metaclass=abc.ABCMeta):
         self._name = _name
 
         self._units  = units
+        self._types  = types
+
         self._models = models
 
         self.availableParameters = availableParameters.copy()
@@ -119,6 +120,9 @@ class simulationStepBase(metaclass=abc.ABCMeta):
 
     def getUnits(self):
         return self._units
+
+    def getTypes(self):
+        return self._types
 
     def getSelection(self,selectionName):
         return self._selection[selectionName]

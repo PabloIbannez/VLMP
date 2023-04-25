@@ -528,17 +528,16 @@ class CORONAVIRUS(modelBase):
         #############################################################
         #############################################################
 
-        types = {}
-        types["labels"] = ["name", "mass", "radius", "charge"]
-        types["data"]   = []
+        types = self.getTypes()
 
         tpy2radius = {}
         for t in ["LV","LP"]:
             tpy2radius[t]=self.lipidRadius
-            types["data"].append([t,1.0,self.lipidRadius,0.0])
+            types.addType(name=t,mass=1.0,radius=self.lipidRadius)
         for t in self.model["spike"]["particleTypes"]["data"]:
-            tpy2radius[t[0]]=t[2]
-            types["data"].append(t)
+            tName,tMass,tRadius,tCharge = t
+            tpy2radius[t[0]]=tRadius
+            types.addType(name=tName,mass=tMass,radius=tRadius,charge=tCharge)
 
         state = {}
 
@@ -698,7 +697,6 @@ class CORONAVIRUS(modelBase):
         #############################################################
         #############################################################
 
-        self.setTypes(types)
         self.setState(state)
         self.setStructure(structure)
         self.setForceField(forceField)

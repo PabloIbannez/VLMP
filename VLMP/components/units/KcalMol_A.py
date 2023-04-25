@@ -28,21 +28,8 @@ class KcalMol_A(unitsBase):
         ############################################################
         ############################################################
 
-        self.availableConstants = {
-            "kT": 0.593,
-            "KBOLTZ":1.987191E-03,
-            "ELECOEF":332.0716
-        }
+        self.setUnitsName("KcalMol_A")
 
-        self.setUnits("KcalMol_A")
-
-    def getConstant(self,constantName):
-        if constantName not in self.availableConstants:
-            self.logger.error("[KcalMol_A] Constant {} not available".format(constantName))
-            raise "Constant not available"
-
-        return self.availableConstants[constantName]
-
-
-
-
+        self.addConstant("kT",0.593)
+        self.addConstant("KBOLTZ",1.987191E-03)
+        self.addConstant("ELECOEF",332.0716)

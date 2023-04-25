@@ -14,7 +14,7 @@ class modelBase(metaclass=abc.ABCMeta):
 
     def __init__(self,
                  _type:str,_name:str,
-                 units,
+                 units,types,
                  availableParameters:set,
                  requiredParameters:set,
                  definedSelections:set,
@@ -26,6 +26,7 @@ class modelBase(metaclass=abc.ABCMeta):
         self._name = _name
 
         self._units = units
+        self._types = types
 
         self.availableParameters = availableParameters.copy()
         self.requiredParameters  = requiredParameters.copy()
@@ -57,7 +58,6 @@ class modelBase(metaclass=abc.ABCMeta):
 
         ########################################################
 
-        self._types      = None
         self._state      = None
         self._structure  = None
         self._forceField = None
@@ -72,9 +72,6 @@ class modelBase(metaclass=abc.ABCMeta):
 
     ########################################################
 
-    def setTypes(self,types):
-        self._types = types
-
     def setState(self,state):
         self._state = state
 
@@ -83,12 +80,6 @@ class modelBase(metaclass=abc.ABCMeta):
 
     def setForceField(self,forceField):
         self._forceField = forceField
-
-    def getTypes(self):
-        if self._types is None:
-            self.logger.error(f"[Model] ({self._type}) Types not set")
-            raise ValueError(f"Types not set")
-        return self._types
 
     def getState(self):
         if self._state is None:
@@ -112,6 +103,9 @@ class modelBase(metaclass=abc.ABCMeta):
 
     def getUnits(self):
         return self._units
+
+    def getTypes(self):
+        return self._types
 
     ########################################################
 
@@ -146,8 +140,6 @@ class modelBase(metaclass=abc.ABCMeta):
 
         sim = {}
 
-        if self._types is not None:
-            sim["global"] = self.getTypes()
         if self._state is not None:
             sim["state"]  = self.getState()
 

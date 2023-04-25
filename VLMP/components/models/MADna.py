@@ -737,12 +737,10 @@ class MADna(modelBase):
         #######################################################
 
         #Add particle types
-        types = {}
-        types["labels"] = ["name", "mass", "radius", "charge"]
-        types["data"]   = []
+        types = self.getTypes()
 
-        for t,info in self.model["TYPES"].items():
-            types["data"].append([t,info["mass"],info["radius"],info["charge"]])
+        for name,t in self.model["TYPES"].items():
+            types.addType(name=name,**t)
 
         state  = {}
         state["labels"] = ["id","position"]
@@ -870,7 +868,6 @@ class MADna(modelBase):
         ##################### VERSION END #####################
         #######################################################
 
-        self.setTypes(types)
         self.setState(state)
         self.setStructure(struct)
         self.setForceField(forceField)

@@ -10,6 +10,7 @@ class globalBase:
     def __init__(self,
                  _type:str,_name:str,
                  units,
+                 types,
                  availableParameters:set,
                  requiredParameters:set,
                  **params):
@@ -20,6 +21,7 @@ class globalBase:
         self._name = _name
 
         self._units = units
+        self._types = types
 
         self.availableParameters = availableParameters.copy()
         self.requiredParameters  = requiredParameters.copy()
@@ -71,6 +73,9 @@ class globalBase:
 
     def getUnits(self):
         return self._units
+
+    def getTypes(self):
+        return self._types
 
     ########################################################
 

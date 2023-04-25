@@ -13,6 +13,7 @@ from .utils import getValuesAndPaths
 
 import VLMP.components.system          as _system
 import VLMP.components.units           as _units
+import VLMP.components.types           as _types
 import VLMP.components.globals         as _globals
 import VLMP.components.models          as _models
 import VLMP.components.modelOperations as _modelOperations
@@ -146,7 +147,7 @@ class VLMP:
 
     def loadSimulationPool(self,simulationPool:dict):
 
-        availableComponents = ["system","units","global","model","modelOperations","modelExtensions","integrator","simulationSteps"]
+        availableComponents = ["system","units","types","global","model","modelOperations","modelExtensions","integrator","simulationSteps"]
 
         for simulationInfo in simulationPool:
 
@@ -221,6 +222,33 @@ class VLMP:
                     self.logger.error(f"[VLMP] Error loading units \"{name}\" ({typ})")
                     raise ValueError("Error loading units")
 
+            ############## TYPES ##############
+
+            #Check if types section is present
+            if "types" not in simulationInfo.keys():
+                self.logger.error("[VLMP] Types section not found")
+                raise ValueError("Types section not found")
+            else:
+                #Only one unit system can be specified
+                if len(simulationInfo["types"]) > 1:
+                    self.logger.error("[VLMP] Only one unit system can be specified")
+                    raise ValueError("Only one unit system can be specified")
+
+                typ, name, param = self.__checkComponent(simulationInfo["types"][0],"types",simulationBuffer)
+                self.logger.debug(f"[VLMP] Selected types: \"{name}\" ({typ})")
+
+                #Check if typ is part of "_types"
+                if typ not in dir(_types):
+                    self.logger.error(f"[VLMP] Unit \"{typ}\" not found")
+                    raise ValueError("Types not found")
+
+                try:
+                    types = eval(f"_types.{typ}")(name=name,units=units,**param)
+                    simulationBuffer["types_"+name] = types
+                except:
+                    self.logger.error(f"[VLMP] Error loading types \"{name}\" ({typ})")
+                    raise ValueError("Error loading types")
+
             ############## GLOBAL ##############
 
             #Check if global section is present
@@ -240,7 +268,7 @@ class VLMP:
                         raise ValueError("Global not found")
 
                     try:
-                        simulationBuffer["global_"+name] = eval("_globals." + typ)(name=name,units=units,**(param))
+                        simulationBuffer["global_"+name] = eval("_globals." + typ)(name=name,units=units,types=types,**(param))
                     except:
                         self.logger.error(f"[VLMP] Error loading global \"{name}\"")
                         raise ValueError("Error loading global")
@@ -266,7 +294,7 @@ class VLMP:
                         raise ValueError("Model not found")
 
                     try:
-                        simulationBuffer["model_"+name] = eval("_models." + typ)(name=name,units=units,**(param))
+                        simulationBuffer["model_"+name] = eval("_models." + typ)(name=name,units=units,types=types,**(param))
                         models.append("model_"+name)
                     except:
                         self.logger.error(f"[VLMP] Error loading model \"{name}\"")
@@ -307,6 +335,7 @@ class VLMP:
                     try:
                         operation = eval("_modelOperations." + typ)(name   = name,
                                                                     units  = units,
+                                                                    types  = types,
                                                                     models = [simulationBuffer[model] for model in models],
                                                                     **(param))
                         appliedOperations.append("modelOperations_"+name)
@@ -335,6 +364,7 @@ class VLMP:
                     try:
                         simulationBuffer["modelExtensions_"+name] = eval("_modelExtensions." + typ)(name   = name,
                                                                                                     units  = units,
+                                                                                                    types  = types,
                                                                                                     models = [simulationBuffer[model] for model in models],
                                                                                                     **(param))
 
@@ -361,7 +391,7 @@ class VLMP:
                         raise ValueError("Integrator not found")
 
                     try:
-                        simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,units=units,**(param))
+                        simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,units=units,types=types,**(param))
                     except:
                         self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
                         raise ValueError("Error loading integrator")
@@ -386,6 +416,7 @@ class VLMP:
                     try:
                         simulationBuffer["simulationSteps_"+name] = eval("_simulationSteps." + typ)(name=name,
                                                                                                     units=units,
+                                                                                                    types=types,
                                                                                                     models = [simulationBuffer[model] for model in models],
                                                                                                     **(param))
                     except:

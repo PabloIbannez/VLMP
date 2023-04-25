@@ -61,11 +61,8 @@ class WLC(modelBase):
         ########################################################
 
         #Add particle types
-        types = {}
-        types["labels"] = ["name", "mass", "radius", "charge"]
-        types["data"]   = [
-            [typeName, mass, 0.5*b, 0.0]
-        ]
+        types = self.getTypes()
+        types.addType(name=typeName,mass=mass,radius=0.5*b)
 
         #Generate positions, a line along the z axis
         state = {}
@@ -104,7 +101,6 @@ class WLC(modelBase):
 
         ########################################################
 
-        self.setTypes(types)
         self.setState(state)
         self.setStructure(structure)
         self.setForceField(forceField)

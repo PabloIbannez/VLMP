@@ -2,18 +2,21 @@ import sys, os
 
 import logging
 
-from . import unitsBase
+from . import typesBase
 
-class none(unitsBase):
+class basic(typesBase):
 
     """
-    Component name: none
-    Component type: units
+    Component name: basic
+    Component type: types
 
     Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
+    Date: 25/04/2023
 
-    None units. All constants are set to 1.
+    Basic types. Components:
+    - mass: mass of the type
+    - radius: radius of the type
+    - charge: charge of the type
 
     """
 
@@ -28,7 +31,8 @@ class none(unitsBase):
         ############################################################
         ############################################################
 
-        self.setUnits("None")
+        self.setTypesName("Basic")
 
-    def getConstant(self,constantName):
-        return 1.0
+        self.addTypesComponent("mass", 1.0)
+        self.addTypesComponent("radius", 1.0)
+        self.addTypesComponent("charge", 0.0)

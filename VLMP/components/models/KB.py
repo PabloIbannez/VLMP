@@ -6,17 +6,17 @@ import logging
 
 from . import modelBase
 
-import pyGrained.models.SBCG as proteinModel
+import pyGrained.models.AlphaCarbon as proteinModel
 
-class SBCG(modelBase):
+class KB(modelBase):
     """
-    Component name: SBCG
+    Component name: KB
     Component type: model
 
     Author: Pablo Ibáñez-Freire
-    Date: 23/03/2023
+    Date: 25/03/2023
 
-    Shape Based Coarse Grained.
+    Karanicolas Brooks.
 
     """
 
@@ -24,12 +24,10 @@ class SBCG(modelBase):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
                          availableParameters = {"PDB",
-                                                "resolution","steps",
-                                                "bondsModel","nativeContactsModel",
                                                 "centerInput",
                                                 "SASA",
                                                 "aggregateChains"},
-                         requiredParameters  = {"PDB","resolution","steps","bondsModel","nativeContactsModel"},
+                         requiredParameters  = {"PDB"},
                          definedSelections   = {"particleId"},
                          **params)
 
@@ -47,21 +45,26 @@ class SBCG(modelBase):
         else:
             raise NotImplementedError("PDB ID download not implemented yet.")
 
-        sbcgParams = {"SASA":params.get("SASA",True),
-                      "centerInput":params.get("centerInput",True),
-                      "aggregateChains":params.get("aggregateChains",True),
-                      "parameters": copy.deepcopy(params)}
+        kbParams = {"SASA":params.get("SASA",False),
+                    "centerInput":params.get("centerInput",True),
+                    "aggregateChains":params.get("aggregateChains",True),
+                    "parameters": copy.deepcopy(params)}
 
-        sbcg = proteinModel.SBCG(name = name,
-                                 inputPDBfilePath = inputPDBfilePath,
-                                 params = sbcgParams)
+        kb = proteinModel.KaranicolasBrooks(name = name,
+                                            inputPDBfilePath = inputPDBfilePath,
+                                            params = kbParams)
 
         ########################################################
 
-        self.setTypes(sbcg.getTypes())
-        self.setState(sbcg.getState())
-        self.setStructure(sbcg.getStructure())
-        self.setForceField(sbcg.getForceField())
+        types = self.getTypes()
+        modelTypes = kb.getTypes()
+
+        for _,t in modelTypes.items():
+            types.addType(**t)
+
+        self.setState(kb.getState())
+        self.setStructure(kb.getStructure())
+        self.setForceField(kb.getForceField())
 
 
     def processSelection(self,**params):
