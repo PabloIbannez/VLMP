@@ -5,8 +5,8 @@ import copy
 
 from pyUAMMD import simulation
 
-from ...utils import getLabelIndex
-from ...utils import getSelections
+from ...utils.utils import getLabelIndex
+from ...utils.utils import getSelections
 
 class modelOperationBase:
 

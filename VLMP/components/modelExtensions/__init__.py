@@ -5,7 +5,7 @@ import copy
 
 from pyUAMMD import simulation
 
-from ...utils import getSelections
+from ...utils.utils import getSelections
 
 class modelExtensionBase:
 

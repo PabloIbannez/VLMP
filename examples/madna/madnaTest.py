@@ -27,6 +27,6 @@ for i in range(copies):
 vlmp = VLMP.VLMP()
 
 vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("upperLimit","numberOfParticles",2000)
+vlmp.distributeSimulationPool("none")
 vlmp.setUpSimulation("TEST")
 

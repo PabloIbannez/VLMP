@@ -41,7 +41,7 @@ class WLC(modelBase):
         ############################################################
 
         #Read the number of particles
-        self.N = params.get("N")
+        self.N = params["N"]
 
         #Read the particle mass and the distance between two consecutive particles
         mass = params.get("mass",1.0)

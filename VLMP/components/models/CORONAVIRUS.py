@@ -14,7 +14,7 @@ import numpy as np
 import orthopoly
 
 from . import modelBase
-from ...utils import *
+from ...utils.utils import *
 
 class CORONAVIRUS(modelBase):
     """
@@ -153,7 +153,7 @@ class CORONAVIRUS(modelBase):
     def __generateSphere(self,N,radius):
 
         if not N%2:
-            self.logger.critical(f"The number of lipids must be odd, but is: {N}")
+            self.logger.error(f"The number of lipids must be odd, but is: {N}")
             raise Exception("The number of lipids must be odd")
 
         theta,phi = orthopoly.spherical_harmonic.grid_fibonacci(N)

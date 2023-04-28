@@ -9,7 +9,7 @@ import jsbeautifier
 from collections import OrderedDict
 
 from . import DEBUG_MODE
-from .utils import getValuesAndPaths
+from .utils.utils import getValuesAndPaths
 
 import VLMP.components.system          as _system
 import VLMP.components.units           as _units

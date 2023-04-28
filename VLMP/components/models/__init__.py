@@ -8,7 +8,7 @@ import logging
 import abc
 from pyUAMMD import simulation
 
-from ...utils import getLabelIndex
+from ...utils.utils import getLabelIndex
 
 class modelBase(metaclass=abc.ABCMeta):
 
