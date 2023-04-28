@@ -224,7 +224,7 @@ class AnalysisSurfaceUmbrellaSampling():
         #Check if histogram.png and potential.dat already exist
         if os.path.exists(outputPlot) and os.path.exists(outputPotential):
             self.logger.info("[AnalysisSurfaceUmbrellaSampling] Histogram and potential already computed")
-            return
+            return True
 
         from WHAM import binless
         from WHAM.lib import potentials
@@ -259,7 +259,8 @@ class AnalysisSurfaceUmbrellaSampling():
 
         #Check all traj in x_it have the same length
         if not all(len(x_it[0]) == len(x) for x in x_it):
-            self.logger.warning("[AnalysisSurfaceUmbrellaSampling] Not all trajectories have the same length.")
+            self.logger.error("[AnalysisSurfaceUmbrellaSampling] Not all trajectories have the same length. Ignoring ...")
+            return False
 
         #Smamllest center -> potMin
         #Largest center  -> potMax
@@ -284,6 +285,8 @@ class AnalysisSurfaceUmbrellaSampling():
 
         fig.set_size_inches(24, 17)
         fig.savefig(outputPlot, dpi=300)
+
+        return True
 
     def __init__(self,infoFilePath,skip=0):
 
@@ -320,8 +323,13 @@ class AnalysisSurfaceUmbrellaSampling():
                     process = False
                     break
 
-                centers.append(float(center))
-                data.append(np.loadtxt(os.path.join(self.sessionPath,file),skiprows=self.skip)[:,3])
+                try:
+                    centers.append(float(center))
+                    data.append(np.loadtxt(os.path.join(self.sessionPath,file),skiprows=self.skip)[:,3])
+                except:
+                    self.logger.error(f"[AnalysisSurfaceUmbrellaSampling] Error loading file {file}")
+                    process = False
+                    break
 
             if not process:
                 continue
@@ -331,8 +339,10 @@ class AnalysisSurfaceUmbrellaSampling():
             if not os.path.isdir(outputFolderPath):
                 os.makedirs(outputFolderPath)
 
-            self.__computePotential(centers,data,beta,K,outputFolderPath)
+            if(self.__computePotential(centers,data,beta,K,outputFolderPath)):
+                self.logger.info(f"[AnalysisSurfaceUmbrellaSampling] Results for model {mdlName} saved in {outputFolderPath}")
+            else:
+                self.logger.error(f"[AnalysisSurfaceUmbrellaSampling] Error while computing potential for model {mdlName}")
 
-            self.logger.info(f"[AnalysisSurfaceUmbrellaSampling] Results for model {mdlName} saved in {outputFolderPath}")
 
 
