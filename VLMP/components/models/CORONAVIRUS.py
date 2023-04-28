@@ -153,7 +153,7 @@ class CORONAVIRUS(modelBase):
     def __generateSphere(self,N,radius):
 
         if not N%2:
-            self.logger.error(f"The number of lipids must be odd, but is: {N}")
+            self.logger.error(f"[CORONAVIRUS] The number of lipids must be odd, but is: {N}")
             raise Exception("The number of lipids must be odd")
 
         theta,phi = orthopoly.spherical_harmonic.grid_fibonacci(N)
@@ -183,7 +183,7 @@ class CORONAVIRUS(modelBase):
 
         r = np.amax(radii)
 
-        self.logger.debug(f"Max radius: {r}")
+        self.logger.debug(f"[CORONAVIRUS] Max radius: {r}")
 
         return r
 
@@ -203,7 +203,7 @@ class CORONAVIRUS(modelBase):
 
         #Add positions
         while(not added):
-            self.logger.debug(f"Trying to add the spike {self.addedSpikes+1}")
+            self.logger.debug(f"[CORONAVIRUS] Trying to add the spike {self.addedSpikes+1}")
 
             # Select random lipid
             lipidId = random.randint(0,self.nLipids-1)
@@ -350,18 +350,18 @@ class CORONAVIRUS(modelBase):
 
         ###########################################
 
-        self.logger.debug(f"Added spike {self.addedSpikes+1}")
+        self.logger.debug(f"[CORONAVIRUS] Added spike {self.addedSpikes+1}")
         self.addedSpikes+=1
 
     def __addSpikes(self):
         for n in range(self.nSpikes):
-            self.logger.debug(f"Adding spike {n+1}/{self.nSpikes}")
+            self.logger.debug(f"[CORONAVIRUS] Adding spike {n+1}/{self.nSpikes}")
             self.__addSpike()
 
-        self.logger.debug(f"SpikeIds shape:{self.spikeIds.shape}")
-        self.logger.debug(f"SpikeTypes shape:{self.spikeTypes.shape}")
-        self.logger.debug(f"SpikePositions shape:{self.spikePositions.shape}")
-        self.logger.debug(f"SpikeOrientations shape:{self.spikeOrientations.shape}")
+        self.logger.debug(f"[CORONAVIRUS] SpikeIds shape:{self.spikeIds.shape}")
+        self.logger.debug(f"[CORONAVIRUS] SpikeTypes shape:{self.spikeTypes.shape}")
+        self.logger.debug(f"[CORONAVIRUS] SpikePositions shape:{self.spikePositions.shape}")
+        self.logger.debug(f"[CORONAVIRUS] SpikeOrientations shape:{self.spikeOrientations.shape}")
 
     def __generateExclusions(self):
 
@@ -409,7 +409,7 @@ class CORONAVIRUS(modelBase):
         ############# COORDINATES GENERATION STARTS ############
         ########################################################
 
-        self.logger.info(f"Generating CORONAVIRUS model with {self.nLipids} lipids "
+        self.logger.info(f"[CORONAVIRUS] Generating CORONAVIRUS model with {self.nLipids} lipids "
                          f"and vesicle radius of {self.vesRadius} with {self.nSpikes} spikes")
 
         self.lipidsPositions,self.lipidsOrientations = self.__generateSphere(self.nLipids,

@@ -43,7 +43,7 @@ class constantForceBetweenCentersOfMass(modelExtensionBase):
         force = params.get("force")
         # Check if the force is a float
         if not isinstance(force,float):
-            raise TypeError("The force must be a float")
+            raise Exception("The force must be a float")
 
         extension = {}
 

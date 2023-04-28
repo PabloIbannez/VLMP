@@ -1,13 +1,13 @@
 import logging
 
-class boundsBox:
+class BoundsBox:
 
     def __init__(self,nParticles,concentration):
         self.logger = logging.getLogger('VLMP')
         L = round((nParticles/concentration)**(1./3.),2)
         self.box = [L,L,L]
 
-        self.logger.debug(f"Bounds box, box size : {L}")
+        self.logger.debug(f"[BoundsBox] Bounds box, box size : {L}")
 
     def getSimulationBox(self):
         return self.box
@@ -25,7 +25,7 @@ class boundsBox:
 
         return True
 
-class boundsPlates:
+class BoundsPlates:
 
     def __init__(self,nParticles,concentration,particleDiameter,padding,aspectRatio):
         self.logger = logging.getLogger('VLMP')
@@ -41,8 +41,8 @@ class boundsPlates:
 
         self.box = [L,L,self.plateTop + particleDiameter*padding - self.plateBottom]
 
-        self.logger.debug(f"Bounds box, box size : {L},{L},{Lz}")
-        self.logger.debug(f"Recomputed concentration {nParticles/(L*L*Lz)}")
+        self.logger.debug(f"[BoundsPlates] Bounds box, box size : {L},{L},{Lz}")
+        self.logger.debug(f"[BoundsPlates] Recomputed concentration {nParticles/(L*L*Lz)}")
 
     def getSimulationBox(self):
         return self.box

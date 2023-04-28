@@ -41,7 +41,7 @@ class constantTorqueOverCenterOfMass(modelExtensionBase):
         torque = params.get("torque")
         # Check if the torque is a list of floats
         if not isinstance(torque,list):
-            raise ValueError("Torque must be a list of floats")
+            raise Exception("Torque must be a list of floats")
 
         extension = {}
 

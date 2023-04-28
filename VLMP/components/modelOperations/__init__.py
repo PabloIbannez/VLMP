@@ -43,31 +43,31 @@ class modelOperationBase:
         if not self.requiredParameters.issubset(self.availableParameters):
             notAvailable = self.requiredParameters.difference(self.availableParameters)
             self.logger.error(f"[ModelOperation] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for model operation {self._name}")
-            raise ValueError(f"Required paramaters are not available parameters")
+            raise Exception(f"Required paramaters are not available parameters")
 
         # Check all required selections are available selections
         if not self.requiredSelections.issubset(self.availableSelections):
             notAvailable = self.requiredSelections.difference(self.availableSelections)
             self.logger.error(f"[ModelOperation] ({self._type}) Some required selections ({notAvailable}) are not available selections for model operation {self._name}")
-            raise ValueError(f"Required selections are not available selections")
+            raise Exception(f"Required selections are not available selections")
 
         # Check if all parameters and selectors given by params are available
         for par in params:
             if par not in self.availableParameters and par not in self.availableSelections:
                 self.logger.error(f"[ModelOperation] ({self._type}) Parameter or selection {par} not available for model operation {self._name}")
-                raise ValueError(f"Parameter not available")
+                raise Exception(f"Parameter not available")
 
         # Check if all required parameters are given
         for par in self.requiredParameters:
             if par not in params:
                 self.logger.error(f"[ModelOperation] ({self._type}) Required parameter {par} not given for model operation {self._name}")
-                raise ValueError(f"Required parameter not given")
+                raise Exception(f"Required parameter not given")
 
         # Check if all required selections are given
         for sel in self.requiredSelections:
             if sel not in params:
                 self.logger.error(f"[ModelOperation] ({self._type}) Required selection {sel} not given for model operation {self._name}")
-                raise ValueError(f"Required selection not given")
+                raise Exception(f"Required selection not given")
 
         self.logger.info(f"[ModelOperation] ({self._type}) Using model operation {self._name}")
 
@@ -140,7 +140,7 @@ class modelOperationBase:
     def setIdPositions(self,ids,pos):
         if len(ids) != len(pos):
             self.logger.error(f"[ModelOperation] ({self._type}) Number of ids and positions do not match")
-            raise ValueError(f"Number of ids and positions do not match")
+            raise Exception(f"Number of ids and positions do not match")
 
         for i,p in zip(ids,pos):
             mdl   = self.id2mdl[i]

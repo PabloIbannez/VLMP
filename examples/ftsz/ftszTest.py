@@ -19,13 +19,13 @@ particleDiameter = 1.0
 
 mode = "surface"
 if mode == "bulk":
-    bnd = bounds.boundsBox(N, concentration)
+    bnd = bounds.BoundsBox(N, concentration)
 elif mode == "surface":
-    bnd = bounds.boundsPlates(N, concentration, particleDiameter, padding, aspectRatio)
+    bnd = bounds.BoundsPlates(N, concentration, particleDiameter, padding, aspectRatio)
 
 simulationPool = []
 
-Eb = np.linspace(-50,-25,2)
+Eb = np.linspace(-50,-25,10)
 El = np.linspace(8,1,1)
 
 for eb,el in itertools.product(Eb,El):

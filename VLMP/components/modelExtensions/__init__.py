@@ -43,31 +43,31 @@ class modelExtensionBase:
         if not self.requiredParameters.issubset(self.availableParameters):
             notAvailable = self.requiredParameters.difference(self.availableParameters)
             self.logger.error(f"[ModelExtension] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for model extension {self._name}")
-            raise ValueError(f"Required paramaters are not available parameters")
+            raise Exception(f"Required paramaters are not available parameters")
 
         # Check all required selections are available selections
         if not self.requiredSelections.issubset(self.availableSelections):
             notAvailable = self.requiredSelections.difference(self.availableSelections)
             self.logger.error(f"[ModelExtension] ({self._type}) Some required selections ({notAvailable}) are not available selections for model extension {self._name}")
-            raise ValueError(f"Required selections are not available selections")
+            raise Exception(f"Required selections are not available selections")
 
         # Check if all parameters and selectors given by params are available
         for par in params:
             if par not in self.availableParameters and par not in self.availableSelections:
                 self.logger.error(f"[ModelExtension] ({self._type}) Parameter or selection {par} not available for model extension {self._name}")
-                raise ValueError(f"Parameter not available")
+                raise Exception(f"Parameter not available")
 
         # Check if all required parameters are given
         for par in self.requiredParameters:
             if par not in params:
                 self.logger.error(f"[ModelExtension] ({self._type}) Required parameter {par} not given for model extension {self._name}")
-                raise ValueError(f"Required parameter not given")
+                raise Exception(f"Required parameter not given")
 
         # Check if all required selections are given
         for sel in self.requiredSelections:
             if sel not in params:
                 self.logger.error(f"[ModelExtension] ({self._type}) Required selection {sel} not given for model extension {self._name}")
-                raise ValueError(f"Required selection not given")
+                raise Exception(f"Required selection not given")
 
         self.logger.info(f"[ModelExtension] ({self._type}) Using model extension {self._name}")
 
@@ -104,7 +104,7 @@ class modelExtensionBase:
     def getExtension(self):
         if self._extension is None:
             self.logger.error(f"[ModelExtension] ({self._type}) Extension not initialized")
-            raise ValueError(f"Extension not initialized")
+            raise Exception(f"Extension not initialized")
 
         if self._startStep is not None:
             self._extension[self.getName()]["parameters"]["startStep"] = self._startStep

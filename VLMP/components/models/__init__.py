@@ -36,19 +36,19 @@ class modelBase(metaclass=abc.ABCMeta):
         if not self.requiredParameters.issubset(self.availableParameters):
             notAvailable = self.requiredParameters.difference(self.availableParameters)
             self.logger.error(f"[Model] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for model {self._name}")
-            raise ValueError(f"Required paramaters are not available parameters")
+            raise Exception(f"Required paramaters are not available parameters")
 
         # Check if all parameters given by params are available
         for par in params:
             if par not in self.availableParameters:
                 self.logger.error(f"[Model] ({self._type}) Parameter {par} not available for model {self._name}")
-                raise ValueError(f"Parameter not available")
+                raise Exception(f"Parameter not available")
 
         # Check if all required parameters are given
         for par in self.requiredParameters:
             if par not in params:
                 self.logger.error(f"[Model] ({self._type}) Required parameter {par} not given for model {self._name}")
-                raise ValueError(f"Required parameter not given")
+                raise Exception(f"Required parameter not given")
 
         self.logger.info(f"[Model] ({self._type}) Using model {self._name}")
 
@@ -84,19 +84,19 @@ class modelBase(metaclass=abc.ABCMeta):
     def getState(self):
         if self._state is None:
             self.logger.error(f"[Model] ({self._type}) State not set")
-            raise ValueError(f"State not set")
+            raise Exception(f"State not set")
         return self._state
 
     def getStructure(self):
         if self._structure is None:
             self.logger.error(f"[Model] ({self._type}) Structure not set")
-            raise ValueError(f"Structure not set")
+            raise Exception(f"Structure not set")
         return self._structure
 
     def getForceField(self):
         if self._forceField is None:
             self.logger.error(f"[Model] ({self._type}) Force field not set")
-            raise ValueError(f"Force field not set")
+            raise Exception(f"Force field not set")
         return self._forceField
 
     ########################################################
@@ -129,7 +129,7 @@ class modelBase(metaclass=abc.ABCMeta):
     def getIdOffset(self):
         if self._idOffset is None:
             self.logger.error(f"[Model] ({self._type}) Id offset not set")
-            raise ValueError(f"Id offset not set")
+            raise Exception(f"Id offset not set")
         return self._idOffset
 
     ########################################################
@@ -170,7 +170,7 @@ class modelBase(metaclass=abc.ABCMeta):
         for par in params:
             if par not in self.definedSelections:
                 self.logger.error(f"[Model] ({self._type}) Selector {par} not available for model {self._name}")
-                raise ValueError(f"Selector not available")
+                raise Exception(f"Selector not available")
         return self.processSelection(**params)
 
 ############### IMPORT ALL MODELS ###############

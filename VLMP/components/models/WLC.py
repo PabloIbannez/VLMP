@@ -117,7 +117,7 @@ class WLC(modelBase):
             for pIndex in params["polymerIndex"]:
                 if pIndex < -self.N or pIndex > self.N or pIndex == 0:
                     self.logger.error(f"[WLC] Invalid polymer index {pIndex}")
-                    raise ValueError("Invalid polymer index")
+                    raise Exception("Invalid polymer index")
 
                 if pIndex > 0:
                     sel.append(pIndex-1)

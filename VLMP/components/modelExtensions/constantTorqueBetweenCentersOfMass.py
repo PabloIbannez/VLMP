@@ -43,7 +43,7 @@ class constantTorqueBetweenCentersOfMass(modelExtensionBase):
         torque = params.get("torque")
         #Check it torque is a float
         if not isinstance(torque,float):
-            raise TypeError("torque must be a float")
+            raise Exception("torque must be a float")
 
         extension = {}
 

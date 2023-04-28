@@ -41,31 +41,31 @@ class simulationStepBase:
         if not self.requiredParameters.issubset(self.availableParameters):
             notAvailable = self.requiredParameters.difference(self.availableParameters)
             self.logger.error(f"[SimulationStep] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for model extension {self._name}")
-            raise ValueError(f"Required paramaters are not available parameters")
+            raise Exception(f"Required paramaters are not available parameters")
 
         # Check all required selections are available selections
         if not self.requiredSelections.issubset(self.availableSelections):
             notAvailable = self.requiredSelections.difference(self.availableSelections)
             self.logger.error(f"[SimulationStep] ({self._type}) Some required selections ({notAvailable}) are not available selections for model extension {self._name}")
-            raise ValueError(f"Required selections are not available selections")
+            raise Exception(f"Required selections are not available selections")
 
         # Check if all parameters and selectors given by params are available
         for par in params:
             if par not in self.availableParameters and par not in self.availableSelections:
                 self.logger.error(f"[SimulationStep] ({self._type}) Parameter or selection {par} not available for model extension {self._name}")
-                raise ValueError(f"Parameter not available")
+                raise Exception(f"Parameter not available")
 
         # Check if all required parameters are given
         for par in self.requiredParameters:
             if par not in params:
                 self.logger.error(f"[SimulationStep] ({self._type}) Required parameter {par} not given for model extension {self._name}")
-                raise ValueError(f"Required parameter not given")
+                raise Exception(f"Required parameter not given")
 
         # Check if all required selections are given
         for sel in self.requiredSelections:
             if sel not in params:
                 self.logger.error(f"[SimulationStep] ({self._type}) Required selection {sel} not given for model extension {self._name}")
-                raise ValueError(f"Required selection not given")
+                raise Exception(f"Required selection not given")
 
         self.logger.info(f"[SimulationStep] ({self._type}) Using simulation step {self._name}")
 
@@ -105,7 +105,7 @@ class simulationStepBase:
     def getSimulationStep(self):
         if self._simulationStep is None:
             self.logger.error(f"[SimulationStep] ({self._type}) Simulation step {self._name} not initialized")
-            raise ValueError(f"Simulation step not initialized")
+            raise Exception(f"Simulation step not initialized")
 
         self._simulationStep[self.getName()]["parameters"]["intervalStep"] = self._intervalStep
 
@@ -138,7 +138,7 @@ class simulationStepBase:
             notAvailable = set(selSelections).difference(self.availableSelections)
             self.logger.error(f"[SimulationStep] ({self._type}) Some selections ({notAvailable}),"
                               f" requested to set a group, are not available selections for simulation step {self._name}")
-            raise ValueError(f"Selections not available")
+            raise Exception(f"Selections not available")
 
         selections = [sel for sel in self._selection.keys() if sel in selSelections]
 

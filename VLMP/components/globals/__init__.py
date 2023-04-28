@@ -30,19 +30,19 @@ class globalBase:
         if not self.requiredParameters.issubset(self.availableParameters):
             notAvailable = self.requiredParameters.difference(self.availableParameters)
             self.logger.error(f"[Global] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for global {self._name}")
-            raise ValueError(f"Required paramaters are not available parameters")
+            raise Exception(f"Required paramaters are not available parameters")
 
         # Check if all parameters given by params are available
         for par in params:
             if par not in self.availableParameters:
                 self.logger.error(f"[Global] ({self._type}) Parameter {par} not available for global {self._name}")
-                raise ValueError(f"Parameter not available")
+                raise Exception(f"Parameter not available")
 
         # Check if all required parameters are given
         for par in self.requiredParameters:
             if par not in params:
                 self.logger.error(f"[Global] ({self._type}) Required parameter {par} not given for global {self._name}")
-                raise ValueError(f"Required parameter not given")
+                raise Exception(f"Required parameter not given")
 
         self.logger.info(f"[Global] ({self._type}) Using global {self._name}")
 
@@ -66,7 +66,7 @@ class globalBase:
     def getGlobals(self):
         if self._globals is None:
             self.logger.error(f"[Global] ({self._type}) Global {self._name} not initialized")
-            raise ValueError(f"Global not initialized")
+            raise Exception(f"Global not initialized")
         return self._globals
 
     ########################################################

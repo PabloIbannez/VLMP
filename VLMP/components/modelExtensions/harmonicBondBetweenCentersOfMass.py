@@ -45,12 +45,12 @@ class harmonicBondBetweenCentersOfMass(modelExtensionBase):
         K  = params.get("K")
         #Check if K is a float
         if not isinstance(K,float):
-            raise TypeError("K must be a float")
+            raise Exception("K must be a float")
 
         r0 = params.get("r0")
         #Check if r0 is a float
         if not isinstance(r0,float):
-            raise TypeError("r0 must be a float")
+            raise Exception("r0 must be a float")
 
         extension = {}
 

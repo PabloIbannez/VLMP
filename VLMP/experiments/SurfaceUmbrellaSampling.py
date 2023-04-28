@@ -79,12 +79,12 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
         self.box         = parameters["simulation"].get("box")
         #Check box is a list of 3 floats
         if not isinstance(self.box,list):
-            raise TypeError("The box must be a list of 3 floats")
+            raise Exception("The box must be a list of 3 floats")
         if len(self.box) != 3:
-            raise ValueError("The box must be a list of 3 floats")
+            raise Exception("The box must be a list of 3 floats")
         for i in self.box:
             if not isinstance(i,float):
-                raise TypeError("The box must be a list of 3 floats")
+                raise Exception("The box must be a list of 3 floats")
 
         self.integrator = parameters["simulation"].get("integrator")
         self.integrator["parameters"]["integrationSteps"] = sum(self.Ksteps)
@@ -302,7 +302,7 @@ class AnalysisSurfaceUmbrellaSampling():
 
         for mdlName in self.info.keys():
 
-            self.logger.info(f"Processing {mdlName}")
+            self.logger.info(f"[AnalysisSurfaceUmbrellaSampling] Processing {mdlName}")
 
             kT   = self.info[mdlName]["kT"]
             beta = 1.0/kT

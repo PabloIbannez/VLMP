@@ -70,7 +70,7 @@ class HELIX(modelBase):
 
         n=1
         while(n<=self.nMonomers):
-            self.logger.debug(f"Trying to add monomer {n}")
+            self.logger.debug(f"[HELIX] Trying to add monomer {n}")
 
             x=np.random.uniform(low=-boxX,high=boxX)
             y=np.random.uniform(low=-boxY,high=boxY)
@@ -92,7 +92,7 @@ class HELIX(modelBase):
                 q=Quaternion.random()
                 q0,q1,q2,q3 = q
                 monomersOrientations.append(np.asarray([q0,q1,q2,q3]))
-                self.logger.debug(f"Added monomer {n}")
+                self.logger.debug(f"[HELIX] Added monomer {n}")
                 n=n+1
 
 
@@ -105,7 +105,7 @@ class HELIX(modelBase):
         boxX,boxY,boxZ = [b/2.0 for b in self.box]
 
         for n in range(self.nMonomers):
-            self.logger.debug(f"Trying to add monomer {n}")
+            self.logger.debug(f"[HELIX] Trying to add monomer {n}")
 
             x=-boxX+self.monomerRadius+(n+1)*2.2*self.monomerRadius
             y=0.0
@@ -122,7 +122,7 @@ class HELIX(modelBase):
         if self.bounds is not None:
             for p in monomersPositions:
                 if not self.bounds.check(p):
-                    self.logger.error(f"Box too small")
+                    self.logger.error(f"[HELIX] Box too small")
                     raise Exception("Box too small")
 
 
@@ -155,7 +155,7 @@ class HELIX(modelBase):
         boxX,boxY,boxZ = [b/2.0 for b in self.box]
 
         for n in range(self.nMonomers):
-            self.logger.debug(f"Adding monomer {n}")
+            self.logger.debug(f"[HELIX] Adding monomer {n}")
 
             if n==0:
                 x=0.0
@@ -192,7 +192,7 @@ class HELIX(modelBase):
         if self.bounds is not None:
             for p in monomersPositions:
                 if not self.bounds.check(p):
-                    self.logger.error(f"Box too small")
+                    self.logger.error(f"[HELIX] Box too small")
                     raise Exception("Box too small")
 
 
@@ -238,7 +238,7 @@ class HELIX(modelBase):
         self.mode      = params.get("mode","bulk")
 
         if self.mode not in ["bulk","surface"]:
-            self.logger.error(f"Mode {self.mode} not supported")
+            self.logger.error(f"[HELIX] Mode {self.mode} not supported")
             raise Exception(f"Mode not supported")
 
         self.nMonomers      = params["nMonomers"]
@@ -246,7 +246,7 @@ class HELIX(modelBase):
         #box and bounds are mutually exclusive
         #but at least one of them is required
         if "box" in params and "bounds" in params:
-            self.logger.error(f"Both box and bounds were specified")
+            self.logger.error(f"[HELIX] Both box and bounds were specified")
             raise Exception("Both box and bounds were specified")
         elif "box" in params:
             self.box = params["box"]
@@ -261,7 +261,7 @@ class HELIX(modelBase):
                 self.plateTop    = self.bounds.getSimulationBounds()["plateTop"]
                 self.plateBottom = self.bounds.getSimulationBounds()["plateBottom"]
         else:
-            self.logger.error(f"Neither box nor bounds were specified")
+            self.logger.error(f"[HELIX] Neither box nor bounds were specified")
             raise Exception("Neither box nor bounds were specified")
 
         self.monomerRadius = params.get("monomerRadius",0.5)
@@ -284,8 +284,8 @@ class HELIX(modelBase):
             surfaceParams = ["Es","beta0","El","Sl"]
             for sPar in surfaceParams:
                 if sPar not in params:
-                    self.logger.error(f"Requiered parameter {sPar} for surface mode not found")
-                    raise ValueError(f"Required parameter not given")
+                    self.logger.error(f"[HELIX] Requiered parameter {sPar} for surface mode not found")
+                    raise Exception(f"Required parameter not given")
 
             self.Es     = params["Es"]
 
@@ -298,13 +298,13 @@ class HELIX(modelBase):
         self.Ka = self.__computeKangle(varTheta,abs(self.Eb))
         self.Kd = self.__computeKangle(varPhi,abs(self.Eb))
 
-        self.logger.info(f"K bond computed {self.Kb} for variance {varDst}")
-        self.logger.info(f"K theta computed {self.Ka} for variance {varTheta}")
-        self.logger.info(f"K phi computed {self.Kd} for variance {varPhi}")
+        self.logger.info(f"[HELIX] K bond computed {self.Kb} for variance {varDst}")
+        self.logger.info(f"[HELIX] K theta computed {self.Ka} for variance {varTheta}")
+        self.logger.info(f"[HELIX] K phi computed {self.Kd} for variance {varPhi}")
 
         ##############################################
 
-        self.logger.info(f"Generating HELIX model with {self.nMonomers} monomers")
+        self.logger.info(f"[HELIX] Generating HELIX model with {self.nMonomers} monomers")
 
         if   self.init == "random":
             self.monomersPositions,self.monomersOrientations = self.__generateRandomPositions()
@@ -313,7 +313,7 @@ class HELIX(modelBase):
         elif self.init == "helix":
             self.monomersPositions,self.monomersOrientations = self.__generateHelix()
         else:
-            self.logger.error(f"Init mode {self.init} is not avaible")
+            self.logger.error(f"[HELIX] Init mode {self.init} is not avaible")
             raise Exception("Init mode not available")
 
         ##############################################

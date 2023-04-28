@@ -41,7 +41,7 @@ class constantForceOverCenterOfMass(modelExtensionBase):
         force = params.get("force")
         #Check if the force is a list of floats
         if not isinstance(force,list):
-            raise ValueError("The force must be a list of floats")
+            raise Exception("The force must be a list of floats")
 
         extension = {}
 

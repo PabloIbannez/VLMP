@@ -91,7 +91,7 @@ class VLMP:
                     propertyValue = propertyValue[propertyPath[i]]
             except:
                 self.logger.error("[VLMP] Property \"%s\" not found in simulation",propertyPath)
-                raise ValueError("Property not found in simulation")
+                raise Exception("Property not found in simulation")
 
             if propertyValue not in simulationSets.keys():
                 simulationSets[propertyValue] = []
@@ -112,7 +112,7 @@ class VLMP:
 
         if componentType is None:
             self.logger.error(f"[VLMP] Error processing \"{componentClass}\" component ({component}), \"type\" property not found")
-            raise ValueError("Component type not specified")
+            raise Exception("Component type not specified")
         self.logger.debug(f"[VLMP] Processing \"{componentClass}\" component ({component}), type \"{componentType}\"")
 
         componentName = component.get("name",None)
@@ -131,7 +131,7 @@ class VLMP:
         #Check if component is already loaded
         if "_".join([componentClass,componentName]) in simulationBuffer.keys():
             self.logger.error(f"[VLMP] ({componentClass}) Component \"{componentName}\" already loaded")
-            raise ValueError("Component already loaded")
+            raise Exception("Component already loaded")
 
         return componentType,componentName,componentParameters
 
@@ -156,7 +156,7 @@ class VLMP:
                 if key not in availableComponents:
                     self.logger.error("[VLMP] Unknown component \"%s\"",key)
                     self.logger.error("[VLMP] Available components are: %s",availableComponents)
-                    raise ValueError("Unknown component")
+                    raise Exception("Unknown component")
 
             simulationBuffer = OrderedDict()
 
@@ -165,17 +165,17 @@ class VLMP:
             #Check if system section is present
             if "system" not in simulationInfo.keys():
                 self.logger.error("[VLMP] System section not found")
-                raise ValueError("System section not found")
+                raise Exception("System section not found")
             else:
 
                 #Check there is one (and only one) system component of type "simulationName"
                 simNameComponents = [component for component in simulationInfo["system"] if component["type"] == "simulationName"]
                 if len(simNameComponents) == 0:
                     self.logger.error("[VLMP] Simulation name not specified")
-                    raise ValueError("Simulation name not specified")
+                    raise Exception("Simulation name not specified")
                 elif len(simNameComponents) > 1:
                     self.logger.error("[VLMP] More than one simulation name specified")
-                    raise ValueError("More than one simulation name specified")
+                    raise Exception("More than one simulation name specified")
 
                 for system in simulationInfo["system"]:
 
@@ -185,14 +185,14 @@ class VLMP:
                     #Check if typ is part of "_system"
                     if typ not in dir(_system):
                         self.logger.error(f"[VLMP] System \"{typ}\" not found")
-                        raise ValueError("System not found")
+                        raise Exception("System not found")
 
                     try:
                         system = eval(f"_system.{typ}")(name=name,**param)
                         simulationBuffer["system_"+name] = system
                     except:
                         self.logger.error(f"[VLMP] Error loading system \"{name}\" ({typ})")
-                        raise ValueError("Error loading system")
+                        raise Exception("Error loading system")
 
 
             ############## UNITS ##############
@@ -200,12 +200,12 @@ class VLMP:
             #Check if units section is present
             if "units" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Units section not found")
-                raise ValueError("Units section not found")
+                raise Exception("Units section not found")
             else:
                 #Only one unit system can be specified
                 if len(simulationInfo["units"]) > 1:
                     self.logger.error("[VLMP] Only one unit system can be specified")
-                    raise ValueError("Only one unit system can be specified")
+                    raise Exception("Only one unit system can be specified")
 
                 typ, name, param = self.__checkComponent(simulationInfo["units"][0],"units",simulationBuffer)
                 self.logger.debug(f"[VLMP] Selected units: \"{name}\" ({typ})")
@@ -213,26 +213,26 @@ class VLMP:
                 #Check if typ is part of "_units"
                 if typ not in dir(_units):
                     self.logger.error(f"[VLMP] Units \"{typ}\" not found")
-                    raise ValueError("Units not found")
+                    raise Exception("Units not found")
 
                 try:
                     units = eval(f"_units.{typ}")(name=name,**param)
                     simulationBuffer["units_"+name] = units
                 except:
                     self.logger.error(f"[VLMP] Error loading units \"{name}\" ({typ})")
-                    raise ValueError("Error loading units")
+                    raise Exception("Error loading units")
 
             ############## TYPES ##############
 
             #Check if types section is present
             if "types" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Types section not found")
-                raise ValueError("Types section not found")
+                raise Exception("Types section not found")
             else:
                 #Only one unit system can be specified
                 if len(simulationInfo["types"]) > 1:
                     self.logger.error("[VLMP] Only one unit system can be specified")
-                    raise ValueError("Only one unit system can be specified")
+                    raise Exception("Only one unit system can be specified")
 
                 typ, name, param = self.__checkComponent(simulationInfo["types"][0],"types",simulationBuffer)
                 self.logger.debug(f"[VLMP] Selected types: \"{name}\" ({typ})")
@@ -240,21 +240,21 @@ class VLMP:
                 #Check if typ is part of "_types"
                 if typ not in dir(_types):
                     self.logger.error(f"[VLMP] Unit \"{typ}\" not found")
-                    raise ValueError("Types not found")
+                    raise Exception("Types not found")
 
                 try:
                     types = eval(f"_types.{typ}")(name=name,units=units,**param)
                     simulationBuffer["types_"+name] = types
                 except:
                     self.logger.error(f"[VLMP] Error loading types \"{name}\" ({typ})")
-                    raise ValueError("Error loading types")
+                    raise Exception("Error loading types")
 
             ############## GLOBAL ##############
 
             #Check if global section is present
             if "global" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Global section not found")
-                raise ValueError("Global section not found")
+                raise Exception("Global section not found")
             else:
 
                 for global_ in simulationInfo["global"]:
@@ -265,13 +265,13 @@ class VLMP:
                     #Check if typ is part of "_globals"
                     if typ not in dir(_globals):
                         self.logger.error(f"[VLMP] Global \"{typ}\" not found")
-                        raise ValueError("Global not found")
+                        raise Exception("Global not found")
 
                     try:
                         simulationBuffer["global_"+name] = eval("_globals." + typ)(name=name,units=units,types=types,**(param))
                     except:
                         self.logger.error(f"[VLMP] Error loading global \"{name}\"")
-                        raise ValueError("Error loading global")
+                        raise Exception("Error loading global")
 
             ############### MODEL ###############
             #Create a list with the added models. This is used afterwards to apply model operations
@@ -280,7 +280,7 @@ class VLMP:
             #Check if model section is present
             if "model" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Model section not found")
-                raise ValueError("Model section not found")
+                raise Exception("Model section not found")
             else:
 
                 for model in simulationInfo["model"]:
@@ -291,14 +291,14 @@ class VLMP:
                     #Check if typ is part of "_models"
                     if typ not in dir(_models):
                         self.logger.error(f"[VLMP] Model \"{typ}\" not found")
-                        raise ValueError("Model not found")
+                        raise Exception("Model not found")
 
                     try:
                         simulationBuffer["model_"+name] = eval("_models." + typ)(name=name,units=units,types=types,**(param))
                         models.append("model_"+name)
                     except:
                         self.logger.error(f"[VLMP] Error loading model \"{name}\"")
-                        raise ValueError("Error loading model")
+                        raise Exception("Error loading model")
 
             #Set idOffset for each model
             idOffset = 0
@@ -325,12 +325,12 @@ class VLMP:
 
                     if "modelOperations_"+name in appliedOperations:
                         self.logger.error(f"[VLMP] Model operation \"{name}\" already applied")
-                        raise ValueError("Model operation already applied")
+                        raise Exception("Model operation already applied")
 
                     #Check if typ is part of "__modelOperation__"
                     if typ not in dir(_modelOperations):
                         self.logger.error(f"[VLMP] Model operation \"{name}\" not found")
-                        raise ValueError("Model operation not found")
+                        raise Exception("Model operation not found")
 
                     try:
                         operation = eval("_modelOperations." + typ)(name   = name,
@@ -342,7 +342,7 @@ class VLMP:
 
                     except:
                         self.logger.error(f"[VLMP] Error loading model operation \"{name}\"")
-                        raise ValueError("Error loading model operation")
+                        raise Exception("Error loading model operation")
 
             ############### MODEL EXTENSIONS ###############
 
@@ -359,7 +359,7 @@ class VLMP:
                     #Check if typ is part of "_modelExtensions"
                     if typ not in dir(_modelExtensions):
                         self.logger.error(f"[VLMP] Model extension \"{name}\" not found")
-                        raise ValueError("Model extension not found")
+                        raise Exception("Model extension not found")
 
                     try:
                         simulationBuffer["modelExtensions_"+name] = eval("_modelExtensions." + typ)(name   = name,
@@ -370,14 +370,14 @@ class VLMP:
 
                     except:
                         self.logger.error(f"[VLMP] Error loading model extension \"{name}\"")
-                        raise ValueError("Error loading model extension")
+                        raise Exception("Error loading model extension")
 
             ############## INTEGRATOR ##############
 
             #Check if integrator section is present
             if "integrator" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Integrator section not found")
-                raise ValueError("Integrator section not found")
+                raise Exception("Integrator section not found")
             else:
 
                 for integrator in simulationInfo["integrator"]:
@@ -388,13 +388,13 @@ class VLMP:
                     #Check if typ is part of "_integrators"
                     if typ not in dir(_integrators):
                         self.logger.error(f"[VLMP] Integrator \"{typ}\" not found")
-                        raise ValueError("Integrator not found")
+                        raise Exception("Integrator not found")
 
                     try:
                         simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,units=units,types=types,**(param))
                     except:
                         self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
-                        raise ValueError("Error loading integrator")
+                        raise Exception("Error loading integrator")
 
             ############### SIMULATION STEPS ###############
 
@@ -411,7 +411,7 @@ class VLMP:
                     #Check if typ is part of "_simulationSteps"
                     if typ not in dir(_simulationSteps):
                         self.logger.error(f"[VLMP] Simulation step \"{name}\" not found")
-                        raise ValueError("Simulation step not found")
+                        raise Exception("Simulation step not found")
 
                     try:
                         simulationBuffer["simulationSteps_"+name] = eval("_simulationSteps." + typ)(name=name,
@@ -421,7 +421,7 @@ class VLMP:
                                                                                                     **(param))
                     except:
                         self.logger.error(f"[VLMP] Error loading simulation step \"{name}\"")
-                        raise ValueError("Error loading simulation step")
+                        raise Exception("Error loading simulation step")
 
             ###############################################
 
@@ -446,7 +446,7 @@ class VLMP:
             #Check if other simulation with the same name has been already created
             if simulationName in [s["system"]["parameters"]["name"] for s in self.simulations]:
                 self.logger.error(f"[VLMP] Simulation with name \"{simulationName}\" already exists")
-                raise ValueError("Simulation already exists")
+                raise Exception("Simulation already exists")
 
             ###############################################
 
@@ -460,7 +460,7 @@ class VLMP:
         #Check at least one simulations has been loaded
         if len(self.simulations) == 0:
             self.logger.error("[VLMP] No simulations loaded")
-            raise ValueError("No simulations loaded")
+            raise Exception("No simulations loaded")
 
         #Check mode
         if len(mode) == 0:
@@ -472,7 +472,7 @@ class VLMP:
 
         if modeName not in availableModes:
             self.logger.error("[VLMP] Distribute mode \"%s\" not available, available modes are: %s",modeName,availableModes)
-            raise ValueError("Distribute mode not available")
+            raise Exception("Distribute mode not available")
         else:
             #Switch to the selected mode
             if modeName == "none":
@@ -487,12 +487,12 @@ class VLMP:
                     scoringPropertyName = mode[1]
                 else:
                     self.logger.error("[VLMP] No scoring property specified")
-                    raise ValueError("No scoring property specified")
+                    raise Exception("No scoring property specified")
 
                 if scoringPropertyName not in availableScoringProperties:
                     self.logger.error("[VLMP] Scoring property \"%s\" not available, available properties are: %s",
                                       scoringPropertyName,availableScoringProperties)
-                    raise ValueError("Scoring property not available")
+                    raise Exception("Scoring property not available")
                 else:
                     #Switch to the selected scoring property
                     if scoringPropertyName == "numberOfParticles":
@@ -501,7 +501,7 @@ class VLMP:
                             maxNumberOfParticles = mode[2]
                         else:
                             self.logger.error("[VLMP] No particle limit specified")
-                            raise ValueError("No upper limit specified")
+                            raise Exception("No upper limit specified")
 
                         #Distribute the simulation pool
                         self.simulationSets = self.__distributeSimulationPoolByMaxNumberOfParticles(maxNumberOfParticles)
@@ -513,7 +513,7 @@ class VLMP:
                     size = mode[1]
                 else:
                     self.logger.error("[VLMP] No size specified")
-                    raise ValueError("No size specified")
+                    raise Exception("No size specified")
 
                 #Distribute the simulation pool
                 self.simulationSets = self.__distributeSimulationPoolBySize(size)
@@ -526,15 +526,15 @@ class VLMP:
                     #Check if property path is valid is list of strings
                     if not isinstance(propertyPath,list):
                         self.logger.error("[VLMP] Property path must be a list of strings")
-                        raise ValueError("Property path must be a list of strings")
+                        raise Exception("Property path must be a list of strings")
                     else:
                         for property in propertyPath:
                             if not isinstance(property,str):
                                 self.logger.error("[VLMP] Property path must be a list of strings")
-                                raise ValueError("Property path must be a list of strings")
+                                raise Exception("Property path must be a list of strings")
                 else:
                     self.logger.error("[VLMP] No property path specified")
-                    raise ValueError("No scoring property specified")
+                    raise Exception("No scoring property specified")
 
                 #Distribute the simulation pool
                 self.simulationSets = self.__distributeSimulationPoolByProperty(propertyPath)
@@ -550,14 +550,14 @@ class VLMP:
         #Both must be equal
         if simulationIndexes != simulationIndexesInSets:
             self.logger.error("[VLMP] Simulation distribution failed")
-            raise ValueError("Simulation distribution failed")
+            raise Exception("Simulation distribution failed")
 
     def setUpSimulation(self, sessionName):
         self.logger.debug("[VLMP] Setting up simulation")
 
         if len(self.simulationSets) == 0:
             self.logger.error("[VLMP] Simulation pool not distributed")
-            raise ValueError("Simulation pool not distributed")
+            raise Exception("Simulation pool not distributed")
 
         ################################################
 
@@ -623,7 +623,7 @@ class VLMP:
                 structureLabels = self.simulations[simIndex]["topology"]["structure"]["labels"]
                 if "simulationId" in structureLabels:
                     self.logger.error("[VLMP] SimulationId already set, for a single simulation. Cannot aggregate simulations")
-                    raise ValueError("SimulationId already set")
+                    raise Exception("SimulationId already set")
 
             #Update simulationsStep for each simulation in the simulation set
             #This ensures the simulation step is applied over particles for the
@@ -674,7 +674,7 @@ class VLMP:
                             }
                         else:
                             self.logger.error("[VLMP] groups_simulationId already defined")
-                            raise ValueError("groups_simulationId already defined")
+                            raise Exception("groups_simulationId already defined")
 
             #Perform aggregation
             self.logger.info("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)

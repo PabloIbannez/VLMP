@@ -28,19 +28,19 @@ class typesBase:
         if not self.requiredParameters.issubset(self.availableParameters):
             notAvailable = self.requiredParameters.difference(self.availableParameters)
             self.logger.error(f"[Types] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for types {self._name}")
-            raise ValueError(f"Required paramaters are not available parameters")
+            raise Exception(f"Required paramaters are not available parameters")
 
         # Check if all parameters given by params are available
         for par in params:
             if par not in self.availableParameters:
                 self.logger.error(f"[Types] ({self._type}) Parameter {par} not available for types {self._name}")
-                raise ValueError(f"Parameter not available")
+                raise Exception(f"Parameter not available")
 
         # Check if all required parameters are given
         for par in self.requiredParameters:
             if par not in params:
                 self.logger.error(f"[Types] ({self._type}) Required parameter {par} not given for types {self._name}")
-                raise ValueError(f"Required parameter not given")
+                raise Exception(f"Required parameter not given")
 
         self.logger.info(f"[Types] ({self._type}) Using types {self._name}")
 
@@ -66,10 +66,10 @@ class typesBase:
     def getTypes(self):
         if self._typesComp is None:
             self.logger.error(f"[Types] ({self._type}) Types components not set for types {self._name}")
-            raise ValueError(f"Types components not set")
+            raise Exception(f"Types components not set")
         if self._typesDecl is None:
             self.logger.error(f"[Types] ({self._type}) Types not declared for types {self._name}")
-            raise ValueError(f"Types not declared")
+            raise Exception(f"Types not declared")
 
         types = {}
 
@@ -85,7 +85,7 @@ class typesBase:
     def getTypesName(self):
         if self._typesUAMMD is None:
             self.logger.error(f"[Types] ({self._type}) Types not set for types {self._name}")
-            raise ValueError(f"Types not set")
+            raise Exception(f"Types not set")
         return self._typesUAMMD
 
     def addTypesComponent(self, typesCompName, defaultValue):
@@ -93,31 +93,31 @@ class typesBase:
             self._typesComp = {"name":None}
         if typesCompName in self._typesComp.keys():
             self.logger.error(f"[Types] ({self._type}) Component {typesCompName} already declared for types {self._name}.")
-            raise ValueError(f"Component already declared")
+            raise Exception(f"Component already declared")
         self._typesComp[typesCompName] = defaultValue
 
     def getTypesComponents(self):
         if self._typesComp is None:
             self.logger.error(f"[Types] ({self._type}) Types components not set for types {self._name}")
-            raise ValueError(f"Types components not set")
+            raise Exception(f"Types components not set")
         return self._typesComp
 
     def addType(self, **components):
         if self._typesComp is None:
             self.logger.error(f"[Types] ({self._type}) Types components not set for types {self._name}")
-            raise ValueError(f"Types components not set")
+            raise Exception(f"Types components not set")
         if self._typesDecl is None:
             self._typesDecl = []
         #Check name in components
         if "name" not in components.keys():
             self.logger.error(f"[Types] ({self._type}) Name not given when declaring types {self._name}. Declaration: {components}")
-            raise ValueError(f"Name not given")
+            raise Exception(f"Name not given")
 
         #Check if all keys of components are available
         for key in components:
             if key not in self._typesComp.keys():
                 self.logger.error(f"[Types] ({self._type}) Component {key} not available for types {self._name}. Available components are {list(self._typesComp.keys())}")
-                raise ValueError(f"Component not available")
+                raise Exception(f"Component not available")
 
         typeDecl = {}
         for key in self._typesComp.keys():
@@ -139,7 +139,7 @@ class typesBase:
 
         if self._typesDecl is None:
             self.logger.error(f"[Types] ({self._type}) Types not declared for types {self._name}")
-            raise ValueError(f"Types not declared")
+            raise Exception(f"Types not declared")
         else:
             for types in self._typesDecl:
                 data.append([types[comp] for comp in labels])

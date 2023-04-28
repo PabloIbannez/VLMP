@@ -25,19 +25,19 @@ class unitsBase:
         if not self.requiredParameters.issubset(self.availableParameters):
             notAvailable = self.requiredParameters.difference(self.availableParameters)
             self.logger.error(f"[Units] ({self._type}) Some required parameters ({notAvailable}) are not available parameters for units {self._name}")
-            raise ValueError(f"Required paramaters are not available parameters")
+            raise Exception(f"Required paramaters are not available parameters")
 
         # Check if all parameters given by params are available
         for par in params:
             if par not in self.availableParameters:
                 self.logger.error(f"[Units] ({self._type}) Parameter {par} not available for units {self._name}")
-                raise ValueError(f"Parameter not available")
+                raise Exception(f"Parameter not available")
 
         # Check if all required parameters are given
         for par in self.requiredParameters:
             if par not in params:
                 self.logger.error(f"[Units] ({self._type}) Required parameter {par} not given for units {self._name}")
-                raise ValueError(f"Required parameter not given")
+                raise Exception(f"Required parameter not given")
 
         self.logger.info(f"[Units] ({self._type}) Using units {self._name}")
 
@@ -62,7 +62,7 @@ class unitsBase:
     def getUnitsName(self):
         if self._unitsUAMMD is None:
             self.logger.error(f"[Units] ({self._type}) Units not set for units {self._name}")
-            raise ValueError(f"Units not set")
+            raise Exception(f"Units not set")
         return self._unitsUAMMD
 
     def addConstant(self, constName, constValue):
@@ -75,10 +75,10 @@ class unitsBase:
     def getConstant(self, constName):
         if self._constants is None:
             self.logger.error(f"[Units] ({self._type}) No constants added for units {self._name}")
-            raise ValueError(f"No constants added")
+            raise Exception(f"No constants added")
         if constName not in self._constants.keys():
             self.logger.error(f"[Units] ({self._type}) Constant {constName} not added for units {self._name}")
-            raise ValueError(f"Constant not added")
+            raise Exception(f"Constant not added")
         return self._constants[constName]
 
     ########################################################

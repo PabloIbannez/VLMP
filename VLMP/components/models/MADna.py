@@ -207,8 +207,8 @@ class MADna(modelBase):
         if "basePairIndex" in selection.keys():
             for bpi in selection["basePairIndex"]:
                 if bpi > self.seqLen or bpi == 0:
-                    print("[ERROR] Base pair has to be a number between 1 and ",self.seqLen,". But is:",bpi)
-                    sys.exit(1)
+                    self.logger.error(f"[MADna] Base pair has to be a number between 1 and {self.seqLen}. But is:{bpi}")
+                    raise Exception("Base pair index out of range")
                 if bpi < 0:
                     bpi = self.seqLen + bpi + 1
                 basePairIndexSel.add(bpi)
@@ -862,7 +862,7 @@ class MADna(modelBase):
                         forceField["BONDS_DH"]["data"].append([ph1[0],ph2[0],chgProduct,self.dielectricConstant,self.debyeLength,cutOff])
 
             else:
-                self.logger.error(f"Version \"{self.version}\" not available")
+                self.logger.error(f"[MADna] Version \"{self.version}\" not available")
                 raise Exception("Version not available")
 
         ##################### VERSION END #####################
