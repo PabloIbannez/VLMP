@@ -29,15 +29,15 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
                 self.logger.error("[SurfaceUmbrellaSampling] Required parameter %s not found!" % parameter)
                 raise Exception("Required parameter not found!")
 
-        self.nWindows        = parameters["umbrella"].get("nWindows")
+        self.nWindows        = parameters["umbrella"]["nWindows"]
 
-        self.windowsStartPosition    = parameters["umbrella"].get("windowsStartPosition")
-        self.windowsEndPosition      = parameters["umbrella"].get("windowsEndPosition")
+        self.windowsStartPosition    = parameters["umbrella"]["windowsStartPosition"]
+        self.windowsEndPosition      = parameters["umbrella"]["windowsEndPosition"]
 
         self.windowsSize             = (self.windowsEndPosition - self.windowsStartPosition)/(self.nWindows-1)
 
-        self.K                       = parameters["umbrella"].get("K")
-        self.Ksteps                  = parameters["umbrella"].get("Ksteps")
+        self.K                       = parameters["umbrella"]["K"]
+        self.Ksteps                  = parameters["umbrella"]["Ksteps"]
         if type(self.K) is not list:
             self.K = [self.K]
 
@@ -63,20 +63,21 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
 
         #Load simulation parameters
 
-        requiredSimulationParameters = ["units","temperature","box","models","selection","integrator"]
+        requiredSimulationParameters = ["units","types","temperature","box","models","selection","integrator"]
         for parameter in requiredSimulationParameters:
             if parameter not in parameters["simulation"]:
                 self.logger.error("[SurfaceUmbrellaSampling] Required parameter %s not found!" % parameter)
                 raise Exception("Required parameter not found!")
 
-        self.units  = parameters["simulation"].get("units")
+        self.units  = parameters["simulation"]["units"]
+        self.types  = parameters["simulation"]["types"]
 
-        self.temperature = parameters["simulation"].get("temperature")
+        self.temperature = parameters["simulation"]["temperature"]
         #Check if the temperature is a float
         if not isinstance(self.temperature,float):
             raise Exception("The temperature must be a float")
 
-        self.box         = parameters["simulation"].get("box")
+        self.box         = parameters["simulation"]["box"]
         #Check box is a list of 3 floats
         if not isinstance(self.box,list):
             raise Exception("The box must be a list of 3 floats")
@@ -86,11 +87,11 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
             if not isinstance(i,float):
                 raise Exception("The box must be a list of 3 floats")
 
-        self.integrator = parameters["simulation"].get("integrator")
+        self.integrator = parameters["simulation"]["integrator"]
         self.integrator["parameters"]["integrationSteps"] = sum(self.Ksteps)
 
-        self.models     = parameters["simulation"].get("models")
-        self.selection  = parameters["simulation"].get("selection")
+        self.models     = parameters["simulation"]["models"]
+        self.selection  = parameters["simulation"]["selection"]
 
         self.backupIntervalStep = parameters["simulation"].get("backupIntervalStep",None)
 
@@ -151,6 +152,7 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
 
                 sim = {"system":[{"type":"simulationName","parameters":{"simulationName":mdl["name"]+"_"+str(i)}}],
                        "units":[{"type":self.units}],
+                       "types":[{"type":self.types}],
                        "global":[{"type":"NVT","parameters":{"box":self.box,"temperature":self.temperature}}],
                        "integrator":[self.integrator],
                        "model":[mdl],
@@ -214,7 +216,7 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
         with open(os.path.join(sessionName,"surfaceUmbrella.json"),"w") as f:
             f.write(jsbeautifier.beautify(json.dumps(self.umbrellaInfo)))
 
-class AnalysisSurfaceUmbrellaSampling():
+class AnalysisSurfaceUmbrellaSampling:
 
     def __computePotential(self,centers,data,beta,K,outputFolderPath):
 
@@ -259,8 +261,11 @@ class AnalysisSurfaceUmbrellaSampling():
 
         #Check all traj in x_it have the same length
         if not all(len(x_it[0]) == len(x) for x in x_it):
-            self.logger.error("[AnalysisSurfaceUmbrellaSampling] Not all trajectories have the same length. Ignoring ...")
-            return False
+            if self.ignoreDifferentLength:
+                self.logger.error("[AnalysisSurfaceUmbrellaSampling] Not all trajectories have the same length. Ignoring ...")
+                return False
+            else:
+                self.logger.warning("[AnalysisSurfaceUmbrellaSampling] Not all trajectories have the same length.")
 
         #Smamllest center -> potMin
         #Largest center  -> potMax
@@ -288,7 +293,10 @@ class AnalysisSurfaceUmbrellaSampling():
 
         return True
 
-    def __init__(self,infoFilePath,skip=0):
+    def __init__(self,
+                 infoFilePath,
+                 skip=0,
+                 ignoreDifferentLength=True):
 
         self.logger = logging.getLogger("VLMP")
 
@@ -298,6 +306,7 @@ class AnalysisSurfaceUmbrellaSampling():
         self.sessionPath = os.path.dirname(infoFilePath)
 
         self.skip = skip + 1
+        self.ignoreDifferentLength = ignoreDifferentLength
 
         ########################################################
 
