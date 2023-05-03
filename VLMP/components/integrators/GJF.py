@@ -47,7 +47,7 @@ class GFJ(integratorBase):
         parameters["frictionConstant"] = params.get("frictionConstant")
 
         integrator = {
-            "type" : ["LangevinNVT","GJF"],
+            "type" : ["Langevin","GJF"],
             "parameters" : copy.deepcopy(parameters)
         }
 

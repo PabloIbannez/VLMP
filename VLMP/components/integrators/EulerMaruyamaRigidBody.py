@@ -46,7 +46,7 @@ class EulerMaruyamaRigidBody(integratorBase):
         parameters["viscosity"]        = params.get("viscosity")
 
         integrator = {
-            "type" : ["BrownianNVT", "EulerMaruyamaRigidBody"],
+            "type" : ["Brownian", "EulerMaruyamaRigidBody"],
             "parameters" : copy.deepcopy(parameters)
         }
 

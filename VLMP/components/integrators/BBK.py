@@ -46,7 +46,7 @@ class BBK(integratorBase):
         parameters["frictionConstant"] = params.get("frictionConstant")
 
         integrator = {
-            "type" : ["LangevinNVT","BBK"],
+            "type" : ["Langevin","BBK"],
             "parameters" : copy.deepcopy(parameters)
         }
 
