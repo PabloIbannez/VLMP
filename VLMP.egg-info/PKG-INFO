@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: VLMP
+Version: 1.0.0
+Summary: Coarse grained library for Python
+Home-page: https://github.com/PabloIbannez/pyGrained
+Author-email: Pablo Ibáñez-Freire <p.ibanez.fre@gmail.com>
+License: MIT License
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# VLMP
+Virtual Laboratory for the study of Macromolecules Properties

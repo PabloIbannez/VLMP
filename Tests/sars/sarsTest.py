@@ -3,9 +3,11 @@ import VLMP
 import json
 import jsbeautifier
 
-copies = 10
+from VLMP.utils.utils import picosecond2KcalMol_A_time
 
-ps2AKMA = 20/0.978
+ps2AKMA = picosecond2KcalMol_A_time()
+
+copies = 10
 
 simulationPool = []
 for i in range(copies):

@@ -1,8 +1,10 @@
 import VLMP
 
-copies = 1
+from VLMP.utils.utils import picosecond2KcalMol_A_time
 
-ps2AKMA = 20/0.978
+ps2AKMA = picosecond2KcalMol_A_time()
+
+copies = 1
 
 simulationPool = []
 for i in range(copies):
@@ -13,8 +15,18 @@ for i in range(copies):
                            "types":[{"type":"basic"}],
                            "global":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
                            "integrator":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0,"integrationSteps":1000000}}],
-                           "model":[{"type":"KB",
-                                     "parameters":{"PDB":"1egl.pdb"}
+                           "model":[{"type":"SBCG",
+                                     "parameters":{"PDB":"mergedTMV_20.pdb",
+                                                   "resolution":150,
+                                                   "steps":10000,
+                                                   "SASA":False,
+                                                   "bondsModel":{"name":"ENM",
+                                                                 "parameters":{"enmCut":12.0,
+                                                                               "K":10.0}},
+                                                   "nativeContactsModel":{"name":"CA",
+                                                                          "parameters":{"ncCut":8.0,
+                                                                                        "epsilon":0.5,
+                                                                                        "D":1.5}}}
                                      }],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                                                 "outputFilePath":"test",

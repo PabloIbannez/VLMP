@@ -1,6 +1,8 @@
 import os
 import copy
 
+import logging
+
 ################ SYSTEM INTERFACE ################
 
 from pyUAMMD import simulation
@@ -74,7 +76,7 @@ class systemBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-systems = [ module.split(".")[0] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
+systems = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
 systems = [ u.split("/")[-1].split(".")[0] for u in systems ]
 
 for s in systems:

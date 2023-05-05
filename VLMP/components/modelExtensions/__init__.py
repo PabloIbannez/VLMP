@@ -1,6 +1,8 @@
 import os
 import copy
 
+import logging
+
 ################ MODEL INTERFACE ################
 
 from pyUAMMD import simulation
@@ -140,7 +142,7 @@ class modelExtensionBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-extensions = [ module.split(".")[0] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
+extensions = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
 extensions = [ m.split("/")[-1].split(".")[0] for m in extensions ]
 
 for e in extensions:

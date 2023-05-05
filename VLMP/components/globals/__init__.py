@@ -1,6 +1,8 @@
 import os
 import copy
 
+import logging
+
 ################ GLOBALS INTERFACE ################
 
 from pyUAMMD import simulation
@@ -87,7 +89,7 @@ class globalBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-globals_ = [ module.split(".")[0] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
+globals_ = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
 globals_ = [ m.split("/")[-1].split(".")[0] for m in globals_]
 
 for g in globals_:

@@ -1,6 +1,8 @@
 import os
 import copy
 
+import logging
+
 ################ INTEGRATORS INTERFACE ################
 
 from pyUAMMD import simulation
@@ -107,7 +109,7 @@ class integratorBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-integrators = [ module.split(".")[0] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
+integrators = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
 integrators = [ m.split("/")[-1].split(".")[0] for m in integrators]
 
 for i in integrators:

@@ -1,6 +1,8 @@
 import os
 import copy
 
+import logging
+
 ################ MODEL INTERFACE ################
 
 from pyUAMMD import simulation
@@ -154,7 +156,7 @@ class modelOperationBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-operations = [ module.split(".")[0] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
+operations = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
 operations = [ m.split("/")[-1].split(".")[0] for m in operations ]
 
 for o in operations:

@@ -1,6 +1,8 @@
 import os
 import copy
 
+import logging
+
 ################ SIMULATION STEP INTERFACE ################
 
 from pyUAMMD import simulation
@@ -173,7 +175,7 @@ class simulationStepBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-simulationSteps = [ module.split(".")[0] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
+simulationSteps = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
 simulationSteps = [ m.split("/")[-1].split(".")[0] for m in simulationSteps ]
 
 for s in simulationSteps:

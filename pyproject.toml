@@ -1,0 +1,25 @@
+[project]
+name="VLMP"
+version="1.0.0"
+authors = [
+    {name = "Pablo Ibáñez-Freire", email = "p.ibanez.fre@gmail.com"},
+]
+description = "Coarse grained library for Python"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT License"}
+classifiers = [
+        "Development Status :: 3 - Alpha",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+]
+dependencies = [
+    "jsbeautifier","tqdm","pyGrained","JFIO","pyUAMMD"
+]
+
+[options]
+include_package_data = true
