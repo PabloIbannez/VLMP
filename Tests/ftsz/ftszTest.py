@@ -49,7 +49,8 @@ for eb,el in itertools.product(Eb,El):
                                                                                                 "outputFilePath":"test",
                                                                                                 "outputFormat":"sp"}},
                                               {"type":"info","parameters":{"intervalStep":10000}},
-                                              {"type":"patchPolymersMeasurement","parameters":{"intervalStep":1000}}],
+                                              {"type":"patchPolymersMeasurement","parameters":{"intervalStep":1000,
+                                                                                               "outputFilePath":"polymers.dat"}}],
                            })
 
     if mode == "surface":

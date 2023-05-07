@@ -24,14 +24,14 @@ class patchPolymersMeasurement(simulationStepBase):
 
     """
 
-    def __init__(self,name,**kwargs):
+    def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
                          availableParameters = {"outputFilePath"},
                          requiredParameters  = {"outputFilePath"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
-                         **kwargs)
+                         **params)
 
         ############################################################
         ############################################################

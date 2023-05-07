@@ -30,7 +30,7 @@ class __SIMULATION_STEPS_TEMPLATE__(simulationStepBase):
     ...
     """
 
-    def __init__(self,name,**kwargs):
+    def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
                          availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
@@ -38,7 +38,7 @@ class __SIMULATION_STEPS_TEMPLATE__(simulationStepBase):
                          availableSelections  = ["selection1","selection2",...], # List of selections used by the component
                          requiredSelections   = ["selection1","selection2",...], # List of required selections
                          #If none use set() instead of [] for available and required parameters and selections
-                         **kwargs)
+                         **params)
 
         ############################################################
         ############################################################
