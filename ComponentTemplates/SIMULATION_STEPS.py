@@ -33,26 +33,27 @@ class __SIMULATION_STEPS_TEMPLATE__(simulationStepBase):
     def __init__(self,name,**kwargs):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         units, # Selected units
                          availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
-                         requiredParameters = ["param1","param2",...], # List of required parameters
+                         requiredParameters   = ["param1","param2",...], # List of required parameters
+                         availableSelections  = ["selection1","selection2",...], # List of selections used by the component
+                         requiredSelections   = ["selection1","selection2",...], # List of required selections
+                         #If none use set() instead of [] for available and required parameters and selections
                          **kwargs)
 
         ############################################################
         ############################################################
         ############################################################
 
-        #Note logger is accessible through self.logger !!!
+        #Note there several accesible methods than can be used
+        #Units: getUnits()
+        #Types: getTypes()
+
+        #Note logger is accessible through self.logger
         #self.logger.info("Message")
 
-        #Define the component dictionary
-        #Particular characteristics of the component are defined here
-        #Rembember this dictionary is inteterpreted by the UAMMD-structured !!!
-        self.simulationStep = {}
-
-        #Editable part ...
-
         #Read the parameters
+
+        outputFilePath = self.getParameter("outputFilePath")
 
         param1 = self.getParameter("param1")
         param2 = self.getParameter("param2")
@@ -62,26 +63,29 @@ class __SIMULATION_STEPS_TEMPLATE__(simulationStepBase):
 
         ############################################################
 
-        #Process the parameters
+        #Here we have to fill the simulationStep itself.
+        #Remember you have to use UAMMD-structured syntax
 
-        #For example:
-        param1 = param1 + param2
-        ...
+        parameters = {}
+
+        parameters["outputFilePath"] = outputFilePath
+        parameters["param1"] = param1
+        parameters["paramA"] = param2+param3
+
+        simulationStep = {
+            name : { #We use the name of the component as the name of the simulationStep
+                "type" : ["SimulationStepClass","SimulationStepSubClass"], #Type of the simulationStep
+                "parameters" : {**parameters} #Parameters of the simulationStep
+            }
+        }
 
         ############################################################
 
-        #Define the component dictionary
+        #We can add the group the simulationSteps is applied to
+        #We can use a given selection
 
-        self.system["__SIMULATION_STEPS_TEMPLATE__"] = {
-                                                        "type":[simStepClass,simStepSubClass],
-                                                        "parameters":{
-                                                            "param1":param1,
-                                                            "param2":param2,
-                                                            "param3":param3,
-                                                            ...
-                                                        }
-                                                        "labels":[...] # Labels of the component
-                                                        "data":[[...],
-                                                                [...],
-                                                                 ...] # Data of the component
-                                                        }
+        self.setGroup("selection1")
+
+        #We finally add the simulationStep to the component
+        self.setSimulationSteps(simulationStep)
+

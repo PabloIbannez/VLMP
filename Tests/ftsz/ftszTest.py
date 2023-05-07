@@ -48,7 +48,8 @@ for eb,el in itertools.product(Eb,El):
                             "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":100000,
                                                                                                 "outputFilePath":"test",
                                                                                                 "outputFormat":"sp"}},
-                                              {"type":"info","parameters":{"intervalStep":10000}}]
+                                              {"type":"info","parameters":{"intervalStep":10000}},
+                                              {"type":"patchPolymersMeasurement","parameters":{"intervalStep":1000}}],
                            })
 
     if mode == "surface":
