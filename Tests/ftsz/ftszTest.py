@@ -29,7 +29,7 @@ Eb = np.linspace(-50,-25,10)
 El = np.linspace(8,1,1)
 
 for eb,el in itertools.product(Eb,El):
-    simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"ftsz_Eb{eb}_El{el}"}},
+    simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"ftsz_Eb{round(eb,2)}_El{round(el,2)}"}},
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"none"}],
                            "types":[{"type":"basic"}],
@@ -41,10 +41,10 @@ for eb,el in itertools.product(Eb,El):
                                                    "nMonomers":N,
                                                    "monomerRadius":particleDiameter/2.0,
                                                    "epsilon_mm":-0.25,
-                                                   "Eb":eb,"rc":0.5,
+                                                   "Eb":round(eb,2),"rc":0.5,
                                                    "theta0":0.125,"phi0":0.3,
                                                    "varDst":0.0001,"varTheta":0.0015,"varPhi":0.005,
-                                                   "Es":10.0,"beta0":1.57,"El":el,"Sl":0.1}}],
+                                                   "Es":10.0,"beta0":1.57,"El":round(el,2),"Sl":0.1}}],
                             "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":100000,
                                                                                                 "outputFilePath":"test",
                                                                                                 "outputFormat":"sp"}},
