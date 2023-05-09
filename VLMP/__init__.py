@@ -49,6 +49,12 @@ logger.addHandler(clogger)
 
 #################################################
 
-from .VLMP  import VLMP
-from .utils import *
+if "-m" not in sys.argv:
+    #This done to avoid the error when running the program with -m option.
+    #When running with -m option a large number of libraries imported by VLMP
+    #are not needed.
 
+    logger.info("Starting VLMP...")
+
+    from .VLMP  import VLMP
+    from .utils import *
