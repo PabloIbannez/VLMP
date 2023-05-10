@@ -13,12 +13,27 @@ def picosecond2KcalMol_A_time():
 
 #Geometry utils
 
+def getEx(q):
+    """ Given a quaternion, q, the function returns the z vector of the local basis"""
+
+    q0,q1,q2,q3 = q
+
+    return 2.0*np.asarray([q0*q0+q1*q1-0.5,q1*q2+q0*q3,q1*q3-q0*q2])
+
+def getEy(q):
+    """ Given a quaternion, q, the function returns the z vector of the local basis"""
+
+    q0,q1,q2,q3 = q
+
+    return 2.0*np.asarray([q1*q2-q0*q3,q0*q0+q2*q2-0.5,q2*q3+q0*q1])
+
 def getEz(q):
     """ Given a quaternion, q, the function returns the z vector of the local basis"""
 
     q0,q1,q2,q3 = q
 
     return 2.0*np.asarray([q1*q3+q0*q2,q2*q3-q0*q1,q0*q0+q3*q3-0.5])
+
 
 def quaternionFromVectors(vec1, vec2):
     """ Given two vector the function returns the rotation that transform one into another.

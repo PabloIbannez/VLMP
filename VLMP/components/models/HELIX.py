@@ -4,6 +4,7 @@ import itertools
 import logging
 
 from . import modelBase
+from ...utils.utils import getEx
 
 import random
 
@@ -33,34 +34,21 @@ class HELIX(modelBase):
     def __computeKdst(self,var,Eb,rc):
         init = 1.0
         Kdst = root(lambda K: var - (self.kT/Eb)*((rc*rc)/(np.pi*np.pi))*((1.0-np.exp(-2.0*K))/K),init)
+        varTheo = (self.kT/Eb)*((rc*rc)/(np.pi*np.pi))*((1.0-np.exp(-2.0*Kdst["x"][0]))/Kdst["x"][0])
+        if np.abs(varTheo-var) > 1e-6:
+            self.logger.error(f"[HELIX] Error computing Kdst")
+            raise Exception("Error computing Kdst")
         return Kdst["x"][0]
 
     def __computeKangle(self,var,Eb):
         init = (1.0-0.5*var*(Eb/self.kT))/2.0
         Kangle = root(lambda K: var - (self.kT/Eb)*((1.0-np.exp(-2.0*K))/K),init)
+        varTheo = (self.kT/Eb)*((1.0-np.exp(-2.0*Kangle["x"][0]))/Kangle["x"][0])
+        if np.abs(varTheo-var) > 1e-6:
+            self.logger.error(f"[HELIX] Error computing Kangle")
+            raise Exception("Error computing Kangle")
         return Kangle["x"][0]
 
-
-    def __getEx(self,q):
-        """ Given a quaternion, q, the function returns the z vector of the local basis"""
-
-        q0,q1,q2,q3 = q
-
-        return 2.0*np.asarray([q0*q0+q1*q1-0.5,q1*q2+q0*q3,q1*q3-q0*q2])
-
-    def __getEy(self,q):
-        """ Given a quaternion, q, the function returns the z vector of the local basis"""
-
-        q0,q1,q2,q3 = q
-
-        return 2.0*np.asarray([q1*q2-q0*q3,q0*q0+q2*q2-0.5,q2*q3+q0*q1])
-
-    def __getEz(self,q):
-        """ Given a quaternion, q, the function returns the z vector of the local basis"""
-
-        q0,q1,q2,q3 = q
-
-        return 2.0*np.asarray([q1*q3+q0*q2,q2*q3-q0*q1,q0*q0+q3*q3-0.5])
 
     def __generateRandomPositions(self):
         monomersPositions    = []
@@ -171,7 +159,7 @@ class HELIX(modelBase):
                 q1,q2,q3,q0 = r_init.as_quat()
 
             else:
-                x,y,z = monomersPositions[-1]+sigma*self.__getEx(monomersOrientations[-1])
+                x,y,z = monomersPositions[-1]+sigma*getEx(monomersOrientations[-1])
 
                 q0,q1,q2,q3 = monomersOrientations[-1]
                 r_prev    = R.from_quat([q1,q2,q3,q0])
@@ -199,8 +187,8 @@ class HELIX(modelBase):
         return np.asarray(monomersPositions),np.asarray(monomersOrientations)
 
     def __getMonomerConnections(self,position,orientation):
-        connectionStart = position-self.monomerRadius*self.__getEx(orientation)
-        connectionEnd   = position+self.monomerRadius*self.__getEx(orientation)
+        connectionStart = position-self.monomerRadius*getEx(orientation)
+        connectionEnd   = position+self.monomerRadius*getEx(orientation)
 
         return connectionStart,connectionEnd
 
@@ -301,6 +289,10 @@ class HELIX(modelBase):
         self.logger.info(f"[HELIX] K bond computed {self.Kb} for variance {varDst}")
         self.logger.info(f"[HELIX] K theta computed {self.Ka} for variance {varTheta}")
         self.logger.info(f"[HELIX] K phi computed {self.Kd} for variance {varPhi}")
+
+        if self.Kb < 0 or self.Ka < 0 or self.Kd < 0:
+            self.logger.error(f"[HELIX] Negative spring constant: Kb {self.Kb} Ka {self.Ka} Kd {self.Kd}")
+            raise Exception("Negative spring constant")
 
         ##############################################
 
