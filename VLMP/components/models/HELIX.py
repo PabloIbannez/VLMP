@@ -202,6 +202,7 @@ class HELIX(modelBase):
                                                 "Eb","rc",
                                                 "theta0","phi0",
                                                 "varDst","varTheta","varPhi",
+                                                "stiffnessFactor",
                                                 "Es",
                                                 "beta0",
                                                 "El","Sl",
@@ -264,6 +265,8 @@ class HELIX(modelBase):
         varTheta = params["varTheta"]
         varPhi   = params["varPhi"]
 
+        stiffnessFactor = params.get("stiffnessFactor",1.0)
+
         self.theta0 = params["theta0"]
         self.phi0   = params["phi0"]
 
@@ -289,6 +292,14 @@ class HELIX(modelBase):
         self.logger.info(f"[HELIX] K bond computed {self.Kb} for variance {varDst}")
         self.logger.info(f"[HELIX] K theta computed {self.Ka} for variance {varTheta}")
         self.logger.info(f"[HELIX] K phi computed {self.Kd} for variance {varPhi}")
+
+        if stiffnessFactor != 1.0:
+            self.logger.info(f"[HELIX] Applying stiffness factor {stiffnessFactor}")
+            self.Ka*=stiffnessFactor
+            self.Kd*=stiffnessFactor
+
+            self.logger.info(f"[HELIX] K theta after stiffness factor {self.Ka}")
+            self.logger.info(f"[HELIX] K phi after stiffness factor {self.Kd}")
 
         if self.Kb < 0 or self.Ka < 0 or self.Kd < 0:
             self.logger.error(f"[HELIX] Negative spring constant: Kb {self.Kb} Ka {self.Ka} Kd {self.Kd}")

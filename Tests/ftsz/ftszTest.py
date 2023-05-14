@@ -44,6 +44,7 @@ for eb,el in itertools.product(Eb,El):
                                                    "Eb":round(eb,2),"rc":0.5,
                                                    "theta0":0.125,"phi0":0.3,
                                                    "varDst":0.0001,"varTheta":0.0015,"varPhi":0.005,
+                                                   "stiffnessFactor":0.8,
                                                    "Es":10.0,"beta0":1.57,"El":round(el,2),"Sl":0.1}}],
                             "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":100000,
                                                                                                 "outputFilePath":"test",
