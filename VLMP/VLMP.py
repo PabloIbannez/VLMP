@@ -617,20 +617,20 @@ class VLMP:
             ################################################
             #Aggregate simulations in simulation sets
 
-            #We assume that simulationId is 0 (not set) for each independent simulation
+            #We assume that batchId is 0 (not set) for each independent simulation
             #Check it
             for simIndex in simSet:
                 structureLabels = self.simulations[simIndex]["topology"]["structure"]["labels"]
-                if "simulationId" in structureLabels:
-                    self.logger.error("[VLMP] SimulationId already set, for a single simulation. Cannot aggregate simulations")
-                    raise Exception("SimulationId already set")
+                if "batchId" in structureLabels:
+                    self.logger.error("[VLMP] BatchId already set, for a single simulation. Cannot aggregate simulations")
+                    raise Exception("BatchId already set")
 
             #Update simulationsStep for each simulation in the simulation set
             #This ensures the simulation step is applied over particles for the
-            #same simulationId
+            #same batchId
             for simIndex in simSet:
 
-                #simIndex is equivalent to simulationId
+                #simIndex is equivalent to batchId
 
                 sim = self.simulations[simIndex]
                 if "simulationStep" in sim.keys():
@@ -640,9 +640,9 @@ class VLMP:
                     for simStep in sim["simulationStep"].keys():
                         simStepType = sim["simulationStep"][simStep]["type"][0]
                         if "UtilsStep" not in simStepType and "Groups" not in simStepType: # Ignore UtilsStep and Groups
-                            #Each simulationStep apply to a simulationId group
+                            #Each simulationStep apply to a batchId group
                             if "group" not in sim["simulationStep"][simStep]["parameters"].keys():
-                                sim["simulationStep"][simStep]["parameters"]["group"] = f"simId_{simIndex}"
+                                sim["simulationStep"][simStep]["parameters"]["group"] = f"batchId_{simIndex}"
                                 groupDefinitionRequired = True
                             keysToRename.append(simStep)
 
@@ -663,18 +663,18 @@ class VLMP:
                         sim["simulationStep"][k+f"_{simIndex}"] = sim["simulationStep"].pop(k)
 
                     if groupDefinitionRequired:
-                        if "groups_simulationId" not in sim["simulationStep"].keys():
-                            sim["simulationStep"]["groups_simulationId"] = {
+                        if "groups_batchId" not in sim["simulationStep"].keys():
+                            sim["simulationStep"]["groups_batchId"] = {
                                 "type": ["Groups","GroupsList"],
                                 "parameters": {},
                                 "labels":["name","type","selection"],
                                 "data":[
-                                    [f"simId_{simIndex}","SimIds",[0]],
+                                    [f"batchId_{simIndex}","BatchIds",[0]],
                                 ]
                             }
                         else:
-                            self.logger.error("[VLMP] groups_simulationId already defined")
-                            raise Exception("groups_simulationId already defined")
+                            self.logger.error("[VLMP] groups_batchId already defined")
+                            raise Exception("groups_batchId already defined")
 
             #Perform aggregation
             self.logger.info("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)
@@ -687,7 +687,7 @@ class VLMP:
                 if aggregatedSimulation is None:
                     aggregatedSimulation = self.simulations[simIndex]
                 else:
-                    aggregatedSimulation.append(self.simulations[simIndex],mode="simulationId")
+                    aggregatedSimulation.append(self.simulations[simIndex],mode="batchId")
 
             #Aggregated simulation is ready
             ################################################
