@@ -86,7 +86,7 @@ class TUBE(modelBase):
 
         return np.asarray(monomersPositions),np.asarray(monomersOrientations)
 
-    def __generateHelix(self):
+    def __generateHelix(self,yOffset=0.0,center=True):
 
         sigma = 2.0*self.monomerRadius
 
@@ -117,7 +117,7 @@ class TUBE(modelBase):
 
             if n==0:
                 x=0.0
-                y=-boxY+sigma
+                y=-boxY+sigma+yOffset
                 z=(self.theta0/(self.theta0*self.theta0+self.phi0*self.phi0)-1.0)
 
                 Rinit = np.asarray([[ca*cp ,-sa ,-ca*sp],
@@ -129,13 +129,13 @@ class TUBE(modelBase):
                 q1,q2,q3,q0 = r_init.as_quat()
 
             else:
-                x,y,z = monomersPositions[-1]+sigma*getEx(monomersOrientations[-1])
-
                 q0,q1,q2,q3 = monomersOrientations[-1]
                 r_prev    = R.from_quat([q1,q2,q3,q0])
                 r_current = r_prev*r_trans
 
                 q1,q2,q3,q0 = r_current.as_quat()
+
+                x,y,z = monomersPositions[-1]+0.5*sigma*(getEx(monomersOrientations[-1])+getEx([q0,q1,q2,q3]))
 
 
             currentMonomerPosition = np.asarray([x,y,z])
@@ -144,8 +144,9 @@ class TUBE(modelBase):
             monomersPositions.append(currentMonomerPosition)
             monomersOrientations.append(currentMonomerOrientation)
 
-        centroid = np.mean(monomersPositions,axis=0)
-        monomersPositions-=centroid
+        if(center):
+            centroid = np.mean(monomersPositions,axis=0)
+            monomersPositions-=centroid
 
         return np.asarray(monomersPositions),np.asarray(monomersOrientations)
 
@@ -159,6 +160,7 @@ class TUBE(modelBase):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
                          availableParameters = {"mode","init",
+                                                "helixPerTube",
                                                 "nMonomers","box",
                                                 "monomerRadius","patchRadius",
                                                 "epsilon_mm",
@@ -227,6 +229,35 @@ class TUBE(modelBase):
             self.monomersPositions,self.monomersOrientations = self.__generateLine()
         elif self.init == "helix":
             self.monomersPositions,self.monomersOrientations = self.__generateHelix()
+        elif self.init == "tube":
+            if "helixPerTube" not in params:
+                self.logger.error(f"[TUBE] Missing parameter helixPerTube. Required for init tube")
+                raise Exception("Missing parameter")
+            helixPerTube = params["helixPerTube"]
+            nTotalMonomers = self.nMonomers #Backup
+
+            monomersPerTube = [0 for i in range(helixPerTube)]
+            n=0
+            i=0
+            while n < self.nMonomers:
+                if i >= helixPerTube:
+                    i=0
+                monomersPerTube[i]+=1
+                n+=1
+                i+=1
+
+            self.monomersPositions = np.zeros((0,3))
+            self.monomersOrientations = np.zeros((0,4))
+            for i in range(helixPerTube):
+                self.nMonomers = monomersPerTube[i]
+                mPos,mOri = self.__generateHelix(yOffset=i*2.0*self.monomerRadius,center=False)
+                self.monomersPositions    = np.vstack((self.monomersPositions,mPos))
+                self.monomersOrientations = np.vstack((self.monomersOrientations,mOri))
+
+            centroid = np.mean(self.monomersPositions,axis=0)
+            self.monomersPositions-=centroid
+
+            self.nMonomers = nTotalMonomers #Restore
         else:
             self.logger.error(f"[TUBE] Init mode {self.init} is not avaible")
             raise Exception("Init mode not available")

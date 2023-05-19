@@ -7,7 +7,7 @@ import jsbeautifier
 
 import numpy as np
 
-N = 15
+N = 100
 concentration = 0.0001
 
 # Compute the box size to get concentration
@@ -16,7 +16,7 @@ box = [L, L, L]
 
 particleDiameter = 1.0
 
-Eb = np.linspace(-50,-25,3)
+Eb = np.linspace(-50,-25,1)
 
 simulationPool = []
 for eb in Eb:
@@ -27,18 +27,20 @@ for eb in Eb:
                            "global":[{"type":"NVT","parameters":{"box":box,"temperature":1.0}}],
                            "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":100000000}}],
                            "model":[{"type":"TUBE",
-                                     "parameters":{"init":"helix",
+                                     "parameters":{"init":"tube",
+                                                   "helixPerTube":4,
                                                    "box":box,
                                                    "nMonomers":N,
                                                    "monomerRadius":particleDiameter/2.0,
                                                    "epsilon_mm":-0.25,
                                                    "Eb":round(eb,2),"rc":0.5,
+                                                   #"theta0":0.418879,"phi0":0.403497,
                                                    "theta0":0.403497,"phi0":0.418879,
                                                    "Kb":10.0,"Ka":1.0,"Kd":1.0,
                                                    "stiffnessFactor":1.0}}],
-                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
-                                                                                  "outputFilePath":"test",
-                                                                                  "outputFormat":"spo"}},
+                            "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":1000,
+                                                                                                "outputFilePath":"test",
+                                                                                                "outputFormat":"sp"}},
                                               {"type":"info","parameters":{"intervalStep":10000}}],
                            })
 
