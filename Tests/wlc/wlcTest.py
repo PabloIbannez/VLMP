@@ -16,6 +16,9 @@ for i in range(copies):
                            "integrator":[{"type":"BBK","parameters":{"timeStep":0.001,"frictionConstant":1.0,"integrationSteps":1000000}}],
                            "model":[{"name":"modelTest1",
                                      "type":"WLC",
+                                     "parameters":{"N":100,"b":1.0,"Kb":100.0,"Ka":50.0}},
+                                    {"name":"modelTest2",
+                                     "type":"WLC",
                                      "parameters":{"N":100,"b":1.0,"Kb":100.0,"Ka":50.0}}],
                            "modelOperations":[{"type":"setCenterOfMassPosition",
                                                "parameters":{"position":[10,10,10],
@@ -24,8 +27,7 @@ for i in range(copies):
                            "modelExtensions":[{"type":"constantForce",
                                                "parameters":{
                                                              "force":[1.0,2.0,3.0],
-                                                             "selection":{"models":["modelTest1"],
-                                                                          "expression":{"particleId":[1,2,3],"polymerIndex":[2,-2]}}
+                                                             "selection":{"expression":{"particleId":[1,2,3],"polymerIndex":[2,-2]}}
                                                             },
 
                                                }],
@@ -39,6 +41,6 @@ for i in range(copies):
 vlmp = VLMP.VLMP()
 
 vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("one")
+vlmp.distributeSimulationPool("none")
 vlmp.setUpSimulation("TEST")
 
