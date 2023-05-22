@@ -159,9 +159,10 @@ class typesBase:
             for types in self._typesDecl:
                 data.append([types[comp] for comp in labels])
 
-        return simulation({"global":{"parameters":copy.deepcopy({"types":self.getTypesName()}),
+        return simulation({"global":{"types":{
+                                     "type":["Types",self.getTypesName()],
                                      "labels":copy.deepcopy(labels),
-                                     "data":copy.deepcopy(data)}},DEBUG_MODE)
+                                     "data":copy.deepcopy(data)}}},DEBUG_MODE)
 
 ############### IMPORT ALL TYPES ###############
 

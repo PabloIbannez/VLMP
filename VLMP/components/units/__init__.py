@@ -86,7 +86,7 @@ class unitsBase:
     ########################################################
 
     def getSimulation(self,DEBUG_MODE = False):
-        return simulation({"global":{"parameters":copy.deepcopy({"units":self.getUnitsName()})}},DEBUG_MODE)
+        return simulation({"global":{"units":{"type":["Types",self.getUnitsName()]}}},DEBUG_MODE)
 
 ############### IMPORT ALL UNITS ###############
 

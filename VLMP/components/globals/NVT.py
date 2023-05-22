@@ -1,4 +1,5 @@
 import sys, os
+import copy
 
 import logging
 
@@ -38,5 +39,8 @@ class NVT(globalBase):
         parameters["box"]         = params.get("box")
         parameters["temperature"] = params.get("temperature")
 
-        self.setGlobals({"parameters":{**parameters}})
+        self.setGlobals({"ensemble":{"type":["Ensemble","NVT"],
+                                     "labels":["box","temperature"],
+                                     "data":[[copy.deepcopy(parameters["box"]),
+                                              copy.deepcopy(parameters["temperature"])]]}})
 

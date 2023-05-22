@@ -34,13 +34,12 @@ for eb in Eb:
                                                    "monomerRadius":particleDiameter/2.0,
                                                    "epsilon_mm":-0.25,
                                                    "Eb":round(eb,2),"rc":0.5,
-                                                   #"theta0":0.418879,"phi0":0.403497,
-                                                   "theta0":0.403497,"phi0":0.418879,
+                                                   "theta0":0.4037,"phi0":0.1117,
                                                    "Kb":10.0,"Ka":1.0,"Kd":1.0,
                                                    "stiffnessFactor":1.0}}],
-                            "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":1000,
-                                                                                                "outputFilePath":"test",
-                                                                                                "outputFormat":"sp"}},
+                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
+                                                                                 "outputFilePath":"test",
+                                                                                 "outputFormat":"spo"}},
                                               {"type":"info","parameters":{"intervalStep":10000}}],
                            })
 
