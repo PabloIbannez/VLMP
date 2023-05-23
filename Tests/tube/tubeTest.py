@@ -7,8 +7,8 @@ import jsbeautifier
 
 import numpy as np
 
-N = 100
-concentration = 0.0001
+N = 2000
+concentration = 0.05
 
 # Compute the box size to get concentration
 L = np.power(N / concentration, 1.0 / 3.0)
@@ -16,32 +16,32 @@ box = [L, L, L]
 
 particleDiameter = 1.0
 
-Eb = np.linspace(-50,-25,1)
+Eb = -14
 
 simulationPool = []
-for eb in Eb:
-    simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"tube_Eb{round(eb,2)}"}},
-                                     {"type":"backup","parameters":{"backupIntervalStep":100000}}],
-                           "units":[{"type":"none"}],
-                           "types":[{"type":"basic"}],
-                           "global":[{"type":"NVT","parameters":{"box":box,"temperature":1.0}}],
-                           "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":100000000}}],
-                           "model":[{"type":"TUBE",
-                                     "parameters":{"init":"tube",
-                                                   "helixPerTube":4,
-                                                   "box":box,
-                                                   "nMonomers":N,
-                                                   "monomerRadius":particleDiameter/2.0,
-                                                   "epsilon_mm":-0.25,
-                                                   "Eb":round(eb,2),"rc":0.5,
-                                                   "theta0":0.4037,"phi0":0.1117,
-                                                   "Kb":10.0,"Ka":1.0,"Kd":1.0,
-                                                   "stiffnessFactor":1.0}}],
-                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
-                                                                                 "outputFilePath":"test",
-                                                                                 "outputFormat":"spo"}},
-                                              {"type":"info","parameters":{"intervalStep":10000}}],
-                           })
+simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"tube"}},
+                                 {"type":"backup","parameters":{"backupIntervalStep":100000}}],
+                       "units":[{"type":"none"}],
+                       "types":[{"type":"basic"}],
+                       "global":[{"type":"NVT","parameters":{"box":box,"temperature":1.0}}],
+                       "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":1000000000}}],
+                       "model":[{"type":"TUBE",
+                                 "parameters":{"init":"nucleus",
+                                               "box":box,
+                                               "nMonomers":N,
+                                               "monomerRadius":particleDiameter/2.0,
+                                               "pitch":4,"monomersPerTurn":15,
+                                               "epsilon_mm":0.1,
+                                               "EbT":Eb,"rcT":0.3,
+                                               "KbT":1.0,"KaT":1.0,"KdT":1.0,
+                                               "EbL":Eb,"rcL":0.3,
+                                               "KbL":1.0,"KaL":1.0,"KdL":1.0,
+                                               "theta0L":0.0}}],
+                        "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":100000,
+                                                                                            "outputFilePath":"test",
+                                                                                            "outputFormat":"sp"}},
+                                          {"type":"info","parameters":{"intervalStep":10000}}],
+                       })
 
 vlmp = VLMP.VLMP()
 

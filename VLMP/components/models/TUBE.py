@@ -1,6 +1,8 @@
 import sys, os
 import itertools
 
+import copy
+
 import logging
 
 from . import modelBase
@@ -31,9 +33,7 @@ class TUBE(modelBase):
 
     """
 
-    def __generateRandomPositions(self):
-        monomersPositions    = []
-        monomersOrientations = []
+    def __generateRandomPositions(self,monomersPositions = [],monomersOrientations = []):
 
         boxX,boxY,boxZ = [b/2.0 for b in self.box]
 
@@ -72,7 +72,7 @@ class TUBE(modelBase):
         for n in range(self.nMonomers):
             self.logger.debug(f"[TUBE] Trying to add monomer {n}")
 
-            x=-boxX+self.monomerRadius+(n+1)*2.2*self.monomerRadius
+            x=-boxX+self.monomerRadius+(n+1)*2.0*self.monomerRadius
             y=0.0
             z=0.0
 
@@ -93,10 +93,10 @@ class TUBE(modelBase):
         monomersPositions    = []
         monomersOrientations = []
 
-        alpha = np.sqrt(self.theta0*self.theta0+self.phi0*self.phi0)
+        alpha = np.sqrt(self.theta0T*self.theta0T+self.phi0T*self.phi0T)
 
-        cp = self.theta0/alpha;
-        sp = self.phi0/alpha;
+        cp = self.theta0T/alpha;
+        sp = self.phi0T/alpha;
 
         cp2 = cp*cp;
         sp2 = sp*sp;
@@ -118,7 +118,7 @@ class TUBE(modelBase):
             if n==0:
                 x=0.0
                 y=-boxY+sigma+yOffset
-                z=(self.theta0/(self.theta0*self.theta0+self.phi0*self.phi0)-1.0)
+                z=(self.theta0T/(self.theta0T*self.theta0T+self.phi0T*self.phi0T)-1.0)
 
                 Rinit = np.asarray([[ca*cp ,-sa ,-ca*sp],
                                     [sp    ,0.0 , cp],
@@ -160,19 +160,26 @@ class TUBE(modelBase):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
                          availableParameters = {"mode","init",
-                                                "helixPerTube",
                                                 "nMonomers","box",
                                                 "monomerRadius","patchRadius",
+                                                "pitch","monomersPerTurn",
                                                 "epsilon_mm",
-                                                "Eb","rc",
-                                                "theta0","phi0",
-                                                "Kb","Ka","Kd",
-                                                "stiffnessFactor"},
+                                                "EbT","rcT",
+                                                "KbT","KaT","KdT",
+                                                "stiffnessFactorT",
+                                                "EbL","rcL",
+                                                "KbL","KaL","KdL",
+                                                "theta0L",
+                                                "phi0L",
+                                                "stiffnessFactorL"},
                          requiredParameters  = {"nMonomers","box",
+                                                "pitch","monomersPerTurn",
                                                 "epsilon_mm",
-                                                "Eb","rc",
-                                                "theta0","phi0",
-                                                "Kb","Ka","Kd"},
+                                                "EbT","rcT",
+                                                "KbT","KaT","KdT",
+                                                "EbL","rcL",
+                                                "KbL","KaL","KdL",
+                                                "theta0L"},
                          definedSelections   = {"particleId"},
                          **params)
 
@@ -193,31 +200,89 @@ class TUBE(modelBase):
         self.monomerRadius = params.get("monomerRadius",0.5)
         self.patchRadius   = params.get("patchRadius",0.1)
 
+        self.pitch           = params["pitch"]
+        self.monomersPerTurn = params["monomersPerTurn"]
+
         self.epsilon_mm = params["epsilon_mm"]
 
-        self.Eb = params["Eb"]
-        self.rc = params["rc"]
+        #Transversal
 
-        stiffnessFactor = params.get("stiffnessFactor",1.0)
+        self.EbT = params["EbT"]
+        self.rcT = params["rcT"]
 
-        self.theta0 = params["theta0"]
-        self.phi0   = params["phi0"]
+        self.KbT = params["KbT"]
+        self.KaT = params["KaT"]
+        self.KdT = params["KdT"]
 
-        self.Kb = params["Kb"]
-        self.Ka = params["Ka"]
-        self.Kd = params["Kd"]
-
+        stiffnessFactor = params.get("stiffnessFactorT",1.0)
         if stiffnessFactor != 1.0:
-            self.logger.info(f"[TUBE] Applying stiffness factor {stiffnessFactor}")
-            self.Ka*=stiffnessFactor
-            self.Kd*=stiffnessFactor
+            self.logger.info(f"[TUBE] Applying stiffness factor (T) {stiffnessFactor}")
+            self.KaT*=stiffnessFactor
+            self.KbT*=stiffnessFactor
 
-            self.logger.info(f"[TUBE] K theta after stiffness factor {self.Ka}")
-            self.logger.info(f"[TUBE] K phi after stiffness factor {self.Kd}")
+            self.logger.info(f"[TUBE] Kt theta after stiffness factor {self.KaT}")
+            self.logger.info(f"[TUBE] Kt phi after stiffness factor {self.KdT}")
 
-        if self.Kb < 0 or self.Ka < 0 or self.Kd < 0:
-            self.logger.error(f"[TUBE] Negative spring constant: Kb {self.Kb} Ka {self.Ka} Kd {self.Kd}")
-            raise Exception("Negative spring constant")
+        def equationSystem(vars, nc, pitch, sigma):
+            phi0, theta0 = vars
+
+            a = pitch/(np.pi*2)
+            b = nc*sigma/(np.pi*2)
+
+            R = np.sqrt(b**2-a**2)
+
+            alpha = np.sqrt(phi0**2+theta0**2)
+
+            eq1 = phi0/alpha - pitch/(sigma*nc)
+            eq2 = np.cos(alpha)*(theta0**2/alpha**2)+phi0**2/alpha**2-(a**2+np.cos(2*np.pi/nc)*(R**2))/(a**2+R**2)
+
+            return [eq1, eq2]
+
+        self.phi0T,self.theta0T = root(equationSystem,
+                                       [np.pi/2,np.pi/2],
+                                       args=(self.monomersPerTurn,self.pitch,self.monomerRadius*2.0),tol=1e-12).x
+
+        self.logger.info(f"[TUBE] Computing theta0T {self.theta0T}")
+        self.logger.info(f"[TUBE] Computing phi0T {self.phi0T}")
+
+        #Longitudinal
+
+        self.EbL = params["EbL"]
+        self.rcL = params["rcL"]
+
+        self.KbL = params["KbL"]
+        self.KaL = params["KaL"]
+        self.KdL = params["KdL"]
+
+        stiffnessFactor = params.get("stiffnessFactorL",1.0)
+        if stiffnessFactor != 1.0:
+            self.logger.info(f"[TUBE] Applying stiffness factor (L) {stiffnessFactor}")
+            self.KaL*=stiffnessFactor
+            self.KbL*=stiffnessFactor
+
+            self.logger.info(f"[TUBE] Kl theta after stiffness factor {self.KaL}")
+            self.logger.info(f"[TUBE] Kl phi after stiffness factor {self.KdL}")
+
+        self.theta0L = params["theta0L"]
+        self.phi0L   = params.get("phi0L",0.0)
+
+        alpha = np.sqrt(self.theta0T**2+self.phi0T**2)
+
+        cp = self.theta0T/alpha;
+        sp = self.phi0T/alpha;
+
+        ca = np.cos(alpha);
+        sa = np.sin(alpha);
+
+        rot = np.asarray([[ca*cp ,-sa ,-ca*sp],
+                          [sp    ,0.0 , cp],
+                          [-sa*cp,-ca , sa*sp]])
+
+        vector = np.asarray([0,1,0])*self.monomerRadius*2.0
+
+
+        self.Lplus  = np.dot(rot.T,vector)*self.monomerRadius
+        self.Lminus = -copy.deepcopy(self.Lplus)
 
         ##############################################
 
@@ -230,17 +295,13 @@ class TUBE(modelBase):
         elif self.init == "helix":
             self.monomersPositions,self.monomersOrientations = self.__generateHelix()
         elif self.init == "tube":
-            if "helixPerTube" not in params:
-                self.logger.error(f"[TUBE] Missing parameter helixPerTube. Required for init tube")
-                raise Exception("Missing parameter")
-            helixPerTube = params["helixPerTube"]
             nTotalMonomers = self.nMonomers #Backup
 
-            monomersPerTube = [0 for i in range(helixPerTube)]
+            monomersPerTube = [0 for i in range(self.pitch)]
             n=0
             i=0
             while n < self.nMonomers:
-                if i >= helixPerTube:
+                if i >= self.pitch:
                     i=0
                 monomersPerTube[i]+=1
                 n+=1
@@ -248,7 +309,7 @@ class TUBE(modelBase):
 
             self.monomersPositions = np.zeros((0,3))
             self.monomersOrientations = np.zeros((0,4))
-            for i in range(helixPerTube):
+            for i in range(self.pitch):
                 self.nMonomers = monomersPerTube[i]
                 mPos,mOri = self.__generateHelix(yOffset=i*2.0*self.monomerRadius,center=False)
                 self.monomersPositions    = np.vstack((self.monomersPositions,mPos))
@@ -258,6 +319,43 @@ class TUBE(modelBase):
             self.monomersPositions-=centroid
 
             self.nMonomers = nTotalMonomers #Restore
+        elif self.init == "nucleus":
+            nTotalMonomers = self.nMonomers #Backup
+            nucleusMonomers = self.monomersPerTurn*2*self.pitch
+
+            if nucleusMonomers > self.nMonomers:
+                logging.error(f"[TUBE] Nucleus monomers {nucleusMonomers} larger than total monomers {self.nMonomers}")
+                raise Exception("Nucleus monomers larger than total monomers")
+
+            monomersPerTube = [0 for i in range(self.pitch)]
+            n=0
+            i=0
+            while n < nucleusMonomers:
+                if i >= self.pitch:
+                    i=0
+                monomersPerTube[i]+=1
+                n+=1
+                i+=1
+
+            self.monomersPositions = np.zeros((0,3))
+            self.monomersOrientations = np.zeros((0,4))
+            for i in range(self.pitch):
+                self.nMonomers = monomersPerTube[i]
+                mPos,mOri = self.__generateHelix(yOffset=i*2.0*self.monomerRadius,center=False)
+                self.monomersPositions    = np.vstack((self.monomersPositions,mPos))
+                self.monomersOrientations = np.vstack((self.monomersOrientations,mOri))
+
+            centroid = np.mean(self.monomersPositions,axis=0)
+            self.monomersPositions-=centroid
+
+            self.nMonomers = nTotalMonomers - nucleusMonomers
+
+            self.monomersPositions,self.monomersOrientations = self.__generateRandomPositions(self.monomersPositions.tolist(),
+                                                                                              self.monomersOrientations.tolist())
+
+            self.nMonomers = nTotalMonomers #Restore
+
+
         else:
             self.logger.error(f"[TUBE] Init mode {self.init} is not avaible")
             raise Exception("Init mode not available")
@@ -306,54 +404,96 @@ class TUBE(modelBase):
 
         ############Patches
 
-        #Helix
-        forceField["helix"]={}
-        forceField["helix"]["type"]       = ["PatchyParticles","DynamicallyBondedPatchyParticles"]
+        forceField["tube"]={}
+        forceField["tube"]["type"]       = ["PatchyParticles","DynamicallyBondedPatchyParticles"]
 
-        forceField["helix"]["patchesState"]={}
-        forceField["helix"]["patchesState"]["labels"]=["id","position"]
-        forceField["helix"]["patchesState"]["data"]  =[]
+        forceField["tube"]["patchesState"]={}
+        forceField["tube"]["patchesState"]["labels"]=["id","position"]
+        forceField["tube"]["patchesState"]["data"]  =[]
 
         for i in range(self.nMonomers):
-            index=i*2
+
+            #Transversal
+            index=i*4
             p = [-self.monomerRadius,0.0,0.0]
-            forceField["helix"]["patchesState"]["data"].append([int(index  ),list(p)])
+            forceField["tube"]["patchesState"]["data"].append([int(index  ),list(p)])
             p = [ self.monomerRadius,0.0,0.0]
-            forceField["helix"]["patchesState"]["data"].append([int(index+1),list(p)])
+            forceField["tube"]["patchesState"]["data"].append([int(index+1),list(p)])
 
-        forceField["helix"]["patchesGlobal"]={}
-        forceField["helix"]["patchesGlobal"]["parameters"]={"energyThreshold":0.0}
-        forceField["helix"]["patchesGlobal"]["labels"] = ["name", "mass", "radius", "charge"]
-        forceField["helix"]["patchesGlobal"]["data"]   = [["S",0.0,self.patchRadius,0.0],
-                                                          ["E",0.0,self.patchRadius,0.0]]
+            #Longitudinal
+            index=i*4
+            p = copy.deepcopy(self.Lplus)
+            forceField["tube"]["patchesState"]["data"].append([int(index+2),list(p)])
+            p = copy.deepcopy(self.Lminus)
+            forceField["tube"]["patchesState"]["data"].append([int(index+3),list(p)])
 
-        forceField["helix"]["patchesTopology"]={}
+        forceField["tube"]["patchesGlobal"]={}
+        forceField["tube"]["patchesGlobal"]["fundamental"] = {}
+        forceField["tube"]["patchesGlobal"]["fundamental"]["type"]      = ["Fundamental","DynamicallyBondedPatchyParticles"]
+        forceField["tube"]["patchesGlobal"]["fundamental"]["parameters"]={"energyThreshold":0.0}
 
-        forceField["helix"]["patchesTopology"]["structure"]={}
-        forceField["helix"]["patchesTopology"]["structure"]["labels"] = ["id", "type", "parentId"]
-        forceField["helix"]["patchesTopology"]["structure"]["data"]   = []
+        forceField["tube"]["patchesGlobal"]["types"]  = {}
+        forceField["tube"]["patchesGlobal"]["types"]["type"]   = ["Types","Basic"]
+        forceField["tube"]["patchesGlobal"]["types"]["labels"] = ["name", "mass", "radius", "charge"]
+        forceField["tube"]["patchesGlobal"]["types"]["data"]   = [["St",0.0,self.patchRadius,0.0],
+                                                                  ["Et",0.0,self.patchRadius,0.0],
+                                                                  ["Sl",0.0,self.patchRadius,0.0],
+                                                                  ["El",0.0,self.patchRadius,0.0]]
+
+        forceField["tube"]["patchesTopology"]={}
+
+        forceField["tube"]["patchesTopology"]["structure"]={}
+        forceField["tube"]["patchesTopology"]["structure"]["labels"] = ["id", "type", "parentId"]
+        forceField["tube"]["patchesTopology"]["structure"]["data"]   = []
 
         for i in range(self.nMonomers):
-            index=i*2
-            forceField["helix"]["patchesTopology"]["structure"]["data"].append([index  ,"E",i])
-            forceField["helix"]["patchesTopology"]["structure"]["data"].append([index+1,"S",i])
+            index=i*4
+            forceField["tube"]["patchesTopology"]["structure"]["data"].append([index  ,"Et",i])
+            forceField["tube"]["patchesTopology"]["structure"]["data"].append([index+1,"St",i])
+            forceField["tube"]["patchesTopology"]["structure"]["data"].append([index+2,"El",i])
+            forceField["tube"]["patchesTopology"]["structure"]["data"].append([index+3,"Sl",i])
 
-        forceField["helix"]["patchesTopology"]["forceField"] = {}
+        forceField["tube"]["patchesTopology"]["forceField"] = {}
+
+        forceField["tube"]["patchesTopology"]["forceField"]["groups"] = {}
+        forceField["tube"]["patchesTopology"]["forceField"]["groups"]["type"] = ["Groups","GroupsList"]
+        forceField["tube"]["patchesTopology"]["forceField"]["groups"]["parameters"] = {}
+        forceField["tube"]["patchesTopology"]["forceField"]["groups"]["labels"] = ["name", "type", "selection"]
+        forceField["tube"]["patchesTopology"]["forceField"]["groups"]["data"]   = [
+            ["trans","Types",["St","Et"]],
+            ["long","Types",["Sl","El"]]
+        ]
+
 
         #Verlet list
-        forceField["helix"]["patchesTopology"]["forceField"]["verletList"]={}
-        forceField["helix"]["patchesTopology"]["forceField"]["verletList"]["type"]       =  ["VerletConditionalListSet", "interDifferentType"]
-        forceField["helix"]["patchesTopology"]["forceField"]["verletList"]["parameters"] =  {"cutOffVerletFactor":3.0}
+        forceField["tube"]["patchesTopology"]["forceField"]["verletList"]={}
+        forceField["tube"]["patchesTopology"]["forceField"]["verletList"]["type"]       =  ["VerletConditionalListSet", "interDifferentType"]
+        forceField["tube"]["patchesTopology"]["forceField"]["verletList"]["parameters"] =  {"cutOffVerletFactor":3.0}
 
-        forceField["helix"]["patchesTopology"]["forceField"]["helix"]={}
-        forceField["helix"]["patchesTopology"]["forceField"]["helix"]["type"]       =  ["NonBondedPatches", "Helix"]
-        forceField["helix"]["patchesTopology"]["forceField"]["helix"]["parameters"] =  {"condition":"inter"}
-        forceField["helix"]["patchesTopology"]["forceField"]["helix"]["labels"]     =  ["name_i", "name_j", "Eb", "Kb", "Ka", "Kd", "rc", "theta0", "phi0"]
-        forceField["helix"]["patchesTopology"]["forceField"]["helix"]["data"]       =  [["S", "E",
-                                                                                         self.Eb,
-                                                                                         self.Kb, self.Ka, self.Kd,
-                                                                                         self.rc,
-                                                                                         self.theta0, self.phi0]]
+        forceField["tube"]["patchesTopology"]["forceField"]["transversal"]={}
+        forceField["tube"]["patchesTopology"]["forceField"]["transversal"]["type"]       =  ["NonBondedPatches", "Helix"]
+        forceField["tube"]["patchesTopology"]["forceField"]["transversal"]["parameters"] =  {"condition":"inter",
+                                                                                             "startType":"St",
+                                                                                             "endType":"Et",
+                                                                                             "group":"trans"}
+        forceField["tube"]["patchesTopology"]["forceField"]["transversal"]["labels"]     =  ["name_i", "name_j", "Eb", "Kb", "Ka", "Kd", "rc", "theta0", "phi0"]
+        forceField["tube"]["patchesTopology"]["forceField"]["transversal"]["data"]       =  [["St", "Et",
+                                                                                              self.EbT,
+                                                                                              self.KbT, self.KaT, self.KdT,
+                                                                                              self.rcT,
+                                                                                              self.theta0T, self.phi0T]]
+        forceField["tube"]["patchesTopology"]["forceField"]["longitudinal"]={}
+        forceField["tube"]["patchesTopology"]["forceField"]["longitudinal"]["type"]       =  ["NonBondedPatches", "Helix"]
+        forceField["tube"]["patchesTopology"]["forceField"]["longitudinal"]["parameters"] =  {"condition":"inter",
+                                                                                              "startType":"Sl",
+                                                                                              "endType":"El",
+                                                                                              "group":"long"}
+        forceField["tube"]["patchesTopology"]["forceField"]["longitudinal"]["labels"]     =  ["name_i", "name_j", "Eb", "Kb", "Ka", "Kd", "rc", "theta0", "phi0"]
+        forceField["tube"]["patchesTopology"]["forceField"]["longitudinal"]["data"]       =  [["Sl", "El",
+                                                                                              self.EbL,
+                                                                                              self.KbL, self.KaL, self.KdL,
+                                                                                              self.rcL,
+                                                                                              self.theta0L, self.phi0L]]
 
         ##############################################
 
