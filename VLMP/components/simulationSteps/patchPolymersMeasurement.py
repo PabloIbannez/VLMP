@@ -27,8 +27,8 @@ class patchPolymersMeasurement(simulationStepBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath"},
-                         requiredParameters  = {"outputFilePath"},
+                         availableParameters = {"outputFilePath","bufferSize","surfaceEnergyThreshold"},
+                         requiredParameters  = {"outputFilePath","bufferSize","surfaceEnergyThreshold"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
@@ -37,9 +37,16 @@ class patchPolymersMeasurement(simulationStepBase):
         ############################################################
         ############################################################
 
+        #Check if intervalStep is different from 1. If so, raise an error
+        if params.get("intervalStep") != 1:
+            self.logger.error("[PatchPolymersMeasurement] intervalStep must be 1")
+            raise Exception("Not valid intervalStep")
+
         parameters = {}
 
-        parameters["outputFilePath"] = params.get("outputFilePath")
+        parameters["outputFilePath"]         = params["outputFilePath"]
+        parameters["bufferSize"]             = params["bufferSize"]
+        parameters["surfaceEnergyThreshold"] = params["surfaceEnergyThreshold"]
 
         simulationStep = {
             name:{

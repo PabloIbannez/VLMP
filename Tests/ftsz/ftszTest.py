@@ -25,8 +25,8 @@ elif mode == "surface":
 
 simulationPool = []
 
-Eb = np.linspace(-50,-25,10)
-El = np.linspace(8,1,1)
+Eb = np.linspace(-50,-30,10)
+El = np.linspace(20,1,1)
 
 for eb,el in itertools.product(Eb,El):
     simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"ftsz_Eb{round(eb,2)}_El{round(el,2)}"}},
@@ -34,7 +34,7 @@ for eb,el in itertools.product(Eb,El):
                            "units":[{"type":"none"}],
                            "types":[{"type":"basic"}],
                            "global":[{"type":"NVT","parameters":{"box":bnd.getSimulationBox(),"temperature":1.0}}],
-                           "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":100000000}}],
+                           "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":1000000}}],
                            "model":[{"type":"HELIX",
                                      "parameters":{"mode":mode,"init":"random",
                                                    "bounds":bnd,
@@ -46,11 +46,13 @@ for eb,el in itertools.product(Eb,El):
                                                    "varDst":0.0001,"varTheta":0.0015,"varPhi":0.005,
                                                    "stiffnessFactor":0.8,
                                                    "Es":10.0,"beta0":1.57,"El":round(el,2),"Sl":0.1}}],
-                            "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":100000,
+                            "simulationSteps":[{"type":"savePatchyParticlesState","parameters":{"intervalStep":10000,
                                                                                                 "outputFilePath":"test",
                                                                                                 "outputFormat":"sp"}},
                                               {"type":"info","parameters":{"intervalStep":10000}},
-                                              {"type":"patchPolymersMeasurement","parameters":{"intervalStep":1000,
+                                              {"type":"patchPolymersMeasurement","parameters":{"intervalStep":1,
+                                                                                               "bufferSize":1000,
+                                                                                               "surfaceEnergyThreshold":-1.0,
                                                                                                "outputFilePath":"polymers.dat"}}],
                            })
 

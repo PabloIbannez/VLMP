@@ -159,11 +159,12 @@ class HELIX(modelBase):
                 q1,q2,q3,q0 = r_init.as_quat()
 
             else:
-                x,y,z = monomersPositions[-1]+sigma*getEx(monomersOrientations[-1])
 
                 q0,q1,q2,q3 = monomersOrientations[-1]
                 r_prev    = R.from_quat([q1,q2,q3,q0])
                 r_current = r_prev*r_trans
+
+                x,y,z = monomersPositions[-1]+0.5*sigma*(getEx(monomersOrientations[-1])+getEx([q0,q1,q2,q3]))
 
                 q1,q2,q3,q0 = r_current.as_quat()
 
@@ -202,6 +203,7 @@ class HELIX(modelBase):
                                                 "Eb","rc",
                                                 "theta0","phi0",
                                                 "varDst","varTheta","varPhi",
+                                                "energyThreshold",
                                                 "stiffnessFactor",
                                                 "Es",
                                                 "beta0",
@@ -264,6 +266,8 @@ class HELIX(modelBase):
         varDst   = params["varDst"]
         varTheta = params["varTheta"]
         varPhi   = params["varPhi"]
+
+        self.energyThreshold = params.get("energyThreshold",-1.0)
 
         stiffnessFactor = params.get("stiffnessFactor",1.0)
 
@@ -379,10 +383,15 @@ class HELIX(modelBase):
             forceField["helix"]["patchesState"]["data"].append([int(index+1),list(p)])
 
         forceField["helix"]["patchesGlobal"]={}
-        forceField["helix"]["patchesGlobal"]["parameters"]={"energyThreshold":0.0}
-        forceField["helix"]["patchesGlobal"]["labels"] = ["name", "mass", "radius", "charge"]
-        forceField["helix"]["patchesGlobal"]["data"]   = [["S",0.0,self.patchRadius,0.0],
-                                                          ["E",0.0,self.patchRadius,0.0]]
+        forceField["helix"]["patchesGlobal"]["fundamental"] = {}
+        forceField["helix"]["patchesGlobal"]["fundamental"]["type"]       = ["Fundamental","DynamicallyBondedPatchyParticles"]
+        forceField["helix"]["patchesGlobal"]["fundamental"]["parameters"] = {"energyThreshold":self.energyThreshold}
+
+        forceField["helix"]["patchesGlobal"]["types"]  = {}
+        forceField["helix"]["patchesGlobal"]["types"]["type"]   = ["Types","Basic"]
+        forceField["helix"]["patchesGlobal"]["types"]["labels"] = ["name", "mass", "radius", "charge"]
+        forceField["helix"]["patchesGlobal"]["types"]["data"]   = [["S",0.0,self.patchRadius,0.0],
+                                                                   ["E",0.0,self.patchRadius,0.0]]
 
         forceField["helix"]["patchesTopology"]={}
 
@@ -443,9 +452,15 @@ class HELIX(modelBase):
                 p = [0.0,self.monomerRadius*np.cos(self.beta0),self.monomerRadius*np.sin(self.beta0)]
                 forceField["surface"]["patchesState"]["data"].append([int(index),list(p)])
 
-            forceField["surface"]["patchesGlobal"] = {}
-            forceField["surface"]["patchesGlobal"]["labels"]     = ["name", "mass", "radius", "charge"]
-            forceField["surface"]["patchesGlobal"]["data"]       = [["L",0.0,self.patchRadius,0.0]]
+            forceField["surface"]["patchesGlobal"]={}
+            forceField["surface"]["patchesGlobal"]["fundamental"] = {}
+            forceField["surface"]["patchesGlobal"]["fundamental"]["type"]      = ["Fundamental","None"]
+            forceField["surface"]["patchesGlobal"]["fundamental"]["parameters"]= {}
+
+            forceField["surface"]["patchesGlobal"]["types"]  = {}
+            forceField["surface"]["patchesGlobal"]["types"]["type"]   = ["Types","Basic"]
+            forceField["surface"]["patchesGlobal"]["types"]["labels"] = ["name", "mass", "radius", "charge"]
+            forceField["surface"]["patchesGlobal"]["types"]["data"]   = [["L",0.0,self.patchRadius,0.0]]
 
             forceField["surface"]["patchesTopology"] = {}
 
