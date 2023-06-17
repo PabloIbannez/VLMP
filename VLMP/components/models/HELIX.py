@@ -203,12 +203,17 @@ class HELIX(modelBase):
                                                 "Eb","rc",
                                                 "theta0","phi0",
                                                 "varDst","varTheta","varPhi",
+                                                "Eb2","rc2",
+                                                "theta02","phi02",
+                                                "varDst2","varTheta2","varPhi2",
+                                                "prob_1_to_2","prob_2_to_1",
                                                 "energyThreshold",
                                                 "stiffnessFactor",
                                                 "Es",
                                                 "beta0",
                                                 "El","Sl",
-                                                "plateTop","plateBottom"},
+                                                "plateTop","plateBottom",
+                                                "variant"},
                          requiredParameters  = {"nMonomers",
                                                 "epsilon_mm",
                                                 "Eb","rc",
@@ -308,6 +313,47 @@ class HELIX(modelBase):
         if self.Kb < 0 or self.Ka < 0 or self.Kd < 0:
             self.logger.error(f"[HELIX] Negative spring constant: Kb {self.Kb} Ka {self.Ka} Kd {self.Kd}")
             raise Exception("Negative spring constant")
+
+        ##############################################
+
+        variant = params.get("variant","default")
+        if variant == "twoStates":
+            self.logger.info(f"[HELIX] Using two states variant")
+            self.variant = "twoStates"
+
+            self.Eb2 = params["Eb2"]
+            self.rc2 = params["rc2"]
+
+            self.varDst2   = params["varDst2"]
+            self.varTheta2 = params["varTheta2"]
+            self.varPhi2   = params["varPhi2"]
+
+            self.theta02 = params["theta02"]
+            self.phi02   = params["phi02"]
+
+            self.Kb2 = self.__computeKdst(self.varDst2,abs(self.Eb2),self.rc2)
+            self.Ka2 = self.__computeKangle(self.varTheta2,abs(self.Eb2))
+            self.Kd2 = self.__computeKangle(self.varPhi2,abs(self.Eb2))
+
+            self.logger.info(f"[HELIX] K2 bond computed {self.Kb2} for variance {self.varDst2}")
+            self.logger.info(f"[HELIX] K2 theta computed {self.Ka2} for variance {self.varTheta2}")
+            self.logger.info(f"[HELIX] K2 phi computed {self.Kd2} for variance {self.varPhi2}")
+
+            if stiffnessFactor != 1.0:
+                self.logger.info(f"[HELIX] Applying stiffness factor {stiffnessFactor}")
+
+                self.Ka2*=stiffnessFactor
+                self.Kd2*=stiffnessFactor
+
+                self.logger.info(f"[HELIX] K2 theta after stiffness factor {self.Ka2}")
+                self.logger.info(f"[HELIX] K2 phi after stiffness factor {self.Kd2}")
+
+            if self.Kb2 < 0 or self.Ka2 < 0 or self.Kd2 < 0:
+                self.logger.error(f"[HELIX] Negative spring constant: Kb2 {self.Kb2} Ka2 {self.Ka2} Kd2 {self.Kd2}")
+                raise Exception("Negative spring constant")
+
+            self.prob_0_to_1 = params["prob_1_to_2"] #Note the different naming convention
+            self.prob_1_to_0 = params["prob_2_to_1"]
 
         ##############################################
 
@@ -420,6 +466,18 @@ class HELIX(modelBase):
                                                                                          self.Kb, self.Ka, self.Kd,
                                                                                          self.rc,
                                                                                          self.theta0, self.phi0]]
+
+        if self.variant == "twoStates":
+            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["type"]   =  ["NonBondedPatches", "Helix2States"]
+            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["labels"] = ["name_i", "name_j",
+                                                                                       "Eb0", "Kb0", "Ka0", "Kd0", "rc0", "theta0_0", "phi0_0",
+                                                                                       "Eb1", "Kb1", "Ka1", "Kd1", "rc1", "theta0_1", "phi0_1",
+                                                                                       "prob_0_to_1","prob_1_to_0"]
+            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["data"][-1].extend([self.Eb2,
+                                                                                              self.Kb2, self.Ka2, self.Kd2,
+                                                                                              self.rc2,
+                                                                                              self.theta02, self.phi02,
+                                                                                              self.prob_0_to_1,self.prob_1_to_0])
 
         ############Patches
 
