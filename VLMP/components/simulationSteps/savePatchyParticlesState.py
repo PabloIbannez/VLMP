@@ -36,8 +36,8 @@ class savePatchyParticlesState(simulationStepBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath","outputFormat",},
-                         requiredParameters  = {"outputFilePath","outputFormat",},
+                         availableParameters = {"outputFilePath","outputFormat","pbc},
+                         requiredParameters  = {"outputFilePath","outputFormat"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
@@ -50,6 +50,9 @@ class savePatchyParticlesState(simulationStepBase):
 
         parameters["outputFilePath"] = params.get("outputFilePath")
         parameters["outputFormat"]   = params.get("outputFormat")
+
+        if "pbc" in params:
+            parameters["pbc"] = params["pbc"]
 
         simulationStep = {
             name:{

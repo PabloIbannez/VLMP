@@ -34,7 +34,7 @@ class saveState(simulationStepBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath","outputFormat",},
+                         availableParameters = {"outputFilePath","outputFormat","pbc"},
                          requiredParameters  = {"outputFilePath","outputFormat",},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
@@ -46,8 +46,11 @@ class saveState(simulationStepBase):
 
         parameters = {}
 
-        parameters["outputFilePath"] = params.get("outputFilePath")
-        parameters["outputFormat"]   = params.get("outputFormat")
+        parameters["outputFilePath"] = params["outputFilePath"]
+        parameters["outputFormat"]   = params["outputFormat"]
+
+        if "pbc" in params:
+            parameters["pbc"] = params["pbc"]
 
         simulationStep = {
             name:{
