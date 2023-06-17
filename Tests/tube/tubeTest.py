@@ -30,7 +30,7 @@ simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulat
                                                "box":box,
                                                "nMonomers":N,
                                                "monomerRadius":particleDiameter/2.0,
-                                               "pitch":4,"monomersPerTurn":15,
+                                               "pitch":7,"monomersPerTurn":30,
                                                "epsilon_mm":1.0,
                                                "EbT":Eb*0.4,"rcT":0.3,
                                                "KbT":1.0,"KaT":1.0,"KdT":1.0,

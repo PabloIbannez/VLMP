@@ -14,13 +14,16 @@ for i in range(copies):
                            "units":[{"type":"KcalMol_A"}],
                            "types":[{"type":"basic"}],
                            "global":[{"type":"NVT","parameters":{"box":[1000.0,1000.0,1000.0],"temperature":300.0}}],
-                           "integrator":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0,"integrationSteps":1000000}}],
+                           "integrator":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0/ps2AKMA,"integrationSteps":1000000}}],
                            "model":[{"name":"madnaTest",
                                      "type":"MADna",
                                      "parameters":{"sequence":"GATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACA"}}],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
+                                                                                "pbc":False,
                                                                                 "outputFilePath":"test",
                                                                                 "outputFormat":"sp"}},
+                                              {"type":"thermodynamicMeasurement","parameters":{"intervalStep":10000,
+                                                                                 "outputFilePath":"thermo.dat"}},
                                               {"type":"info","parameters":{"intervalStep":10000}}]
 
                            })
