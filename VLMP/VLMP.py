@@ -148,9 +148,9 @@ class VLMP:
         self.simulations    = []
         self.simulationSets = []
 
-        self.availableComponents = ["system","units","types","global",
-                                    "model","modelOperations","modelExtensions",
-                                    "integrator",
+        self.availableComponents = ["system","units","types","globals",
+                                    "models","modelOperations","modelExtensions",
+                                    "integrators",
                                     "simulationSteps"]
 
         #Check if additional components is a valid path folder
@@ -340,18 +340,18 @@ class VLMP:
             ############## GLOBAL ##############
 
             #Check if global section is present
-            if "global" not in simulationInfo.keys():
+            if "globals" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Global section not found")
                 raise Exception("Global section not found")
             else:
 
-                for global_ in simulationInfo["global"]:
+                for global_ in simulationInfo["globals"]:
 
-                    typ, name, param = self.__checkComponent(global_,"global",simulationBuffer)
+                    typ, name, param = self.__checkComponent(global_,"globals",simulationBuffer)
                     self.logger.debug(f"[VLMP] Adding global \"{name}\"")
 
                     isGlobal           = typ in dir(_globals)
-                    isAdditionalGlobal = typ in dir(self.additionalGlobal)
+                    isAdditionalGlobal = typ in dir(self.additionalGlobals)
 
                     if not isGlobal and not isAdditionalGlobal:
                         self.logger.error(f"[VLMP] Global \"{typ}\" not found")
@@ -366,32 +366,32 @@ class VLMP:
                             simulationBuffer["global_"+name] = eval("_globals." + typ)(name=name,units=units,types=types,**(param))
                         except:
                             self.logger.error(f"[VLMP] Error loading global \"{name}\"")
-                            raise Exception("Error loading global")
+                            raise Exception("Error loading globals")
 
                     if isAdditionalGlobal:
                         try:
-                            simulationBuffer["global_"+name] = eval("self.additionalGlobal." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["global_"+name] = eval("self.additionalGlobals." + typ)(name=name,units=units,types=types,**(param))
                         except:
                             self.logger.error(f"[VLMP] Error loading global \"{name}\"")
-                            raise Exception("Error loading global")
+                            raise Exception("Error loading globals")
 
             ############### MODEL ###############
             #Create a list with the added models. This is used afterwards to apply model operations
             #and add model extensions to specific models
             models = []
             #Check if model section is present
-            if "model" not in simulationInfo.keys():
+            if "models" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Model section not found")
                 raise Exception("Model section not found")
             else:
 
-                for model in simulationInfo["model"]:
+                for model in simulationInfo["models"]:
 
-                    typ, name, param = self.__checkComponent(model,"model",simulationBuffer)
+                    typ, name, param = self.__checkComponent(model,"models",simulationBuffer)
                     self.logger.debug(f"[VLMP] Adding model \"{name}\"")
 
                     isModel           = typ in dir(_models)
-                    isAdditionalModel = typ in dir(self.additionalModel)
+                    isAdditionalModel = typ in dir(self.additionalModels)
 
                     if not isModel and not isAdditionalModel:
                         self.logger.error(f"[VLMP] Model \"{typ}\" not found")
@@ -407,15 +407,15 @@ class VLMP:
                             models.append("model_"+name)
                         except:
                             self.logger.error(f"[VLMP] Error loading model \"{name}\"")
-                            raise Exception("Error loading model")
+                            raise Exception("Error loading models")
 
                     if isAdditionalModel:
                         try:
-                            simulationBuffer["model_"+name] = eval("self.additionalModel." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["model_"+name] = eval("self.additionalModels." + typ)(name=name,units=units,types=types,**(param))
                             models.append("model_"+name)
                         except:
                             self.logger.error(f"[VLMP] Error loading model \"{name}\"")
-                            raise Exception("Error loading model")
+                            raise Exception("Error loading models")
 
             #Set idOffset for each model
             idOffset = 0
@@ -470,11 +470,11 @@ class VLMP:
 
                     if isAdditionalModelOperation:
                         try:
-                            operation = eval("self.additionalModelOperation." + typ)(name   = name,
-                                                                                     units  = units,
-                                                                                     types  = types,
-                                                                                     models = [simulationBuffer[model] for model in models],
-                                                                                     **(param))
+                            operation = eval("self.additionalModelOperations." + typ)(name   = name,
+                                                                                      units  = units,
+                                                                                      types  = types,
+                                                                                      models = [simulationBuffer[model] for model in models],
+                                                                                      **(param))
                             appliedOperations.append("modelOperations_"+name)
 
                         except:
@@ -518,11 +518,11 @@ class VLMP:
 
                     if isAdditionalModelExtension:
                         try:
-                            simulationBuffer["modelExtensions_"+name] = eval("self.additionalModelExtension." + typ)(name   = name,
-                                                                                                                     units  = units,
-                                                                                                                     types  = types,
-                                                                                                                     models = [simulationBuffer[model] for model in models],
-                                                                                                                     **(param))
+                            simulationBuffer["modelExtensions_"+name] = eval("self.additionalModelExtensions." + typ)(name   = name,
+                                                                                                                      units  = units,
+                                                                                                                      types  = types,
+                                                                                                                      models = [simulationBuffer[model] for model in models],
+                                                                                                                      **(param))
 
                         except:
                             self.logger.error(f"[VLMP] Error loading model extension \"{name}\"")
@@ -531,18 +531,18 @@ class VLMP:
             ############## INTEGRATOR ##############
 
             #Check if integrator section is present
-            if "integrator" not in simulationInfo.keys():
+            if "integrators" not in simulationInfo.keys():
                 self.logger.error("[VLMP] Integrator section not found")
                 raise Exception("Integrator section not found")
             else:
 
-                for integrator in simulationInfo["integrator"]:
+                for integrator in simulationInfo["integrators"]:
 
-                    typ, name, param = self.__checkComponent(integrator,"integrator",simulationBuffer)
+                    typ, name, param = self.__checkComponent(integrator,"integrators",simulationBuffer)
                     self.logger.debug(f"[VLMP] Adding integrator \"{name}\"")
 
                     isIntegrator           = typ in dir(_integrators)
-                    isAdditionalIntegrator = typ in dir(self.additionalIntegrator)
+                    isAdditionalIntegrator = typ in dir(self.additionalIntegrators)
 
                     if not isIntegrator and not isAdditionalIntegrator:
                         self.logger.error(f"[VLMP] Integrator \"{typ}\" not found")
@@ -557,14 +557,14 @@ class VLMP:
                             simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,units=units,types=types,**(param))
                         except:
                             self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
-                            raise Exception("Error loading integrator")
+                            raise Exception("Error loading integrators")
 
                     if isAdditionalIntegrator:
                         try:
-                            simulationBuffer["integrator_"+name] = eval("self.additionalIntegrator." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["integrator_"+name] = eval("self.additionalIntegrators." + typ)(name=name,units=units,types=types,**(param))
                         except:
                             self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
-                            raise Exception("Error loading integrator")
+                            raise Exception("Error loading integrators")
 
             ############### SIMULATION STEPS ###############
 
@@ -591,7 +591,6 @@ class VLMP:
 
                     if isSimulationStep:
                         try:
-                            print("_simulationSteps." + typ)
                             simulationBuffer["simulationSteps_"+name] = eval("_simulationSteps." + typ)(name=name,
                                                                                                         units=units,
                                                                                                         types=types,
