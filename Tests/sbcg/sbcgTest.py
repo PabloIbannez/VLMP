@@ -14,7 +14,7 @@ for i in range(copies):
                            "units":[{"type":"KcalMol_A"}],
                            "types":[{"type":"basic"}],
                            "global":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
-                           "integrator":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0,"integrationSteps":1000000}}],
+                           "integrator":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0/ps2AKMA,"integrationSteps":1000000}}],
                            "model":[{"type":"SBCG",
                                      "parameters":{"PDB":"mergedTMV_20.pdb",
                                                    "resolution":150,
