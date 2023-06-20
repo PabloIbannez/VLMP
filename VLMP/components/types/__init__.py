@@ -129,10 +129,10 @@ class typesBase:
                 typeDecl[key] = self._typesComp[key]
                 self.logger.warning(f"[Types] ({self._type}) Component {key} not given for types {self._name}. Using default value {self._typesComp[key]}")
 
-        addType = True
+        addT = True
         for typ in self._typesDecl:
             if typ["name"] == typeDecl["name"]:
-                addType = False
+                addT = False
                 #Check if all components are the same
                 for key in self._typesComp.keys():
                     if typ[key] != typeDecl[key]:
@@ -141,7 +141,8 @@ class typesBase:
                                           f" Previous value {typ[key]}, new value {typeDecl[key]}")
                         raise Exception(f"Component not the same")
 
-        if addType:
+        if addT:
+            self.logger.debug(f"[Types] ({self._type}) Adding type {typeDecl['name']} for types {self._name}. Declaration: {typeDecl}")
             self._typesDecl.append(copy.deepcopy(typeDecl))
 
     ########################################################

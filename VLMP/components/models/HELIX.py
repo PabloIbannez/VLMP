@@ -316,8 +316,8 @@ class HELIX(modelBase):
 
         ##############################################
 
-        variant = params.get("variant","default")
-        if variant == "twoStates":
+        self.variant = params.get("variant","default")
+        if self.variant == "twoStates":
             self.logger.info(f"[HELIX] Using two states variant")
             self.variant = "twoStates"
 
