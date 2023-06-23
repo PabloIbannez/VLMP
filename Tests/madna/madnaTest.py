@@ -4,7 +4,7 @@ from VLMP.utils.utils import picosecond2KcalMol_A_time
 
 ps2AKMA = picosecond2KcalMol_A_time()
 
-copies = 10
+copies = 1
 
 simulationPool = []
 for i in range(copies):
@@ -13,11 +13,11 @@ for i in range(copies):
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"KcalMol_A"}],
                            "types":[{"type":"basic"}],
-                           "global":[{"type":"NVT","parameters":{"box":[1000.0,1000.0,1000.0],"temperature":300.0}}],
-                           "integrator":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":0.2/ps2AKMA,"integrationSteps":1000000}}],
-                           "model":[{"name":"madnaTest",
-                                     "type":"MADna",
-                                     "parameters":{"sequence":"GATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACA"}}],
+                           "globals":[{"type":"NVT","parameters":{"box":[10.0,10.0,10.0],"temperature":300.0}}],
+                           "integrators":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":0.2/ps2AKMA,"integrationSteps":1000000}}],
+                           "models":[{"name":"madnaTest",
+                                      "type":"MADna",
+                                      "parameters":{"sequence":"GATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACAGATACA"}}],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                                                 "pbc":False,
                                                                                 "outputFilePath":"test",
