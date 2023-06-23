@@ -21,9 +21,9 @@ from scipy.spatial.transform import Rotation as R
 from scipy.optimize import root
 
 
-class UNDULOID(modelBase):
+class LEMON(modelBase):
     """
-    Component name: UNDULOID
+    Component name: LEMON
     Component type: model
 
     Author: Pablo Ibáñez-Freire
@@ -59,7 +59,7 @@ class UNDULOID(modelBase):
 
         for n in range(self.nMonomers+monomersOffset):
             if n > monomersOffset:
-                self.logger.debug(f"[UNDULOID] Adding monomer {n}")
+                self.logger.debug(f"[LEMON] Adding monomer {n}")
 
             if n==0:
                 x=0.0
@@ -160,12 +160,12 @@ class UNDULOID(modelBase):
 
         stiffnessFactor = params.get("stiffnessFactor",1.0)
         if stiffnessFactor != 1.0:
-            self.logger.info(f"[UNDULOID] Applying stiffness factor{stiffnessFactor}")
+            self.logger.info(f"[LEMON] Applying stiffness factor{stiffnessFactor}")
             self.Ka*=stiffnessFactor
             self.Kb*=stiffnessFactor
 
-            self.logger.info(f"[UNDULOID] Kt theta after stiffness factor {self.Ka}")
-            self.logger.info(f"[UNDULOID] Kt phi after stiffness factor {self.Kd}")
+            self.logger.info(f"[LEMON] Kt theta after stiffness factor {self.Ka}")
+            self.logger.info(f"[LEMON] Kt phi after stiffness factor {self.Kd}")
 
         def equationSystem(vars, nc, pitch, sigma):
             phi0, theta0 = vars
@@ -186,8 +186,8 @@ class UNDULOID(modelBase):
                                      [np.pi/2,np.pi/2],
                                      args=(self.monomersPerTurn,self.pitch,self.monomerRadius*2.0),tol=1e-12).x
 
-        self.logger.info(f"[UNDULOID] Computing theta0 {self.theta0}")
-        self.logger.info(f"[UNDULOID] Computing phi0 {self.phi0}")
+        self.logger.info(f"[LEMON] Computing theta0 {self.theta0}")
+        self.logger.info(f"[LEMON] Computing phi0 {self.phi0}")
 
         ##############################################
 
@@ -197,14 +197,14 @@ class UNDULOID(modelBase):
         self.chiLipids     = params["chiLipids"]
         self.thetaLipids   = params["thetaLipids"]
 
-        self.logger.info(f"[UNDULOID] Epilson lipids {self.epsilonLipids}")
-        self.logger.info(f"[UNDULOID] Mu lipids {self.muLipids}")
-        self.logger.info(f"[UNDULOID] Chi lipids {self.chiLipids}")
-        self.logger.info(f"[UNDULOID] Theta lipids {self.thetaLipids}")
+        self.logger.info(f"[LEMON] Epilson lipids {self.epsilonLipids}")
+        self.logger.info(f"[LEMON] Mu lipids {self.muLipids}")
+        self.logger.info(f"[LEMON] Chi lipids {self.chiLipids}")
+        self.logger.info(f"[LEMON] Theta lipids {self.thetaLipids}")
 
         ##############################################
 
-        self.logger.info(f"[UNDULOID] Generating UNDULOID model with {self.nMonomers} monomers")
+        self.logger.info(f"[LEMON] Generating LEMON model with {self.nMonomers} monomers")
 
         if self.init == "tube":
             nTotalMonomers = self.nMonomers #Backup
@@ -238,7 +238,7 @@ class UNDULOID(modelBase):
 
             self.nMonomers = nTotalMonomers #Restore
         else:
-            self.logger.error(f"[UNDULOID] Init mode {self.init} is not avaible")
+            self.logger.error(f"[LEMON] Init mode {self.init} is not avaible")
             raise Exception("Init mode not available")
 
         ##############################################
@@ -295,56 +295,56 @@ class UNDULOID(modelBase):
 
         ############Patches
 
-        forceField["unduloid"]={}
-        forceField["unduloid"]["type"]       = ["PatchyParticles","DynamicallyBondedPatchyParticles"]
+        forceField["lemon"]={}
+        forceField["lemon"]["type"]       = ["PatchyParticles","DynamicallyBondedPatchyParticles"]
 
-        forceField["unduloid"]["patchesState"]={}
-        forceField["unduloid"]["patchesState"]["labels"]=["id","position"]
-        forceField["unduloid"]["patchesState"]["data"]  =[]
+        forceField["lemon"]["patchesState"]={}
+        forceField["lemon"]["patchesState"]["labels"]=["id","position"]
+        forceField["lemon"]["patchesState"]["data"]  =[]
 
         for i in range(self.nMonomers):
 
             index=i*2
             p = [-self.monomerRadius,0.0,0.0]
-            forceField["unduloid"]["patchesState"]["data"].append([int(index  ),list(p)])
+            forceField["lemon"]["patchesState"]["data"].append([int(index  ),list(p)])
             p = [ self.monomerRadius,0.0,0.0]
-            forceField["unduloid"]["patchesState"]["data"].append([int(index+1),list(p)])
+            forceField["lemon"]["patchesState"]["data"].append([int(index+1),list(p)])
 
-        forceField["unduloid"]["patchesGlobal"]={}
-        forceField["unduloid"]["patchesGlobal"]["fundamental"] = {}
-        forceField["unduloid"]["patchesGlobal"]["fundamental"]["type"]      = ["Fundamental","DynamicallyBondedPatchyParticles"]
-        forceField["unduloid"]["patchesGlobal"]["fundamental"]["parameters"]={"energyThreshold":0.0}
+        forceField["lemon"]["patchesGlobal"]={}
+        forceField["lemon"]["patchesGlobal"]["fundamental"] = {}
+        forceField["lemon"]["patchesGlobal"]["fundamental"]["type"]      = ["Fundamental","DynamicallyBondedPatchyParticles"]
+        forceField["lemon"]["patchesGlobal"]["fundamental"]["parameters"]={"energyThreshold":0.0}
 
-        forceField["unduloid"]["patchesGlobal"]["types"]  = {}
-        forceField["unduloid"]["patchesGlobal"]["types"]["type"]   = ["Types","Basic"]
-        forceField["unduloid"]["patchesGlobal"]["types"]["labels"] = ["name", "mass", "radius", "charge"]
-        forceField["unduloid"]["patchesGlobal"]["types"]["data"]   = [["S",0.0,self.patchRadius,0.0],
+        forceField["lemon"]["patchesGlobal"]["types"]  = {}
+        forceField["lemon"]["patchesGlobal"]["types"]["type"]   = ["Types","Basic"]
+        forceField["lemon"]["patchesGlobal"]["types"]["labels"] = ["name", "mass", "radius", "charge"]
+        forceField["lemon"]["patchesGlobal"]["types"]["data"]   = [["S",0.0,self.patchRadius,0.0],
                                                                       ["E",0.0,self.patchRadius,0.0]]
 
-        forceField["unduloid"]["patchesTopology"]={}
+        forceField["lemon"]["patchesTopology"]={}
 
-        forceField["unduloid"]["patchesTopology"]["structure"]={}
-        forceField["unduloid"]["patchesTopology"]["structure"]["labels"] = ["id", "type", "parentId"]
-        forceField["unduloid"]["patchesTopology"]["structure"]["data"]   = []
+        forceField["lemon"]["patchesTopology"]["structure"]={}
+        forceField["lemon"]["patchesTopology"]["structure"]["labels"] = ["id", "type", "parentId"]
+        forceField["lemon"]["patchesTopology"]["structure"]["data"]   = []
 
         for i in range(self.nMonomers):
             index=i*2
-            forceField["unduloid"]["patchesTopology"]["structure"]["data"].append([index  ,"E",i])
-            forceField["unduloid"]["patchesTopology"]["structure"]["data"].append([index+1,"S",i])
+            forceField["lemon"]["patchesTopology"]["structure"]["data"].append([index  ,"E",i])
+            forceField["lemon"]["patchesTopology"]["structure"]["data"].append([index+1,"S",i])
 
-        forceField["unduloid"]["patchesTopology"]["forceField"] = {}
+        forceField["lemon"]["patchesTopology"]["forceField"] = {}
 
         #Verlet list
-        forceField["unduloid"]["patchesTopology"]["forceField"]["verletList"]={}
-        forceField["unduloid"]["patchesTopology"]["forceField"]["verletList"]["type"]       =  ["VerletConditionalListSet", "interDifferentType"]
-        forceField["unduloid"]["patchesTopology"]["forceField"]["verletList"]["parameters"] =  {"cutOffVerletFactor":3.0}
+        forceField["lemon"]["patchesTopology"]["forceField"]["verletList"]={}
+        forceField["lemon"]["patchesTopology"]["forceField"]["verletList"]["type"]       =  ["VerletConditionalListSet", "interDifferentType"]
+        forceField["lemon"]["patchesTopology"]["forceField"]["verletList"]["parameters"] =  {"cutOffVerletFactor":3.0}
 
-        forceField["unduloid"]["patchesTopology"]["forceField"]["transversal"]={}
-        forceField["unduloid"]["patchesTopology"]["forceField"]["transversal"]["type"]       =  ["NonBondedPatches", "Helix"]
-        forceField["unduloid"]["patchesTopology"]["forceField"]["transversal"]["parameters"] =  {"condition":"inter"}
+        forceField["lemon"]["patchesTopology"]["forceField"]["transversal"]={}
+        forceField["lemon"]["patchesTopology"]["forceField"]["transversal"]["type"]       =  ["NonBondedPatches", "Helix"]
+        forceField["lemon"]["patchesTopology"]["forceField"]["transversal"]["parameters"] =  {"condition":"inter"}
 
-        forceField["unduloid"]["patchesTopology"]["forceField"]["transversal"]["labels"]     =  ["name_i", "name_j", "Eb", "Kb", "Ka", "Kd", "rc", "theta0", "phi0"]
-        forceField["unduloid"]["patchesTopology"]["forceField"]["transversal"]["data"]       =  [["S", "E",
+        forceField["lemon"]["patchesTopology"]["forceField"]["transversal"]["labels"]     =  ["name_i", "name_j", "Eb", "Kb", "Ka", "Kd", "rc", "theta0", "phi0"]
+        forceField["lemon"]["patchesTopology"]["forceField"]["transversal"]["data"]       =  [["S", "E",
                                                                                                   self.Eb,
                                                                                                   self.Kb, self.Ka, self.Kd,
                                                                                                   self.rc,

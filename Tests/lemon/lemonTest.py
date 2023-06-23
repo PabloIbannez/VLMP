@@ -19,13 +19,13 @@ particleDiameter = 1.0
 Eb = -30
 
 simulationPool = []
-simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"unduloid"}},
+simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"lemon"}},
                                  {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                        "units":[{"type":"none"}],
                        "types":[{"type":"basic"}],
                        "global":[{"type":"NVT","parameters":{"box":box,"temperature":1.0}}],
                        "integrator":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":1000000000}}],
-                       "model":[{"type":"UNDULOID",
+                       "model":[{"type":"LEMON",
                                  "parameters":{"init":"tube",
                                                "box":box,
                                                "nMonomers":N,
