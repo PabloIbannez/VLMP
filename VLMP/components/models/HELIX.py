@@ -203,9 +203,11 @@ class HELIX(modelBase):
                                                 "Eb","rc",
                                                 "theta0","phi0",
                                                 "varDst","varTheta","varPhi",
+                                                "Kb","Ka","Kd",
                                                 "Eb2","rc2",
                                                 "theta02","phi02",
                                                 "varDst2","varTheta2","varPhi2",
+                                                "Kb2","Ka2","Kd2",
                                                 "prob_1_to_2","prob_2_to_1",
                                                 "energyThreshold",
                                                 "stiffnessFactor",
@@ -217,8 +219,7 @@ class HELIX(modelBase):
                          requiredParameters  = {"nMonomers",
                                                 "epsilon_mm",
                                                 "Eb","rc",
-                                                "theta0","phi0",
-                                                "varDst","varTheta","varPhi"},
+                                                "theta0","phi0"},
                          definedSelections   = {"particleId"},
                          **params)
 
@@ -268,10 +269,6 @@ class HELIX(modelBase):
         self.Eb = params["Eb"]
         self.rc = params["rc"]
 
-        varDst   = params["varDst"]
-        varTheta = params["varTheta"]
-        varPhi   = params["varPhi"]
-
         self.energyThreshold = params.get("energyThreshold",-1.0)
 
         stiffnessFactor = params.get("stiffnessFactor",1.0)
@@ -294,13 +291,30 @@ class HELIX(modelBase):
             self.El     = params["El"]
             self.Sl     = params["Sl"]
 
-        self.Kb = self.__computeKdst(varDst,abs(self.Eb),self.rc)
-        self.Ka = self.__computeKangle(varTheta,abs(self.Eb))
-        self.Kd = self.__computeKangle(varPhi,abs(self.Eb))
 
-        self.logger.info(f"[HELIX] K bond computed {self.Kb} for variance {varDst}")
-        self.logger.info(f"[HELIX] K theta computed {self.Ka} for variance {varTheta}")
-        self.logger.info(f"[HELIX] K phi computed {self.Kd} for variance {varPhi}")
+        if "varDst" in params:
+            varDst   = params["varDst"]
+            self.Kb = self.__computeKdst(varDst,abs(self.Eb),self.rc)
+            self.logger.info(f"[HELIX] K bond computed {self.Kb} for variance {varDst}")
+        else:
+            self.Kb = params["Kb"]
+            self.logger.info(f"[HELIX] K bond {self.Kb}")
+
+        if "varTheta" in params:
+            varTheta = params["varTheta"]
+            self.Ka = self.__computeKangle(varTheta,abs(self.Eb))
+            self.logger.info(f"[HELIX] K theta computed {self.Ka} for variance {varTheta}")
+        else:
+            self.Ka = params["Ka"]
+            self.logger.info(f"[HELIX] K theta {self.Ka}")
+
+        if "varPhi" in params:
+            varPhi   = params["varPhi"]
+            self.Kd = self.__computeKangle(varPhi,abs(self.Eb))
+            self.logger.info(f"[HELIX] K phi computed {self.Kd} for variance {varPhi}")
+        else:
+            self.Kd = params["Kd"]
+            self.logger.info(f"[HELIX] K phi {self.Kd}")
 
         if stiffnessFactor != 1.0:
             self.logger.info(f"[HELIX] Applying stiffness factor {stiffnessFactor}")
@@ -324,20 +338,32 @@ class HELIX(modelBase):
             self.Eb2 = params["Eb2"]
             self.rc2 = params["rc2"]
 
-            self.varDst2   = params["varDst2"]
-            self.varTheta2 = params["varTheta2"]
-            self.varPhi2   = params["varPhi2"]
-
             self.theta02 = params["theta02"]
             self.phi02   = params["phi02"]
 
-            self.Kb2 = self.__computeKdst(self.varDst2,abs(self.Eb2),self.rc2)
-            self.Ka2 = self.__computeKangle(self.varTheta2,abs(self.Eb2))
-            self.Kd2 = self.__computeKangle(self.varPhi2,abs(self.Eb2))
+            if "varDst2" in params:
+                varDst2   = params["varDst2"]
+                self.Kb2 = self.__computeKdst(varDst2,abs(self.Eb2),self.rc2)
+                self.logger.info(f"[HELIX] K bond 2 computed {self.Kb2} for variance {varDst2}")
+            else:
+                self.Kb2 = params["Kb2"]
+                self.logger.info(f"[HELIX] K bond 2 {self.Kb2}")
 
-            self.logger.info(f"[HELIX] K2 bond computed {self.Kb2} for variance {self.varDst2}")
-            self.logger.info(f"[HELIX] K2 theta computed {self.Ka2} for variance {self.varTheta2}")
-            self.logger.info(f"[HELIX] K2 phi computed {self.Kd2} for variance {self.varPhi2}")
+            if "varTheta2" in params:
+                varTheta2 = params["varTheta2"]
+                self.Ka2 = self.__computeKangle(varTheta2,abs(self.Eb2))
+                self.logger.info(f"[HELIX] K theta 2 computed {self.Ka2} for variance {varTheta2}")
+            else:
+                self.Ka2 = params["Ka2"]
+                self.logger.info(f"[HELIX] K theta 2 {self.Ka2}")
+
+            if "varPhi2" in params:
+                varPhi2   = params["varPhi2"]
+                self.Kd2 = self.__computeKangle(varPhi2,abs(self.Eb2))
+                self.logger.info(f"[HELIX] K phi 2 computed {self.Kd2} for variance {varPhi2}")
+            else:
+                self.Kd2 = params["Kd2"]
+                self.logger.info(f"[HELIX] K phi 2 {self.Kd2}")
 
             if stiffnessFactor != 1.0:
                 self.logger.info(f"[HELIX] Applying stiffness factor {stiffnessFactor}")
