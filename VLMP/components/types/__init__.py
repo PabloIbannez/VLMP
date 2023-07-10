@@ -170,8 +170,8 @@ class typesBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-types = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
-types = [ t.split("/")[-1].split(".")[0] for t in types ]
+types = [os.path.basename(x) for x in glob.glob(currentPath+"/*.py")]
+types = [x.split(".")[0] for x in types if "__" not in x]
 
 for t in types:
     try:

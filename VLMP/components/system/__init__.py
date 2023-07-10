@@ -76,8 +76,9 @@ class systemBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-systems = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
-systems = [ u.split("/")[-1].split(".")[0] for u in systems ]
+#Get file name, without full path
+systems = [os.path.basename(x) for x in glob.glob(currentPath+"/*.py")]
+systems = [x.split(".")[0] for x in systems if "__" not in x]
 
 for s in systems:
     try:

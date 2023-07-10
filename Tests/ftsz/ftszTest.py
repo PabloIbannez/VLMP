@@ -30,13 +30,12 @@ El = np.linspace(20,1,1)
 
 for eb,el in itertools.product(Eb,El):
     simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"ftsz_Eb{round(eb,2)}_El{round(el,2)}"}},
-                                     {"type":"backup","parameters":{"backupIntervalStep":100000}},
-                                     {"type":"addSystemTest","parameters":{}}],
+                                     {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"none"}],
                            "types":[{"type":"basic"}],
-                           "global":[{"type":"NVT","parameters":{"box":bnd.getSimulationBox(),"temperature":1.0}}],
-                           "integrator":[{"type":"EulerMaruyamaRigidBodyPatchesState","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":1000000}}],
-                           "model":[{"type":"HELIX",
+                           "globals":[{"type":"NVT","parameters":{"box":bnd.getSimulationBox(),"temperature":1.0}}],
+                           "integrators":[{"type":"EulerMaruyamaRigidBodyPatchesState","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":1000000}}],
+                           "models":[{"type":"HELIX",
                                      "parameters":{"mode":mode,"init":"helix",
                                                    "bounds":bnd,
                                                    "nMonomers":N,

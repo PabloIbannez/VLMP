@@ -178,8 +178,8 @@ class modelBase(metaclass=abc.ABCMeta):
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-models = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
-models = [ m.split("/")[-1].split(".")[0] for m in models]
+models = [os.path.basename(x) for x in glob.glob(currentPath+"/*.py")]
+models = [x.split(".")[0] for x in models if "__" not in x]
 
 for m in models:
     try:

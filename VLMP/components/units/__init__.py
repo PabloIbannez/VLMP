@@ -93,8 +93,8 @@ class unitsBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-units = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
-units = [ u.split("/")[-1].split(".")[0] for u in units ]
+units = [os.path.basename(x) for x in glob.glob(currentPath+"/*.py")]
+units = [x.split(".")[0] for x in units if "__" not in x]
 
 for u in units:
     try:

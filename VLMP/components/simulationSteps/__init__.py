@@ -175,8 +175,8 @@ class simulationStepBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-simulationSteps = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
-simulationSteps = [ m.split("/")[-1].split(".")[0] for m in simulationSteps ]
+simulationSteps = [os.path.basename(x) for x in glob.glob(currentPath+"/*.py")]
+simulationSteps = [x.split(".")[0] for x in simulationSteps if "__" not in x]
 
 for s in simulationSteps:
     try:

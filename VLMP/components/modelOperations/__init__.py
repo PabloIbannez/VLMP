@@ -156,8 +156,8 @@ class modelOperationBase:
 import glob
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-operations = [ module.rsplit(".")[1] for module in glob.glob(currentPath+"/*.py") if not "__" in module]
-operations = [ m.split("/")[-1].split(".")[0] for m in operations ]
+operations = [os.path.basename(x) for x in glob.glob(currentPath+"/*.py")]
+operations = [x.split(".")[0] for x in operations if "__" not in x]
 
 for o in operations:
     try:
