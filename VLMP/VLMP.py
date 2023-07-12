@@ -790,6 +790,9 @@ class VLMP:
                 #Update output files for each simulation in simSet
                 sim = self.simulations[simIndex]
 
+                #Write simulation file into results folder
+                sim.write(os.path.join(simulationFolder,"simulation.json"))
+
                 #Relative path to the simulation folder
                 relativePath = os.path.relpath(simulationFolder,simulationSetFolder)
 

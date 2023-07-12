@@ -97,31 +97,32 @@ class ICOSPHERE(modelBase):
                 if len(set(faces[i]).intersection(set(faces[j]))) == 2:
                     facesPairs.add((i,j))
 
-        forceField["dihedrals"] = {}
-        forceField["dihedrals"]["type"]       = ["Bond4","Dihedral"]
-        forceField["dihedrals"]["labels"]     = ["id_i","id_j","id_k","id_l","phi0","K","n"]
-        forceField["dihedrals"]["parameters"] = {}
-        forceField["dihedrals"]["data"]       = []
+        if Kd > 0.0:
+            forceField["dihedrals"] = {}
+            forceField["dihedrals"]["type"]       = ["Bond4","Dihedral"]
+            forceField["dihedrals"]["labels"]     = ["id_i","id_j","id_k","id_l","phi0","K","n"]
+            forceField["dihedrals"]["parameters"] = {}
+            forceField["dihedrals"]["data"]       = []
 
-        for facePair in facesPairs:
-            face1 = faces[facePair[0]]
-            face2 = faces[facePair[1]]
+            for facePair in facesPairs:
+                face1 = faces[facePair[0]]
+                face2 = faces[facePair[1]]
 
-            common = set(face1).intersection(set(face2))
+                common = set(face1).intersection(set(face2))
 
-            if len(common) == 2:
-                face1Id = list(set(face1).difference(common))[0]
-                face2Id = list(set(face2).difference(common))[0]
+                if len(common) == 2:
+                    face1Id = list(set(face1).difference(common))[0]
+                    face2Id = list(set(face2).difference(common))[0]
 
-                i = int(face1Id)
-                j = int(common.pop())
-                k = int(common.pop())
-                l = int(face2Id)
+                    i = int(face1Id)
+                    j = int(common.pop())
+                    k = int(common.pop())
+                    l = int(face2Id)
 
-                forceField["dihedrals"]["data"].append([i,j,k,l,0.0,Kd,1])
-            else:
-                self.log("Faces do not share an edge, faces: {} {}".format(face1,face2))
-                raise Exception("Faces do not share an edge")
+                    forceField["dihedrals"]["data"].append([i,j,k,l,0.0,Kd,1])
+                else:
+                    self.log("Faces do not share an edge, faces: {} {}".format(face1,face2))
+                    raise Exception("Faces do not share an edge")
 
         ############################################################
 
