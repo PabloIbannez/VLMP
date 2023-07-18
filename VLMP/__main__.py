@@ -97,7 +97,7 @@ def localLauncher(simulationSetsInfo,gpuIDList):
 
     logger.info("End")
 
-def liquidLauncher(simulationSetsInfo,nodeGPUList):
+def liquidLauncher(simulationSetsInfo,nodeGPUList,postScript):
 
     nodeGPUList = itertools.cycle(nodeGPUList)
 
@@ -139,7 +139,8 @@ def liquidLauncher(simulationSetsInfo,nodeGPUList):
                      "#$ -V\n"
                      f"cd /scratch/{user}/{jobName}-$JOB_ID\n"
                      "module load gcc/8.4 cuda/10.2\n"
-                     f"UAMMDlauncher {simSetOptions}\n")
+                     f"UAMMDlauncher {simSetOptions}\n"
+                     f"{postScript}\n")
 
             f.write(batch)
 
@@ -171,9 +172,13 @@ if __name__ == "__main__":
     group.add_argument('--liquid', action='store_true', help='Run simulations in liquid cluster')
 
     parser.add_argument('--gpu', nargs='+', type=int, help='List of gpu ids to use',required=True)
+    parser.add_argument('--postScript', type=str, help='Post script to run after simulations are finished',required=False)
 
     #Parse arguments
     args = parser.parse_args()
+
+    if args.postScript and not args.liquid:
+        parser.error("--postScript can only be used with --liquid")
 
     #Load simulation sets info
     with open(args.simulationSetsInfo,"r") as f:
@@ -207,6 +212,8 @@ if __name__ == "__main__":
             sys.exit(0)
     else:
         logger.info("Running simulations in liquid cluster ...")
-        liquidLauncher(simulationSetsInfo,args.gpu)
+
+        postScript = args.postScript if args.postScript else ""
+        liquidLauncher(simulationSetsInfo,args.gpu,postScript)
 
     sys.exit(0)

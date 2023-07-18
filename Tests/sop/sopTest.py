@@ -16,7 +16,7 @@ for i in range(copies):
                            "globals":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
                            "integrators":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0,"integrationSteps":1000000}}],
                            "models":[{"type":"SOP",
-                                     "parameters":{"PDB":"5xs5.pdb"}
+                                     "parameters":{"PDB":"3dkt_2.pdb"}
                                      }],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                                                 "outputFilePath":"test",
