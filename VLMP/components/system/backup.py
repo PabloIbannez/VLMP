@@ -41,18 +41,18 @@ class backup(systemBase):
         ############################################################
         ############################################################
 
-        system = {}
-        system["parameters"] = {}
+        system = {
+            name:{"type":["Simulation","Backup"],
+                  "parameters":{}}
+        }
 
-        system["parameters"]["saveBackup"] = True
-
-        system["parameters"]["backupIntervalStep"] = params.get("backupIntervalStep")
-        system["parameters"]["backupFilePath"]     = params.get("backupFilePath","backup")
+        system[name]["parameters"]["backupIntervalStep"] = params.get("backupIntervalStep")
+        system[name]["parameters"]["backupFilePath"]     = params.get("backupFilePath","backup")
 
         if "backupStartStep" in params:
-            system["parameters"]["backupStartStep"] = params.get("backupStartStep")
+            system[name]["parameters"]["backupStartStep"] = params.get("backupStartStep")
         if "backupEndStep" in params:
-            system["backupEndStep"] = params.get("backupEndStep")
+            system[name]["backupEndStep"] = params.get("backupEndStep")
 
         ############################################################
 

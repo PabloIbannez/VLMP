@@ -29,10 +29,12 @@ class simulationName(systemBase):
         ############################################################
         ############################################################
 
-        system = {}
+        system = {
+            name:{"type":["Simulation","Information"],
+                  "parameters":{}}
+        }
 
-        system["parameters"] = {}
-        system["parameters"]["name"] = params.get("simulationName")
+        system[name]["parameters"]["name"] = params.get("simulationName")
 
         ############################################################
 

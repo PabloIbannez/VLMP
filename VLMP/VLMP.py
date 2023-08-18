@@ -629,10 +629,42 @@ class VLMP:
             ###############################################
 
             #Check name is unique
-            simulationName = sim["system"]["parameters"]["name"]
+            simulationName = None
+            for sysEntry in sim["system"]:
+                tpy, subTpy = sim["system"][sysEntry]["type"]
+
+                if tpy == "Simulation" and subTpy == "Information":
+                    if simulationName is None:
+                        simulationName = sim["system"][sysEntry]["parameters"]["name"]
+                    else:
+                        self.logger.error("[VLMP] Simulation name added twice")
+                        raise Exception("Simulation name added twice")
+
+            if simulationName is None:
+                self.logger.error("[VLMP] Simulation name not found")
+                raise Exception("Simulation name not found")
+
+            addedSimulationNames = []
+            for s in self.simulations:
+                simSimulationName = None
+                for sysEntry in s["system"]:
+                    tpy, subTpy = s["system"][sysEntry]["type"]
+
+                    if tpy == "Simulation" and subTpy == "Information":
+                        if simSimulationName is None:
+                            simSimulationName = s["system"][sysEntry]["parameters"]["name"]
+                        else:
+                            self.logger.error("[VLMP] Simulation name added twice")
+                            raise Exception("Simulation name added twice")
+
+                if simSimulationName is None:
+                    self.logger.error("[VLMP] Simulation name not found")
+                    raise Exception("Simulation name not found")
+                else:
+                    addedSimulationNames.append(simSimulationName)
 
             #Check if other simulation with the same name has been already created
-            if simulationName in [s["system"]["parameters"]["name"] for s in self.simulations]:
+            if simulationName in addedSimulationNames:
                 self.logger.error(f"[VLMP] Simulation with name \"{simulationName}\" already exists")
                 raise Exception("Simulation already exists")
 
@@ -776,7 +808,17 @@ class VLMP:
 
             #For each simulation in the simulation set. Create a folder sessionName/simulationSets/simulationSetName/simulationName/
             for simIndex in simSet:
-                simulationName         = self.simulations[simIndex]["system"]["parameters"]["name"]
+
+                simulationName = None
+                for sysEntry in self.simulations[simIndex]["system"]:
+                    tpy, subTpy = self.simulations[simIndex]["system"][sysEntry]["type"]
+
+                    if tpy == "Simulation" and subTpy == "Information":
+                        simulationName = self.simulations[simIndex]["system"][sysEntry]["parameters"]["name"]
+
+                if simulationName is None:
+                    self.logger.error("[VLMP] Simulation name not found")
+                    raise Exception("Simulation name not found")
 
                 simulationFolder       = os.path.join(sessionName,"simulationSets",simulationSetName,simulationName)
                 simulationResultFolder = os.path.join(sessionName,"results",simulationName)
@@ -871,7 +913,21 @@ class VLMP:
             self.logger.info("[VLMP] Aggregating simulations in simulation set %d",simSetIndex)
 
             #Store names of simulations in simulation set
-            simInSimSetNames = [self.simulations[simIndex]["system"]["parameters"]["name"] for simIndex in simSet]
+            simInSimSetNames = []
+
+            for simIndex in simSet:
+                simulationName = None
+                for sysEntry in self.simulations[simIndex]["system"]:
+                    typ, subTyp = self.simulations[simIndex]["system"][sysEntry]["type"]
+
+                    if typ == "Simulation" and subTyp == "Information":
+                        simulationName = self.simulations[simIndex]["system"][sysEntry]["parameters"]["name"]
+
+                if simulationName is None:
+                    self.logger.error("[VLMP] Simulation name not found")
+                    raise Exception("Simulation name not found")
+                else:
+                    simInSimSetNames.append(simulationName)
 
             aggregatedSimulation = None
             for simIndex in tqdm(simSet):
