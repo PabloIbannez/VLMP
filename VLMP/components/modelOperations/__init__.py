@@ -9,6 +9,9 @@ from pyUAMMD import simulation
 
 from ...utils.utils import getLabelIndex
 from ...utils.utils import getSelections
+from ...utils.utils import _getIdsProperty
+from ...utils.utils import _getIdsState
+from ...utils.utils import _setIdsState
 
 class modelOperationBase:
 
@@ -115,40 +118,14 @@ class modelOperationBase:
         return self._selection[selectionName]
 
     def getIdsProperty(self,ids,propertyName):
-         idProp = []
+        return _getIdsProperty(ids,propertyName,self.id2mdl,self._models,self.id2mdlId)
 
-         for i in ids:
-             mdl   = self.id2mdl[i]
-
-             typeIndex = getLabelIndex("type",self._models[mdl].getStructure()["labels"])
-             itype     = self._models[mdl].getStructure()["data"][self.id2mdlId[i]][typeIndex]
-
-             idProp.append(self._models[mdl].getTypes().getTypes()[itype][propertyName])
-
-         return idProp
+    def getIdsState(self,ids,stateName):
+        return _getIdsState(ids,stateName,self.id2mdl,self._models,self.id2mdlId)
 
 
-    def getIdPositions(self,ids):
-        idPos = []
-
-        for i in ids:
-            mdl   = self.id2mdl[i]
-
-            posIndex = getLabelIndex("position",self._models[mdl].getState()["labels"])
-            idPos.append(self._models[mdl].getState()["data"][self.id2mdlId[i]][posIndex])
-
-        return idPos
-
-    def setIdPositions(self,ids,pos):
-        if len(ids) != len(pos):
-            self.logger.error(f"[ModelOperation] ({self._type}) Number of ids and positions do not match")
-            raise Exception(f"Number of ids and positions do not match")
-
-        for i,p in zip(ids,pos):
-            mdl   = self.id2mdl[i]
-
-            posIndex = getLabelIndex("position",self._models[mdl].getState()["labels"])
-            self._models[mdl].getState()["data"][self.id2mdlId[i]][posIndex] = p
+    def setIdsState(self,ids,stateName,states):
+        _setIdsState(ids,stateName,states,self.id2mdl,self._models,self.id2mdlId)
 
 
 ############### IMPORT ALL MODEL OPERATIONS ###############

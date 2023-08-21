@@ -35,7 +35,7 @@ class setParticleLowestPosition(modelOperationBase):
 
         selectedIds = self.getSelection("selection")
 
-        pos    = np.asarray(self.getIdPositions(selectedIds))
+        pos    = np.asarray(self.getIdsState(selectedIds,"position"))
 
         if params.get("considerRadius",False):
             rad = np.asarray(self.getIdsProperty(selectedIds,"radius"))
@@ -55,4 +55,4 @@ class setParticleLowestPosition(modelOperationBase):
         for i in range(len(selectedIds)):
             pos[i] = pos[i] + translation
 
-        self.setIdPositions(selectedIds,pos.tolist())
+        self.setIdsState(selectedIds,"position",pos.tolist())

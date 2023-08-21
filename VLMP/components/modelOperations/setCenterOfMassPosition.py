@@ -29,7 +29,7 @@ class setCenterOfMassPosition(modelOperationBase):
         selectedIds = self.getSelection("selection")
 
         masses = np.asarray(self.getIdsProperty(selectedIds,"mass"))
-        pos    = np.asarray(self.getIdPositions(selectedIds))
+        pos    = np.asarray(self.getIdsState(selectedIds,"position"))
 
         totalMass = np.sum(masses)
         com       = np.sum(masses[:,np.newaxis]*pos,axis=0)/totalMass
@@ -39,5 +39,5 @@ class setCenterOfMassPosition(modelOperationBase):
         pos += translation
         pos = pos.tolist()
 
-        self.setIdPositions(selectedIds,pos)
+        self.setIdsState(selectedIds,"position",pos)
 

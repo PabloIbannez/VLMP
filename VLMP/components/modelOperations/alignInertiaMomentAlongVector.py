@@ -47,7 +47,7 @@ class alignInertiaMomentAlongVector(modelOperationBase):
         if len(selectedIds) > 1:
 
             masses = np.asarray(self.getIdsProperty(selectedIds,"mass"))
-            pos    = np.asarray(self.getIdPositions(selectedIds))
+            pos    = np.asarray(self.getIdsState(selectedIds,"position"))
 
             inertia = np.zeros((3,3))
             for i in range(len(selectedIds)):
@@ -78,4 +78,4 @@ class alignInertiaMomentAlongVector(modelOperationBase):
                 for i in range(len(selectedIds)):
                     pos[i] = rot.apply(pos[i])
 
-                self.setIdPositions(selectedIds,pos.tolist())
+                self.setIdsState(selectedIds,"position",pos.tolist())

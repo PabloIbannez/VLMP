@@ -125,3 +125,52 @@ def getSelections(models,selectionsList,**param):
         selections[sel] = list(set(selections[sel]))
 
     return copy.deepcopy(selections)
+
+def _getIdsProperty(ids,propertyName,id2mdl,models,id2mdlId):
+     idProp = []
+
+     for i in ids:
+         mdl   = id2mdl[i]
+
+         typeIndex = getLabelIndex("type",models[mdl].getStructure()["labels"])
+         itype     = models[mdl].getStructure()["data"][id2mdlId[i]][typeIndex]
+
+         idProp.append(models[mdl].getTypes().getTypes()[itype][propertyName])
+
+     return idProp
+
+def _getIdsState(ids,stateName,id2mdl,models,id2mdlId):
+    idState = []
+
+    for i in ids:
+        mdl   = id2mdl[i]
+
+        stateIndex = getLabelIndex(stateName,models[mdl].getState()["labels"])
+        idState.append(models[mdl].getState()["data"][id2mdlId[i]][stateIndex])
+
+    return idState
+
+def _setIdsState(ids,stateName,states,id2mdl,models,id2mdlId):
+
+    logger = logging.getLogger("VLMP")
+
+    if len(ids) != len(states):
+        logger.error(f"[ModelOperation] Number of ids and states ({stateName}) do not match")
+        raise Exception(f"Number of ids and states do not match")
+
+    for i,s in zip(ids,states):
+        mdl   = id2mdl[i]
+
+        stateIndex = getLabelIndex(stateName,models[mdl].getState()["labels"])
+
+        #Check if state is valid
+        if type(s) != type(models[mdl].getState()["data"][id2mdlId[i]][stateIndex]):
+            logger.error(f"[ModelOperation] State value {s} for state \"{stateName}\" is not valid")
+            raise Exception(f"State is not valid")
+        else:
+            if type(s) == list:
+                if len(s) != len(models[mdl].getState()["data"][id2mdlId[i]][stateIndex]):
+                    logger.error(f"[ModelOperation] State value {s} for state \"{stateName}\" is not valid, length does not match")
+                    raise Exception(f"State is not valid")
+
+            models[mdl].getState()["data"][id2mdlId[i]][stateIndex] = s
