@@ -33,7 +33,7 @@ for eb,el in itertools.product(Eb,El):
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"none"}],
                            "types":[{"type":"basic"}],
-                           "globals":[{"type":"NVT","parameters":{"box":bnd.getSimulationBox(),"temperature":1.0}}],
+                           "ensemble":[{"type":"NVT","parameters":{"box":bnd.getSimulationBox(),"temperature":1.0}}],
                            "integrators":[{"type":"EulerMaruyamaRigidBodyPatchesState","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":1000000}}],
                            "models":[{"type":"HELIX",
                                      "parameters":{"mode":mode,"init":"helix",

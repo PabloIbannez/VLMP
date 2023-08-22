@@ -1,17 +1,17 @@
-#Template for the GLOBALS component.
-#This template is used to create the GLOBALS component.
+#Template for the ENSEMBLE component.
+#This template is used to create the ENSEMBLE component.
 #Comments begin with a hash (#) and they can be removed.
 
 import sys, os
 
 import logging
 
-from . import globalBase
+from . import ensembleBase
 
-class __GLOBALS_TEMPLATE__(globalBase):
+class __ENSEMBLE_TEMPLATE__(ensembleBase):
     """
-    Component name: __GLOBALS_TEMPLATE__ # Name of the component
-    Component type: global # Type of the component
+    Component name: __ENSEMBLE_TEMPLATE__ # Name of the component
+    Component type: ensemble # Type of the component
 
     Author: __AUTHOR__ # Author of the component
     Date: __DATE__ # Date of last modification
@@ -47,7 +47,7 @@ class __GLOBALS_TEMPLATE__(globalBase):
         #Define the component dictionary
         #Particular characteristics of the component are defined here
         #Rembember this dictionary is inteterpreted by the UAMMD-structured !!!
-        self.globals = {}
+        self.ensemble = {}
 
         #Editable part ...
 
@@ -71,7 +71,7 @@ class __GLOBALS_TEMPLATE__(globalBase):
 
         #Define the component dictionary
 
-        self.globals["parameters"] = {"param1":param1,
-                                      "param2":param2,
-                                      "param3":param3,
-                                      ...}
+        self.ensemble["parameters"] = {"param1":param1,
+                                       "param2":param2,
+                                       "param3":param3,
+                                       ...}

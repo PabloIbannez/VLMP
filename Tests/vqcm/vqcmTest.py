@@ -9,7 +9,7 @@ for i in range(copies):
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"none"}],
                            "types":[{"type":"basic"}],
-                           "globals":[{"type":"NVT","parameters":{"box":[16.0,16.0,16.0],"temperature":1.0}}],
+                           "ensemble":[{"type":"NVT","parameters":{"box":[16.0,16.0,16.0],"temperature":1.0}}],
                            "integrators":[{"type":"BBK","parameters":{"timeStep":0.01,"frictionConstant":1.0,"integrationSteps":1}}],
                            "models":[{"name":"part1",
                                       "type":"PARTICLE",

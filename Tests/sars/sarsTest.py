@@ -15,7 +15,7 @@ for i in range(copies):
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"KcalMol_A"}],
                            "types":[{"type":"basic"}],
-                           "globals":[{"type":"NVT","parameters":{"box":[2000.0,2000.0,4000.0],"temperature":300.0}}],
+                           "ensemble":[{"type":"NVT","parameters":{"box":[2000.0,2000.0,4000.0],"temperature":300.0}}],
                            "integrators":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.1*ps2AKMA,"viscosity":1.0/ps2AKMA,"integrationSteps":1000000}}],
                            "models":[{"type":"CORONAVIRUS","parameters":{"nSpikes":40,"surface":True}}],
                            "modelExtensions":[{"type":"constantTorqueOverCenterOfMass",

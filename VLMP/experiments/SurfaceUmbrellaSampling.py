@@ -153,7 +153,7 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
                 sim = {"system":[{"type":"simulationName","parameters":{"simulationName":mdl["name"]+"_"+str(i)}}],
                        "units":[{"type":self.units}],
                        "types":[{"type":self.types}],
-                       "global":[{"type":"NVT","parameters":{"box":self.box,"temperature":self.temperature}}],
+                       "ensemble":[{"type":"NVT","parameters":{"box":self.box,"temperature":self.temperature}}],
                        "integrator":[self.integrator],
                        "model":[mdl],
                        "modelExtensions":[],

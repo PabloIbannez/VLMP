@@ -14,7 +14,7 @@ from .utils.utils import getValuesAndPaths
 import VLMP.components.system          as _system
 import VLMP.components.units           as _units
 import VLMP.components.types           as _types
-import VLMP.components.globals         as _globals
+import VLMP.components.ensembles       as _ensembles
 import VLMP.components.models          as _models
 import VLMP.components.modelOperations as _modelOperations
 import VLMP.components.modelExtensions as _modelExtensions
@@ -148,7 +148,7 @@ class VLMP:
         self.simulations    = []
         self.simulationSets = []
 
-        self.availableComponents = ["system","units","types","globals",
+        self.availableComponents = ["system","units","types","ensemble",
                                     "models","modelOperations","modelExtensions",
                                     "integrators",
                                     "simulationSteps"]
@@ -337,43 +337,49 @@ class VLMP:
                         self.logger.error(f"[VLMP] Error loading types \"{name}\" ({typ})")
                         raise Exception("Error loading types")
 
-            ############## GLOBAL ##############
+            ############## ENSEMBLE ##############
 
-            #Check if global section is present
-            if "globals" not in simulationInfo.keys():
-                self.logger.error("[VLMP] Global section not found")
-                raise Exception("Global section not found")
+            #Check if ensemble section is present
+            if "ensemble" not in simulationInfo.keys():
+                self.logger.error("[VLMP] Ensemble section not found")
+                raise Exception("Ensemble section not found")
             else:
+                #Only one ensemble system can be specified
+                if len(simulationInfo["ensemble"]) > 1:
+                    self.logger.error("[VLMP] Only one ensemble system can be specified")
+                    raise Exception("Only one ensemble system can be specified")
 
-                for global_ in simulationInfo["globals"]:
+                for ens in simulationInfo["ensemble"]:
 
-                    typ, name, param = self.__checkComponent(global_,"globals",simulationBuffer)
-                    self.logger.debug(f"[VLMP] Adding global \"{name}\"")
+                    typ, name, param = self.__checkComponent(ens,"ensemble",simulationBuffer)
+                    self.logger.debug(f"[VLMP] Adding ensemble \"{name}\"")
 
-                    isGlobal           = typ in dir(_globals)
-                    isAdditionalGlobal = typ in dir(self.additionalGlobals)
+                    isEnsemble           = typ in dir(_ensembles)
+                    isAdditionalEnsemble = typ in dir(self.additionalEnsemble)
 
-                    if not isGlobal and not isAdditionalGlobal:
-                        self.logger.error(f"[VLMP] Global \"{typ}\" not found")
-                        raise Exception("Global not found")
+                    if not isEnsemble and not isAdditionalEnsemble:
+                        self.logger.error(f"[VLMP] Ensemble \"{typ}\" not found")
+                        raise Exception("Ensemble not found")
 
-                    if isGlobal and isAdditionalGlobal:
-                        self.logger.error(f"[VLMP] Global \"{typ}\" found in both VLMP base and additional components")
-                        raise Exception("Global found in both VLMP base and additional components")
+                    if isEnsemble and isAdditionalEnsemble:
+                        self.logger.error(f"[VLMP] Ensemble \"{typ}\" found in both VLMP base and additional components")
+                        raise Exception("Ensemble found in both VLMP base and additional components")
 
-                    if isGlobal:
+                    if isEnsemble:
                         try:
-                            simulationBuffer["global_"+name] = eval("_globals." + typ)(name=name,units=units,types=types,**(param))
+                            ensemble = eval("_ensembles." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["ensemble_"+name] = ensemble
                         except:
-                            self.logger.error(f"[VLMP] Error loading global \"{name}\"")
-                            raise Exception("Error loading globals")
+                            self.logger.error(f"[VLMP] Error loading ensemble \"{name}\"")
+                            raise Exception("Error loading ensemble")
 
-                    if isAdditionalGlobal:
+                    if isAdditionalEnsemble:
                         try:
-                            simulationBuffer["global_"+name] = eval("self.additionalGlobals." + typ)(name=name,units=units,types=types,**(param))
+                            ensemble = eval("self.additionalEnsemble." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["ensemble_"+name] = ensemble
                         except:
-                            self.logger.error(f"[VLMP] Error loading global \"{name}\"")
-                            raise Exception("Error loading globals")
+                            self.logger.error(f"[VLMP] Error loading ensemble \"{name}\"")
+                            raise Exception("Error loading ensemble")
 
             ############### MODEL ###############
             #Create a list with the added models. This is used afterwards to apply model operations
@@ -403,7 +409,11 @@ class VLMP:
 
                     if isModel:
                         try:
-                            simulationBuffer["model_"+name] = eval("_models." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["model_"+name] = eval("_models." + typ)(name=name,
+                                                                                     units=units,
+                                                                                     types=types,
+                                                                                     ensemble=ensemble,
+                                                                                     **(param))
                             models.append("model_"+name)
                         except:
                             self.logger.error(f"[VLMP] Error loading model \"{name}\"")
@@ -411,7 +421,11 @@ class VLMP:
 
                     if isAdditionalModel:
                         try:
-                            simulationBuffer["model_"+name] = eval("self.additionalModels." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["model_"+name] = eval("self.additionalModels." + typ)(name=name,
+                                                                                                   units=units,
+                                                                                                   types=types,
+                                                                                                   ensemble=ensemble,
+                                                                                                   **(param))
                             models.append("model_"+name)
                         except:
                             self.logger.error(f"[VLMP] Error loading model \"{name}\"")
@@ -424,8 +438,6 @@ class VLMP:
                 ids = simulationBuffer[mdl].getIds()
                 if len(ids) != 0:
                     idOffset += max(ids) + 1
-
-
 
             ############### MODEL OPERATIONS ###############
 
@@ -457,9 +469,10 @@ class VLMP:
 
                     if isModelOperation:
                         try:
-                            operation = eval("_modelOperations." + typ)(name   = name,
-                                                                        units  = units,
-                                                                        types  = types,
+                            operation = eval("_modelOperations." + typ)(name     = name,
+                                                                        units    = units,
+                                                                        types    = types,
+                                                                        ensemble = ensemble,
                                                                         models = [simulationBuffer[model] for model in models],
                                                                         **(param))
                             appliedOperations.append("modelOperations_"+name)
@@ -473,6 +486,7 @@ class VLMP:
                             operation = eval("self.additionalModelOperations." + typ)(name   = name,
                                                                                       units  = units,
                                                                                       types  = types,
+                                                                                      ensemble = ensemble,
                                                                                       models = [simulationBuffer[model] for model in models],
                                                                                       **(param))
                             appliedOperations.append("modelOperations_"+name)
@@ -509,6 +523,7 @@ class VLMP:
                             simulationBuffer["modelExtensions_"+name] = eval("_modelExtensions." + typ)(name   = name,
                                                                                                         units  = units,
                                                                                                         types  = types,
+                                                                                                        ensemble = ensemble,
                                                                                                         models = [simulationBuffer[model] for model in models],
                                                                                                         **(param))
 
@@ -521,6 +536,7 @@ class VLMP:
                             simulationBuffer["modelExtensions_"+name] = eval("self.additionalModelExtensions." + typ)(name   = name,
                                                                                                                       units  = units,
                                                                                                                       types  = types,
+                                                                                                                      ensemble = ensemble,
                                                                                                                       models = [simulationBuffer[model] for model in models],
                                                                                                                       **(param))
 
@@ -554,14 +570,22 @@ class VLMP:
 
                     if isIntegrator:
                         try:
-                            simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["integrator_"+name] = eval("_integrators." + typ)(name=name,
+                                                                                               units=units,
+                                                                                               types=types,
+                                                                                               ensemble = ensemble,
+                                                                                               **(param))
                         except:
                             self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
                             raise Exception("Error loading integrators")
 
                     if isAdditionalIntegrator:
                         try:
-                            simulationBuffer["integrator_"+name] = eval("self.additionalIntegrators." + typ)(name=name,units=units,types=types,**(param))
+                            simulationBuffer["integrator_"+name] = eval("self.additionalIntegrators." + typ)(name=name,
+                                                                                                             units=units,
+                                                                                                             types=types,
+                                                                                                             ensemble = ensemble,
+                                                                                                             **(param))
                         except:
                             self.logger.error(f"[VLMP] Error loading integrator \"{name}\"")
                             raise Exception("Error loading integrators")
@@ -594,6 +618,7 @@ class VLMP:
                             simulationBuffer["simulationSteps_"+name] = eval("_simulationSteps." + typ)(name=name,
                                                                                                         units=units,
                                                                                                         types=types,
+                                                                                                        ensemble = ensemble,
                                                                                                         models = [simulationBuffer[model] for model in models],
                                                                                                         **(param))
                         except:
@@ -605,6 +630,7 @@ class VLMP:
                             simulationBuffer["simulationSteps_"+name] = eval("self.additionalSimulationSteps." + typ)(name=name,
                                                                                                                       units=units,
                                                                                                                       types=types,
+                                                                                                                      ensemble = ensemble,
                                                                                                                       models = [simulationBuffer[model] for model in models],
                                                                                                                       **(param))
                         except:

@@ -17,7 +17,7 @@ class modelOperationBase:
 
     def __init__(self,
                  _type:str,_name:str,
-                 units,types,
+                 units,types,ensemble,
                  models,
                  availableParameters:set,
                  requiredParameters:set,
@@ -32,6 +32,7 @@ class modelOperationBase:
 
         self._units = units
         self._types = types
+        self._ensemble = ensemble
 
         self._models = models
 
@@ -113,6 +114,9 @@ class modelOperationBase:
 
     def getTypes(self):
         return self._types
+
+    def getEnsemble(self):
+        return self._ensemble
 
     def getSelection(self,selectionName):
         return self._selection[selectionName]

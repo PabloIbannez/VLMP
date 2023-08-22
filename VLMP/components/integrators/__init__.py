@@ -11,8 +11,7 @@ class integratorBase:
 
     def __init__(self,
                  _type:str,_name:str,
-                 units,
-                 types,
+                 units,types,ensemble,
                  availableParameters:set,
                  requiredParameters:set,
                  **params):
@@ -22,8 +21,9 @@ class integratorBase:
         self._type = _type
         self._name = _name
 
-        self._units = units
-        self._types = types
+        self._units    = units
+        self._types    = types
+        self._ensemble = ensemble
 
         self.availableParameters  = availableParameters.copy()
         self.requiredParameters = requiredParameters.copy()
@@ -88,6 +88,9 @@ class integratorBase:
 
     def getTypes(self):
         return self._types
+
+    def getEnsemble(self):
+        return self._ensemble
 
     ########################################################
 

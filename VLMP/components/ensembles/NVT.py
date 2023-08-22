@@ -3,13 +3,13 @@ import copy
 
 import logging
 
-from . import globalBase
+from . import ensembleBase
 
-class NVT(globalBase):
+class NVT(ensembleBase):
 
     """
     Component name: NVT
-    Component type: globalBase
+    Component type: ensembleBase
 
     Author: Pablo Ibáñez-Freire
     Date: 13/03/2023
@@ -34,13 +34,10 @@ class NVT(globalBase):
         ############################################################
         ############################################################
 
-        parameters = {}
+        box         = params.get("box")
+        temperature = params.get("temperature")
 
-        parameters["box"]         = params.get("box")
-        parameters["temperature"] = params.get("temperature")
+        self.setEnsembleName("NVT")
 
-        self.setGlobals({"ensemble":{"type":["Ensemble","NVT"],
-                                     "labels":["box","temperature"],
-                                     "data":[[copy.deepcopy(parameters["box"]),
-                                              copy.deepcopy(parameters["temperature"])]]}})
-
+        self.addComponent("box",box)
+        self.addComponent("temperature",temperature)

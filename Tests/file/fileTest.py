@@ -13,7 +13,7 @@ for i in range(copies):
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"KcalMol_A"}],
                            "types":[{"type":"basic"}],
-                           "globals":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
+                           "ensemble":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
                            "integrators":[{"type":"BBK","parameters":{"timeStep":0.01*ps2AKMA,"frictionConstant":1.0/ps2AKMA,"integrationSteps":2000000}}],
                            "models":[{"name":"sample",
                                       "type":"FILE",

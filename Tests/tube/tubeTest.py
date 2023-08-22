@@ -23,7 +23,7 @@ simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulat
                                  {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                        "units":[{"type":"none"}],
                        "types":[{"type":"basic"}],
-                       "globals":[{"type":"NVT","parameters":{"box":box,"temperature":1.0}}],
+                       "ensemble":[{"type":"NVT","parameters":{"box":box,"temperature":1.0}}],
                        "integrators":[{"type":"EulerMaruyamaRigidBody","parameters":{"timeStep":0.0005,"viscosity":1.0,"integrationSteps":1000000000}}],
                        "models":[{"type":"TUBE",
                                  "parameters":{"init":"tube",

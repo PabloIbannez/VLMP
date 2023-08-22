@@ -71,7 +71,8 @@ class unitsBase:
         if self._constants is None:
             self._constants = {}
         if constName in self._constants.keys():
-            self.logger.warning(f"[Units] ({self._type}) Constant {constName} already add for units {self._name}")
+            self.logger.error(f"[Units] ({self._type}) Constant {constName} already add for units {self._name}")
+            raise Exception(f"Constant already added")
         self._constants[constName] = constValue
 
     def getConstant(self, constName):

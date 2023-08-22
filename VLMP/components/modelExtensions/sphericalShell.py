@@ -47,7 +47,7 @@ class sphericalShell(modelExtensionBase):
                                                 "radiusVelocity"},
                          requiredParameters  = {"shellCenter",
                                                 "shellRadius"},
-                         availableSelections = set(),
+                         availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
 
@@ -57,6 +57,15 @@ class sphericalShell(modelExtensionBase):
 
         shellCenter = params["shellCenter"]
         shellRadius = params["shellRadius"]
+
+        ###########
+
+        #if shellRadius == "auto":
+        #    #Check sele
+        #    sel = self.getSelection("all")
+
+        ###########
+
 
         shellEpsilon = params.get("shellEpsilon",1.0)
         shellSigma   = params.get("shellSigma",1.0)

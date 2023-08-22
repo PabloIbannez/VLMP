@@ -118,7 +118,7 @@ for n in nSpheres:
                 simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":filename}}],
                                        "units":[{"type":"none"}],
                                        "types":[{"type":"basic"}],
-                                       "globals":[{"type":"NVT","parameters":{"box":[X,Y,Z],"temperature":1.0}}],
+                                       "ensemble":[{"type":"NVT","parameters":{"box":[X,Y,Z],"temperature":1.0}}],
                                        "integrators":[{"type":"BBK","parameters":{"timeStep":0.0001,"frictionConstant":1.0,"integrationSteps":1}}],
                                        "models":[{"type":"SPHEREMULTIBLOB",
                                                   "parameters":{"numberOfSpheres":n,

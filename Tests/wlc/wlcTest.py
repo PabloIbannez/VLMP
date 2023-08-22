@@ -12,7 +12,7 @@ for i in range(copies):
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"none"}],
                            "types":[{"type":"basic"}],
-                           "globals":[{"type":"NVT","parameters":{"box":[200.0,200.0,100.0],"temperature":1.0}}],
+                           "ensemble":[{"type":"NVT","parameters":{"box":[200.0,200.0,100.0],"temperature":1.0}}],
                            "integrators":[{"type":"BBK","parameters":{"timeStep":0.001,"frictionConstant":1.0,"integrationSteps":1000000}}],
                            "models":[{"name":"modelTest1",
                                       "type":"WLC",
