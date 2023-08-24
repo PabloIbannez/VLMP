@@ -15,8 +15,12 @@ import orthopoly
 
 from . import modelBase
 
-from ...utils.utils import *
-from ...utils.geometry import getEx
+from ...utils.input import getLabelIndex
+
+from ...utils.geometry import quaternionFromVectors
+from ...utils.geometry import getEz
+
+from scipy.spatial.transform import Rotation as R
 
 class CORONAVIRUS(modelBase):
     """

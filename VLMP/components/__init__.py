@@ -2,7 +2,7 @@ import logging
 
 ########################################################
 
-from ..utils.utils import getLabelIndex
+from ..utils.input import getLabelIndex
 
 class idsHandler:
 

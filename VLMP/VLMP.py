@@ -9,7 +9,6 @@ import jsbeautifier
 from collections import OrderedDict
 
 from . import DEBUG_MODE
-from .utils.utils import getValuesAndPaths
 
 import VLMP.components.systems         as _systems
 import VLMP.components.units           as _units
@@ -681,6 +680,25 @@ class VLMP:
                                                    os.path.join(*simulationResultFolder.split("/")[1:])])
 
                 #Updating file path
+                def getValuesAndPaths(d, key, path=None):
+                    """
+                    Recursively search a nested dictionary
+                    for all values associated with a given key,
+                    along with the path to each value.
+                    """
+                    if path is None:
+                        path = ()
+
+                    values = []
+                    for k, v in d.items():
+                        new_path = path + (k,)
+                        if k == key:
+                            values.append((v, new_path))
+                        elif isinstance(v, dict):
+                            values.extend(getValuesAndPaths(v, key, new_path))
+
+                    return values
+
                 outputFilePaths = getValuesAndPaths(sim,"outputFilePath")
                 for fName,fSimPath in outputFilePaths:
                     sim.setValue(fSimPath,os.path.join(relativePath,fName))

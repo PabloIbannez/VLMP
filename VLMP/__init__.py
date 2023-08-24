@@ -57,4 +57,3 @@ if "-m" not in sys.argv:
     logger.info("Starting VLMP...")
 
     from .VLMP  import VLMP
-    from .utils import *

@@ -6,7 +6,7 @@ import logging
 from . import modelBase
 from ...utils.geometry import getEx
 
-from ...utils.utils import readVariant
+from ...utils.input import readVariant
 
 import random
 

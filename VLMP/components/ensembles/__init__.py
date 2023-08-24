@@ -7,7 +7,7 @@ import logging
 
 from pyUAMMD import simulation
 
-from ...utils.utils import getLabelIndex
+from ...utils.input import getLabelIndex
 
 class ensembleBase:
 

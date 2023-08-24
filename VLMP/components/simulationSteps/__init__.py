@@ -9,7 +9,7 @@ from pyUAMMD import simulation
 
 from .. import idsHandler
 
-from ...utils.utils import getSelections
+from ...utils.selections import getSelections
 
 class simulationStepBase(idsHandler):
 

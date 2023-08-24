@@ -7,7 +7,7 @@ import logging
 import itertools
 
 from . import modelBase
-from ...utils.utils import readVariant
+from ...utils.input import readVariant
 
 import math
 
