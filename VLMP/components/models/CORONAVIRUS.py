@@ -14,7 +14,9 @@ import numpy as np
 import orthopoly
 
 from . import modelBase
+
 from ...utils.utils import *
+from ...utils.geometry import getEx
 
 class CORONAVIRUS(modelBase):
     """

@@ -7,9 +7,11 @@ import logging
 
 from pyUAMMD import simulation
 
+from .. import idsHandler
+
 from ...utils.utils import getSelections
 
-class simulationStepBase:
+class simulationStepBase(idsHandler):
 
     def __init__(self,
                  _type:str,_name:str,
@@ -20,6 +22,7 @@ class simulationStepBase:
                  availableSelections:set,
                  requiredSelections:set,
                  **params):
+        super().__init__(models)
 
         self.logger = logging.getLogger("VLMP")
 
@@ -102,6 +105,17 @@ class simulationStepBase:
 
     ########################################################
 
+    def getUnits(self):
+        return self._units
+
+    def getTypes(self):
+        return self._types
+
+    def getEnsemble(self):
+        return self._ensemble
+
+    ########################################################
+
     def setSimulationStep(self, simulationStep):
         self._simulationStep = simulationStep
 
@@ -118,20 +132,6 @@ class simulationStepBase:
             self._simulationStep[self.getName()]["parameters"]["endStep"]   = self._endStep
 
         return self._simulationStep
-
-    ########################################################
-
-    def getUnits(self):
-        return self._units
-
-    def getTypes(self):
-        return self._types
-
-    def getEnsemble(self):
-        return self._ensemble
-
-    def getSelection(self,selectionName):
-        return self._selection[selectionName]
 
     def setGroup(self,selSelections):
 
@@ -160,6 +160,22 @@ class simulationStepBase:
                        "parameters":{},
                        "labels":["name","type","selection"],
                        "data":[[self.getName(),"Ids",list(set(ids)).copy()]]}
+
+    ########################################################
+
+    def getSelection(self,selectionName):
+        return self._selection[selectionName]
+
+    ########################################################
+
+    def getIdsProperty(self,ids,propertyName):
+        return self._getIdsProperty(ids,propertyName)
+
+    def getIdsState(self,ids,stateName):
+        return self._getIdsState(ids,stateName)
+
+    def getIdsStructure(self,ids,structName):
+        return self._getIdsStructure(ids,structName)
 
     ########################################################
 

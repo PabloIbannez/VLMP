@@ -7,9 +7,11 @@ import logging
 
 from pyUAMMD import simulation
 
+from .. import idsHandler
+
 from ...utils.utils import getSelections
 
-class modelExtensionBase:
+class modelExtensionBase(idsHandler):
 
     def __init__(self,
                  _type:str,_name:str,
@@ -20,6 +22,7 @@ class modelExtensionBase:
                  availableSelections:set,
                  requiredSelections:set,
                  **params):
+        super().__init__(models)
 
         self.logger = logging.getLogger("VLMP")
 
@@ -38,7 +41,7 @@ class modelExtensionBase:
 
         self.availableParameters =  availableParameters.copy()
         self.availableParameters.update({"startStep","endStep"})
-        self.availableSelections  =  availableSelections.copy()
+        self.availableSelections =  availableSelections.copy()
 
         self.requiredParameters  =  requiredParameters.copy()
         self.requiredSelections  =  requiredSelections.copy()
@@ -102,6 +105,17 @@ class modelExtensionBase:
 
     ########################################################
 
+    def getUnits(self):
+        return self._units
+
+    def getTypes(self):
+        return self._types
+
+    def getEnsemble(self):
+        return self._ensemble
+
+    ########################################################
+
     def setExtension(self,extension):
         self._extension = extension
 
@@ -119,17 +133,19 @@ class modelExtensionBase:
 
     ########################################################
 
-    def getUnits(self):
-        return self._units
-
-    def getTypes(self):
-        return self._types
-
-    def getEnsemble(self):
-        return self._ensemble
-
     def getSelection(self,selectionName):
         return self._selection[selectionName]
+
+    ########################################################
+
+    def getIdsProperty(self,ids,propertyName):
+        return self._getIdsProperty(ids,propertyName)
+
+    def getIdsState(self,ids,stateName):
+        return self._getIdsState(ids,stateName)
+
+    def getIdsStructure(self,ids,structName):
+        return self._getIdsStructure(ids,structName)
 
     ########################################################
 

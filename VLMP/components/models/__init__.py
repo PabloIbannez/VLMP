@@ -73,6 +73,17 @@ class modelBase(metaclass=abc.ABCMeta):
 
     ########################################################
 
+    def getUnits(self):
+        return self._units
+
+    def getTypes(self):
+        return self._types
+
+    def getEnsemble(self):
+        return self._ensemble
+
+    ########################################################
+
     def setState(self,state):
         self._state = state
 
@@ -102,23 +113,12 @@ class modelBase(metaclass=abc.ABCMeta):
 
     ########################################################
 
-    def getUnits(self):
-        return self._units
-
-    def getTypes(self):
-        return self._types
-
-    def getEnsemble(self):
-        return self._ensemble
-
-    ########################################################
-
     def getNumberOfParticles(self):
         if self._state is None:
             return 0
         return len(self.getState()["data"])
 
-    def getIds(self):
+    def getLocalIds(self):
         if self._state is None:
             return []
         ids = []
@@ -135,6 +135,12 @@ class modelBase(metaclass=abc.ABCMeta):
             self.logger.error(f"[Model] ({self._type}) Id offset not set")
             raise Exception(f"Id offset not set")
         return self._idOffset
+
+    def getGlobalIds(self):
+        globalIds = []
+        for localId in self.getLocalIds():
+            globalIds.append(localId + self.getIdOffset())
+        return globalIds
 
     ########################################################
 
@@ -169,7 +175,7 @@ class modelBase(metaclass=abc.ABCMeta):
     def getSelection(self,**params):
         # If no selection is given, select all particles
         if len(params) == 0:
-            return self.getIds()
+            return self.getLocalIds()
         # Check if all selectors given by params are available
         for par in params:
             if par not in self.definedSelections:

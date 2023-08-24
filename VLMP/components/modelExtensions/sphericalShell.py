@@ -60,13 +60,6 @@ class sphericalShell(modelExtensionBase):
 
         ###########
 
-        #if shellRadius == "auto":
-        #    #Check sele
-        #    sel = self.getSelection("all")
-
-        ###########
-
-
         shellEpsilon = params.get("shellEpsilon",1.0)
         shellSigma   = params.get("shellSigma",1.0)
 
@@ -74,6 +67,40 @@ class sphericalShell(modelExtensionBase):
         maxShellRadius = params.get("maxShellRadius","INFINITY")
 
         radiusVelocity = params.get("radiusVelocity",0.0)
+
+        ###########
+
+        if shellRadius == "auto":
+            if "selection" not in params:
+                self.logger.error(f"[sphericalShell] ({name}) Selection \
+                                    is required when shellRadius is 'auto'.")
+                raise Exception("Not compatible parameters.")
+
+            # Get selection
+            selIds = self.getSelection("selection")
+
+            # Get the maximum distance to the center
+            posIds = self.getIdsState(selIds, "position")
+            maxDist = np.max(np.linalg.norm(np.asarray(posIds) - shellCenter, axis=1))
+
+            self.logger.debug(f"[sphericalShell] ({name}) Maximum distance to the center: {maxDist}")
+
+            # Get the maximum radius
+            radIds = self.getIdsProperty(selIds, "radius")
+            maxRad = np.max(radIds)
+
+            self.logger.debug(f"[sphericalShell] ({name}) Maximum radius: {maxRad}")
+
+            shellRadius = maxDist + (shellSigma  + maxRad)*1.1
+
+            self.logger.info(f"[sphericalShell] ({name}) Shell radius: {shellRadius}")
+
+        elif "selection" in params:
+            self.logger.error(f"[sphericalShell] ({name}) Selection selected \
+                                but radius is not set to 'auto'.")
+            raise Exception("Not compatible parameters.")
+
+        ###########
 
         extension = {}
 

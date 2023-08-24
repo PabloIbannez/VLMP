@@ -4,7 +4,9 @@ import itertools
 import logging
 
 from . import modelBase
-from ...utils.utils import getEx
+from ...utils.geometry import getEx
+
+from ...utils.utils import readVariant
 
 import random
 
@@ -204,11 +206,6 @@ class HELIX(modelBase):
                                                 "theta0","phi0",
                                                 "varDst","varTheta","varPhi",
                                                 "Kb","Ka","Kd",
-                                                "Eb2","rc2",
-                                                "theta02","phi02",
-                                                "varDst2","varTheta2","varPhi2",
-                                                "Kb2","Ka2","Kd2",
-                                                "prob_1_to_2","prob_2_to_1",
                                                 "energyThreshold",
                                                 "stiffnessFactor",
                                                 "Es",
@@ -330,39 +327,59 @@ class HELIX(modelBase):
 
         ##############################################
 
-        self.variant = params.get("variant","default")
-        if self.variant == "twoStates":
+        self.variantName, self.variantParams = readVariant(params)
+
+        if self.variantName == "twoStates":
             self.logger.info(f"[HELIX] Using two states variant")
-            self.variant = "twoStates"
 
-            self.Eb2 = params["Eb2"]
-            self.rc2 = params["rc2"]
+            variantAvailableParameters = {"Eb2","rc2",
+                                          "theta02","phi02",
+                                          "varDst2","varTheta2","varPhi2",
+                                          "Kb2","Ka2","Kd2",
+                                          "prob_1_to_2","prob_2_to_1"}
 
-            self.theta02 = params["theta02"]
-            self.phi02   = params["phi02"]
+            variantRequiredParameters  = {"Eb2","rc2",
+                                          "theta02","phi02",
+                                          "prob_1_to_2","prob_2_to_1"}
 
-            if "varDst2" in params:
-                varDst2   = params["varDst2"]
+            for key in self.variantParams.keys():
+                if key not in variantAvailableParameters:
+                    self.logger.error(f"[HELIX] Variant parameter {key} is not available for variant {self.variantName}")
+                    raise Exception("Not correct variant parameter")
+
+            for key in variantRequiredParameters:
+                if key not in self.variantParams.keys():
+                    self.logger.error(f"[HELIX] Variant parameter {key} is required for variant {self.variantName}")
+                    raise Exception("Not correct variant parameter")
+
+            self.Eb2 = self.variantParams["Eb2"]
+            self.rc2 = self.variantParams["rc2"]
+
+            self.theta02 = self.variantParams["theta02"]
+            self.phi02   = self.variantParams["phi02"]
+
+            if "varDst2" in self.variantParams:
+                varDst2   = self.variantParams["varDst2"]
                 self.Kb2 = self.__computeKdst(varDst2,abs(self.Eb2),self.rc2)
                 self.logger.info(f"[HELIX] K bond 2 computed {self.Kb2} for variance {varDst2}")
             else:
-                self.Kb2 = params["Kb2"]
+                self.Kb2 = self.variantParams["Kb2"]
                 self.logger.info(f"[HELIX] K bond 2 {self.Kb2}")
 
-            if "varTheta2" in params:
-                varTheta2 = params["varTheta2"]
+            if "varTheta2" in self.variantParams:
+                varTheta2 = self.variantParams["varTheta2"]
                 self.Ka2 = self.__computeKangle(varTheta2,abs(self.Eb2))
                 self.logger.info(f"[HELIX] K theta 2 computed {self.Ka2} for variance {varTheta2}")
             else:
-                self.Ka2 = params["Ka2"]
+                self.Ka2 = self.variantParams["Ka2"]
                 self.logger.info(f"[HELIX] K theta 2 {self.Ka2}")
 
-            if "varPhi2" in params:
-                varPhi2   = params["varPhi2"]
+            if "varPhi2" in self.variantParams:
+                varPhi2   = self.variantParams["varPhi2"]
                 self.Kd2 = self.__computeKangle(varPhi2,abs(self.Eb2))
                 self.logger.info(f"[HELIX] K phi 2 computed {self.Kd2} for variance {varPhi2}")
             else:
-                self.Kd2 = params["Kd2"]
+                self.Kd2 = self.variantParams["Kd2"]
                 self.logger.info(f"[HELIX] K phi 2 {self.Kd2}")
 
             if stiffnessFactor != 1.0:
@@ -378,8 +395,8 @@ class HELIX(modelBase):
                 self.logger.error(f"[HELIX] Negative spring constant: Kb2 {self.Kb2} Ka2 {self.Ka2} Kd2 {self.Kd2}")
                 raise Exception("Negative spring constant")
 
-            self.prob_0_to_1 = params["prob_1_to_2"] #Note the different naming convention
-            self.prob_1_to_0 = params["prob_2_to_1"]
+            self.prob_0_to_1 = self.variantParams["prob_1_to_2"] #Note the different naming convention
+            self.prob_1_to_0 = self.variantParams["prob_2_to_1"]
 
         ##############################################
 
@@ -493,7 +510,7 @@ class HELIX(modelBase):
                                                                                          self.rc,
                                                                                          self.theta0, self.phi0]]
 
-        if self.variant == "twoStates":
+        if self.variantName == "twoStates":
             forceField["helix"]["patchesTopology"]["forceField"]["helix"]["type"]   =  ["NonBondedPatches", "Helix2States"]
             forceField["helix"]["patchesTopology"]["forceField"]["helix"]["labels"] = ["name_i", "name_j",
                                                                                        "Eb0", "Kb0", "Ka0", "Kd0", "rc0", "theta0_0", "phi0_0",

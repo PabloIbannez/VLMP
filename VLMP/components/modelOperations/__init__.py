@@ -7,13 +7,11 @@ import logging
 
 from pyUAMMD import simulation
 
-from ...utils.utils import getLabelIndex
-from ...utils.utils import getSelections
-from ...utils.utils import _getIdsProperty
-from ...utils.utils import _getIdsState
-from ...utils.utils import _setIdsState
+from .. import idsHandler
 
-class modelOperationBase:
+from ...utils.utils import getSelections
+
+class modelOperationBase(idsHandler):
 
     def __init__(self,
                  _type:str,_name:str,
@@ -24,6 +22,7 @@ class modelOperationBase:
                  availableSelections:set,
                  requiredSelections:set,
                  **params):
+        super().__init__(models)
 
         self.logger = logging.getLogger("VLMP")
 
@@ -85,20 +84,6 @@ class modelOperationBase:
                                         selections,
                                         **params)
 
-        ########################################################
-
-        self.id2mdl   = list(range(sum([mdl.getNumberOfParticles() for mdl in self._models])))
-        self.id2mdlId = copy.deepcopy(self.id2mdl)
-
-        offset=0
-        for mdlIndex,mdl in enumerate(self._models):
-            for i in range(mdl.getNumberOfParticles()):
-                self.id2mdl[i+offset] = mdlIndex
-                self.id2mdlId[i+offset] = i
-            offset+=mdl.getNumberOfParticles()
-
-        ########################################################
-
     ########################################################
 
     def getName(self):
@@ -118,18 +103,24 @@ class modelOperationBase:
     def getEnsemble(self):
         return self._ensemble
 
+    ########################################################
+
     def getSelection(self,selectionName):
         return self._selection[selectionName]
 
+    ########################################################
+
     def getIdsProperty(self,ids,propertyName):
-        return _getIdsProperty(ids,propertyName,self.id2mdl,self._models,self.id2mdlId)
+        return self._getIdsProperty(ids,propertyName)
 
     def getIdsState(self,ids,stateName):
-        return _getIdsState(ids,stateName,self.id2mdl,self._models,self.id2mdlId)
+        return self._getIdsState(ids,stateName)
 
+    def getIdsStructure(self,ids,structName):
+        return self._getIdsStructure(ids,structName)
 
     def setIdsState(self,ids,stateName,states):
-        _setIdsState(ids,stateName,states,self.id2mdl,self._models,self.id2mdlId)
+        self._setIdsState(ids,stateName,states)
 
 
 ############### IMPORT ALL MODEL OPERATIONS ###############

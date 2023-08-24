@@ -48,6 +48,7 @@ class SPHEREMULTIBLOB(modelBase):
     def __sphere(self, rSphere):
 
         if self.icoN != 31:
+
             mu = int(np.sqrt(0.1*(self.icoN-12)+1))
             N  = 12+10*(mu**2-1)
 
@@ -55,29 +56,32 @@ class SPHEREMULTIBLOB(modelBase):
             pos    = np.append(pos, [[0, 0, 0]], axis=0)
             pos   *= rSphere
 
-            self.icoN = len(pos)
+            self.icoN  = len(pos)
             edgeIco    = rSphere/np.sin(2*np.pi/5)
             edgeLength = edgeIco/mu
 
         else:
+
+            goldenRatio = (1.0 + np.sqrt(5.0))/2.0
+
             pos = np.zeros((self.icoN, 3), dtype=float)
             ic = np.zeros(self.icoN, dtype=int)
-            edgeLength = rSphere / self.goldenRatio
-            
+            edgeLength = rSphere / goldenRatio
+
             a = 0
             b = 0
-            c = self.goldenRatio
+            c = goldenRatio
             cm = -c
             self.__even_permutation(a, b, c, pos, 0)
             self.__even_permutation(a, b, cm, pos, 3)
-            
+
             a = 0.5
-            b = self.goldenRatio / 2.0
-            c = (self.goldenRatio + 1.) / 2.
+            b = goldenRatio / 2.0
+            c = (goldenRatio + 1.) / 2.
             am = -a
             bm = -b
             cm = -c
-            
+
             self.__even_permutation(a, b, c, pos, 6)
             self.__even_permutation(am, b, c, pos, 9)
             self.__even_permutation(a, bm, c, pos, 12)
@@ -86,7 +90,7 @@ class SPHEREMULTIBLOB(modelBase):
             self.__even_permutation(am, b, cm, pos, 21)
             self.__even_permutation(a, bm, cm, pos, 24)
             self.__even_permutation(am, bm, cm, pos, 27)
-            
+
             pos[30, :] = 0  # central
             ic[0] = 2
             ic[6] = 3
@@ -94,9 +98,9 @@ class SPHEREMULTIBLOB(modelBase):
             ic[12] = 3
             ic[18] = 3
             pos = edgeLength * pos
-                       
+
         return pos, edgeLength
-        
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
@@ -113,9 +117,7 @@ class SPHEREMULTIBLOB(modelBase):
                          **params)
 
         self.maxTries    = 100
-        self.goldenRatio = (1.0 + np.sqrt(5.0))/2.0
 
-        self.edgeLength  = 0
         ############################################################
 
         self.icoN        = params.get("particlesPerSphere",31)
@@ -202,7 +204,7 @@ class SPHEREMULTIBLOB(modelBase):
                 i+=1
 
         # Generate spheres
-        
+
         state = {}
         state["labels"]=["id","position"]
         state["data"]  =[]

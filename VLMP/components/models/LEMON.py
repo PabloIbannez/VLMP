@@ -6,7 +6,7 @@ import copy
 import logging
 
 from . import modelBase
-from ...utils.utils import getEx
+from ...utils.geometry import getEx
 
 import random
 

@@ -11,7 +11,7 @@ class integratorBase:
 
     def __init__(self,
                  _type:str,_name:str,
-                 units,types,ensemble,
+                 units,types,ensemble,models,
                  availableParameters:set,
                  requiredParameters:set,
                  **params):
@@ -24,6 +24,7 @@ class integratorBase:
         self._units    = units
         self._types    = types
         self._ensemble = ensemble
+        self._models   = models
 
         self.availableParameters  = availableParameters.copy()
         self.requiredParameters = requiredParameters.copy()
@@ -63,6 +64,17 @@ class integratorBase:
 
     ########################################################
 
+    def getUnits(self):
+        return self._units
+
+    def getTypes(self):
+        return self._types
+
+    def getEnsemble(self):
+        return self._ensemble
+
+    ########################################################
+
     def setIntegrator(self, integrator):
         self._integrator = integrator
 
@@ -80,17 +92,6 @@ class integratorBase:
             self.logger.error(f"[Integrator] ({self._type}) Integration steps not initialized")
             raise Exception(f"Integration steps not initialized")
         return self._integrationSteps
-
-    ########################################################
-
-    def getUnits(self):
-        return self._units
-
-    def getTypes(self):
-        return self._types
-
-    def getEnsemble(self):
-        return self._ensemble
 
     ########################################################
 

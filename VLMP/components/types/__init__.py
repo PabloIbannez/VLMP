@@ -65,6 +65,8 @@ class typesBase:
     def getUnits(self):
         return self._units
 
+    ########################################################
+
     def getTypes(self):
         if self._typesComp is None:
             self.logger.error(f"[Types] ({self._type}) Types components not set for types {self._name}")

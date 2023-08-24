@@ -39,5 +39,5 @@ class NVT(ensembleBase):
 
         self.setEnsembleName("NVT")
 
-        self.addComponent("box",box)
-        self.addComponent("temperature",temperature)
+        self.addEnsembleComponent("box",box)
+        self.addEnsembleComponent("temperature",temperature)

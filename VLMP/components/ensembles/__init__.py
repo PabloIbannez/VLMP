@@ -69,6 +69,14 @@ class ensembleBase:
 
     ########################################################
 
+    def getUnits(self):
+        return self._units
+
+    def getTypes(self):
+        return self._types
+
+    ########################################################
+
     def setEnsembleName(self, ensembleUAMMD):
         self._ensembleUAMMD = ensembleUAMMD
 
@@ -79,7 +87,7 @@ class ensembleBase:
 
         return self._ensembleUAMMD
 
-    def addComponent(self,componentName,componentValue):
+    def addEnsembleComponent(self,componentName,componentValue):
         if self._ensembleComp is None:
             self._ensembleComp = {}
         if componentName in self._ensembleComp:
@@ -89,14 +97,14 @@ class ensembleBase:
 
         self._ensembleComp[componentName] = componentValue
 
-    def getComponents(self):
+    def getEnsembleComponents(self):
         if self._ensembleComp is None:
             self.logger.error(f"[Ensemble] ({self._type}) No components added to ensemble {self._name}")
             raise Exception(f"No components added")
 
         return self._ensembleComp
 
-    def getComponent(self,componentName):
+    def getEnsembleComponent(self,componentName):
         if self._ensembleComp is None:
             self.logger.error(f"[Ensemble] ({self._type}) No components added to ensemble {self._name}")
             raise Exception(f"No components added")
@@ -109,21 +117,13 @@ class ensembleBase:
 
     ########################################################
 
-    def getUnits(self):
-        return self._units
-
-    def getTypes(self):
-        return self._types
-
-    ########################################################
-
     def getSimulation(self,DEBUG_MODE = False):
         labels = []
         data   = []
 
-        for l in self.getComponents():
+        for l in self.getEnsembleComponents():
             labels.append(l)
-            data.append(self.getComponent(l))
+            data.append(self.getEnsembleComponent(l))
 
         return simulation({"global":{"ensemble":{
                                         "type":["Ensemble",self.getEnsembleName()],

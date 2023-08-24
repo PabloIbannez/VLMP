@@ -7,6 +7,7 @@ import logging
 import itertools
 
 from . import modelBase
+from ...utils.utils import readVariant
 
 import math
 
@@ -33,10 +34,8 @@ class MADna(modelBase):
     :type dielectricConstant: float, optional. Default: 78.3
     :param debyeFactor: Debye factor
     :type debyeFactor: float, optional. Default: 4.0
-    :param fastFactor: Fast factor
-    :type fastFactor: float, optional. Default: 1.0
-    :param version: Version of the model. Options: "standard" or "fast"
-    :type version: str, optional. Default: "standard"
+    :param variant: variant of the model. Options: "fast"
+    :type variant: str, optional. Default: None
     """
 
     def __alignBasePairs(self,ref,mobile):
@@ -134,8 +133,8 @@ class MADna(modelBase):
                          availableParameters = {"sequence",
                                                 "inputModelData",
                                                 "debyeLength","dielectricConstant",
-                                                "debyeFactor","fastFactor",
-                                                "version"},
+                                                "debyeFactor",
+                                                "variant"},
                          requiredParameters  = {"sequence"},
                          definedSelections   = {"type","strand","basePairIndex","basePairType"},
                          **params)
@@ -167,9 +166,29 @@ class MADna(modelBase):
         self.dielectricConstant = params.get("dielectricConstant",78.3)
 
         self.debyeFactor = params.get("debyeFactor",4.0)
-        self.fastFactor  = params.get("fastFactor",1)
 
-        self.version = params.get("version", "standard")
+        self.variantName, self.variantParams = readVariant(params)
+        if   self.variantName is None:
+            pass
+        elif self.variantName == "fast":
+
+            variantAvailableParameters = {"fastFactor"}
+            variantRequiredParameters  = set()
+
+            for key in self.variantParams.keys():
+                if key not in variantAvailableParameters:
+                    self.logger.error(f"[MADna] Variant parameter {key} is not available for variant {self.variantName}")
+                    raise Exception("Not correct variant parameter")
+
+            for key in variantRequiredParameters:
+                if key not in self.variantParams.keys():
+                    self.logger.error(f"[MADna] Variant parameter {key} is required for variant {self.variantName}")
+                    raise Exception("Not correct variant parameter")
+
+            self.fastFactor  = params.get("fastFactor",1)
+        else:
+            self.logger.error(f"[MADna] Variant {self.variantName} is not available")
+            raise Exception("Variant not available")
 
         self.__generateCoordinatesAndTopology()
 
@@ -830,42 +849,36 @@ class MADna(modelBase):
                                                     self.model["DIHEDRALS"][dih["type"]]["phi0"]])
 
         #######################################################
-        ####################### VERSION #######################
+        ####################### VARIANT #######################
 
-        if self.version != "standard":
+        if self.variantName == "fast":
 
-            if self.version == "fast":
+            del forceField["WCA"]
+            del forceField["DH"]
 
-                del forceField["WCA"]
-                del forceField["DH"]
+            PHOSPHATE_DISTANCE = 3.4
 
-                PHOSPHATE_DISTANCE = 3.4
+            cutOff      = self.debyeFactor*self.debyeLength
+            madnafast_n = math.ceil(self.fastFactor*(cutOff/PHOSPHATE_DISTANCE))
 
-                cutOff      = self.debyeFactor*self.debyeLength
-                madnafast_n = math.ceil(self.fastFactor*(cutOff/PHOSPHATE_DISTANCE))
+            phosphateIndex_basePair = []
+            for bp in range(self.seqLen):
+                index = self.processSelection(**{"basePairIndex":bp+1,"type":"P"})
+                phosphateIndex_basePair+=[[i,bp+1] for i in index]
 
-                phosphateIndex_basePair = []
-                for bp in range(self.seqLen):
-                    index = self.processSelection(**{"basePairIndex":bp+1,"type":"P"})
-                    phosphateIndex_basePair+=[[i,bp+1] for i in index]
+            forceField["BONDS_DH"] = {}
+            forceField["BONDS_DH"]["type"]       = ["Bond2", "DebyeHuckel"]
+            forceField["BONDS_DH"]["parameters"] = {}
+            forceField["BONDS_DH"]["labels"]     = ["id_i", "id_j", "chgProduct", "dielectricConstant", "debyeLength", "cutOff"]
+            forceField["BONDS_DH"]["data"]       = []
 
-                forceField["BONDS_DH"] = {}
-                forceField["BONDS_DH"]["type"]       = ["Bond2", "DebyeHuckel"]
-                forceField["BONDS_DH"]["parameters"] = {}
-                forceField["BONDS_DH"]["labels"]     = ["id_i", "id_j", "chgProduct", "dielectricConstant", "debyeLength", "cutOff"]
-                forceField["BONDS_DH"]["data"]       = []
+            chgProduct = self.model["TYPES"]["P"]["charge"]
+            chgProduct = chgProduct*chgProduct
+            for ph1,ph2 in itertools.combinations(phosphateIndex_basePair,2):
+                if(abs(ph1[1]-ph2[1])<madnafast_n):
+                    forceField["BONDS_DH"]["data"].append([ph1[0],ph2[0],chgProduct,self.dielectricConstant,self.debyeLength,cutOff])
 
-                chgProduct = self.model["TYPES"]["P"]["charge"]
-                chgProduct = chgProduct*chgProduct
-                for ph1,ph2 in itertools.combinations(phosphateIndex_basePair,2):
-                    if(abs(ph1[1]-ph2[1])<madnafast_n):
-                        forceField["BONDS_DH"]["data"].append([ph1[0],ph2[0],chgProduct,self.dielectricConstant,self.debyeLength,cutOff])
-
-            else:
-                self.logger.error(f"[MADna] Version \"{self.version}\" not available")
-                raise Exception("Version not available")
-
-        ##################### VERSION END #####################
+        ##################### VARIANT END #####################
         #######################################################
 
         self.setState(state)

@@ -47,7 +47,7 @@ class ICOSPHERE(modelBase):
         radius     = params.get("radius",1.0)
 
         Kb = params.get("Kb",1.0)
-        Kd = params.get("Kd",1.0)
+        Kd = params.get("Kd",0.0)
 
         ############################################################
 

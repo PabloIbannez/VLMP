@@ -6,56 +6,32 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 from pyquaternion import Quaternion
 
+#Parameters processing
+
+def readVariant(parameters):
+
+    logger = logging.getLogger("VLMP")
+
+    variant = parameters.get("variant",{})
+
+    variantName   = None
+    variantParams = {}
+
+    if len(variant) == 0:
+        return variantName, variantParams
+    if len(variant) > 1:
+        logger.error("Only one variant can be specified")
+        raise Exception("Only one variant can be specified")
+
+    variantName = list(variant.keys())[0]
+    variantParams = variant[variantName]
+
+    return variantName, variantParams
+
 #Units utils
 
 def picosecond2KcalMol_A_time():
     return 20/0.978
-
-#Geometry utils
-
-def getEx(q):
-    """ Given a quaternion, q, the function returns the z vector of the local basis"""
-
-    q0,q1,q2,q3 = q
-
-    return 2.0*np.asarray([q0*q0+q1*q1-0.5,q1*q2+q0*q3,q1*q3-q0*q2])
-
-def getEy(q):
-    """ Given a quaternion, q, the function returns the z vector of the local basis"""
-
-    q0,q1,q2,q3 = q
-
-    return 2.0*np.asarray([q1*q2-q0*q3,q0*q0+q2*q2-0.5,q2*q3+q0*q1])
-
-def getEz(q):
-    """ Given a quaternion, q, the function returns the z vector of the local basis"""
-
-    q0,q1,q2,q3 = q
-
-    return 2.0*np.asarray([q1*q3+q0*q2,q2*q3-q0*q1,q0*q0+q3*q3-0.5])
-
-
-def quaternionFromVectors(vec1, vec2):
-    """ Given two vector the function returns the rotation that transform one into another.
-        The rotation is codified as a quaternion"""
-
-    a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (vec2 / np.linalg.norm(vec2)).reshape(3)
-    v = np.cross(a, b)
-
-    if any(v):
-        c = np.dot(a, b)
-        s = np.linalg.norm(v)
-        kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
-        M = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
-    else:
-        if np.dot(a,b) < 0:
-            M = -np.eye(3)
-        else:
-            M =  np.eye(3)
-
-    q1,q2,q3,q0 = R.from_matrix(M).as_quat()
-
-    return np.asarray([q0,q1,q2,q3])
 
 
 ################################################################
@@ -99,7 +75,8 @@ def getSelections(models,selectionsList,**param):
         else:
             for k in param[p].keys():
                 if k not in ["models","expression"]:
-                    logger.error(f"[getSelections] Parameter {k} not recognized for selection {p}, available parameters are: models, expression")
+                    logger.error(f"[getSelections] Parameter {k} not recognized for selection {p},"
+                                  " available parameters are: models, expression")
                     raise Exception("Unknown parameter")
 
     selections = {}
@@ -118,59 +95,11 @@ def getSelections(models,selectionsList,**param):
             else:
                 mdlSelIds = mdl.getSelection()
 
-            offSet = mdl.getIdOffset()
+            offSet    = mdl.getIdOffset()
             mdlSelIds = [i+offSet for i in mdlSelIds]
 
             selections[sel] += mdlSelIds
         selections[sel] = list(set(selections[sel]))
 
+    #Selection is a set of global ids
     return copy.deepcopy(selections)
-
-def _getIdsProperty(ids,propertyName,id2mdl,models,id2mdlId):
-     idProp = []
-
-     for i in ids:
-         mdl   = id2mdl[i]
-
-         typeIndex = getLabelIndex("type",models[mdl].getStructure()["labels"])
-         itype     = models[mdl].getStructure()["data"][id2mdlId[i]][typeIndex]
-
-         idProp.append(models[mdl].getTypes().getTypes()[itype][propertyName])
-
-     return idProp
-
-def _getIdsState(ids,stateName,id2mdl,models,id2mdlId):
-    idState = []
-
-    for i in ids:
-        mdl   = id2mdl[i]
-
-        stateIndex = getLabelIndex(stateName,models[mdl].getState()["labels"])
-        idState.append(models[mdl].getState()["data"][id2mdlId[i]][stateIndex])
-
-    return idState
-
-def _setIdsState(ids,stateName,states,id2mdl,models,id2mdlId):
-
-    logger = logging.getLogger("VLMP")
-
-    if len(ids) != len(states):
-        logger.error(f"[ModelOperation] Number of ids and states ({stateName}) do not match")
-        raise Exception(f"Number of ids and states do not match")
-
-    for i,s in zip(ids,states):
-        mdl   = id2mdl[i]
-
-        stateIndex = getLabelIndex(stateName,models[mdl].getState()["labels"])
-
-        #Check if state is valid
-        if type(s) != type(models[mdl].getState()["data"][id2mdlId[i]][stateIndex]):
-            logger.error(f"[ModelOperation] State value {s} for state \"{stateName}\" is not valid")
-            raise Exception(f"State is not valid")
-        else:
-            if type(s) == list:
-                if len(s) != len(models[mdl].getState()["data"][id2mdlId[i]][stateIndex]):
-                    logger.error(f"[ModelOperation] State value {s} for state \"{stateName}\" is not valid, length does not match")
-                    raise Exception(f"State is not valid")
-
-            models[mdl].getState()["data"][id2mdlId[i]][stateIndex] = s

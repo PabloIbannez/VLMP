@@ -9,7 +9,16 @@ import numpy as np
 class setCenterOfMassPosition(modelOperationBase):
 
     """
+    Component name: setCenterOfMassPosition
+    Component type: modelOperation
 
+    Author: Pablo Ibáñez-Freire
+    Date: 17/06/2023
+
+    Set the center of mass of a selection of particles to a given position.
+
+    :param position: Position to set the center of mass to.
+    :type position: list of floats
 
     """
 
