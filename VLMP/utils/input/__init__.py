@@ -9,23 +9,29 @@ def getLabelIndex(l,labels):
         logger.error("Label %s not found in labels list" % l)
         raise Exception("Label not found")
 
-#Parameters processing
-def readVariant(parameters):
+def getSubParameters(prmName,parameters):
 
     logger = logging.getLogger("VLMP")
 
-    variant = parameters.get("variant",{})
+    param = parameters.get(prmName,{})
+    if not isinstance(param,dict):
+        #Check if the parameter is a string
+        if isinstance(param,str):
+            param = {param:{}}
+        else:
+            logger.error(f"Parameter {prmName} is not a dictionary nor a string")
+            raise Exception("Parameter is not a dictionary")
 
-    variantName   = None
-    variantParams = {}
+    parameterName   = None
+    subParameters   = {}
 
-    if len(variant) == 0:
-        return variantName, variantParams
-    if len(variant) > 1:
-        logger.error("Only one variant can be specified")
-        raise Exception("Only one variant can be specified")
+    if len(param) == 0:
+        return parameterName, subParameters
+    if len(param) > 1:
+        logger.error("Only one subparameter can be specified")
+        raise Exception("Only one subparameter can be specified")
 
-    variantName = list(variant.keys())[0]
-    variantParams = variant[variantName]
+    parameterName = list(param.keys())[0]
+    subParameters = param[parameterName]
 
-    return variantName, variantParams
+    return parameterName, subParameters

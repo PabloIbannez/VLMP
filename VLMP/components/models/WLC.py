@@ -82,22 +82,22 @@ class WLC(modelBase):
         forceField = {}
 
         forceField["bonds"] = {}
-        forceField["bonds"]["type"]       = ["Bond2","HarmonicCommon_K_r0"]
-        forceField["bonds"]["parameters"] = {"K":Kb, "r0":b}
-        forceField["bonds"]["labels"]     = ["id_i","id_j"]
+        forceField["bonds"]["type"]       = ["Bond2","Harmonic"]
+        forceField["bonds"]["parameters"] = {}
+        forceField["bonds"]["labels"]     = ["id_i","id_j","K","r0"]
         forceField["bonds"]["data"]       = []
 
         for i in range(self.N-1):
-            forceField["bonds"]["data"].append([i,i+1])
+            forceField["bonds"]["data"].append([i,i+1,Kb,b])
 
         forceField["angles"] = {}
-        forceField["angles"]["type"]       = ["Bond3","KratkyPorodCommon_K"]
-        forceField["angles"]["parameters"] = {"K":Ka}
-        forceField["angles"]["labels"]     = ["id_i","id_j","id_k"]
+        forceField["angles"]["type"]       = ["Bond3","KratkyPorod"]
+        forceField["angles"]["parameters"] = {}
+        forceField["angles"]["labels"]     = ["id_i","id_j","id_k","K"]
         forceField["angles"]["data"]       = []
 
         for i in range(self.N-2):
-            forceField["angles"]["data"].append([i,i+1,i+2])
+            forceField["angles"]["data"].append([i,i+1,i+2,Ka])
 
         ########################################################
 

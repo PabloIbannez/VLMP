@@ -5,8 +5,9 @@ import logging
 
 from . import modelBase
 from ...utils.geometry import getEx
+from ...utils.geometry import boxChecker,platesChecker
 
-from ...utils.input import readVariant
+from ...utils.input import getSubParameters
 
 import random
 
@@ -68,9 +69,8 @@ class HELIX(modelBase):
 
             currentMonomerPosition = np.asarray([x,y,z])
 
-            if self.bounds is not None:
-                if not self.bounds.check([x,y,z]):
-                    continue
+            if not self.checker.check([x,y,z]):
+                continue
 
             if monomersPositions:
                 minDst,minDstIndex = cKDTree(monomersPositions).query(currentMonomerPosition, 1)
@@ -109,11 +109,10 @@ class HELIX(modelBase):
         centroid = np.mean(monomersPositions,axis=0)
         monomersPositions-=centroid
 
-        if self.bounds is not None:
-            for p in monomersPositions:
-                if not self.bounds.check(p):
-                    self.logger.error(f"[HELIX] Box too small")
-                    raise Exception("Box too small")
+        for p in monomersPositions:
+            if not self.checker.check(p):
+                self.logger.error(f"[HELIX] Box too small")
+                raise Exception("Box too small")
 
 
         return np.asarray(monomersPositions),np.asarray(monomersOrientations)
@@ -180,11 +179,10 @@ class HELIX(modelBase):
         centroid = np.mean(monomersPositions,axis=0)
         monomersPositions-=centroid
 
-        if self.bounds is not None:
-            for p in monomersPositions:
-                if not self.bounds.check(p):
-                    self.logger.error(f"[HELIX] Box too small")
-                    raise Exception("Box too small")
+        for p in monomersPositions:
+            if not self.checker.check(p):
+                self.logger.error(f"[HELIX] Box too small")
+                raise Exception("Box too small")
 
 
         return np.asarray(monomersPositions),np.asarray(monomersOrientations)
@@ -199,7 +197,7 @@ class HELIX(modelBase):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
                          availableParameters = {"mode","init",
-                                                "nMonomers","box","bounds",
+                                                "nMonomers",
                                                 "monomerRadius","patchRadius",
                                                 "epsilon_mm",
                                                 "Eb","rc",
@@ -208,10 +206,6 @@ class HELIX(modelBase):
                                                 "Kb","Ka","Kd",
                                                 "energyThreshold",
                                                 "stiffnessFactor",
-                                                "Es",
-                                                "beta0",
-                                                "El","Sl",
-                                                "plateTop","plateBottom",
                                                 "variant"},
                          requiredParameters  = {"nMonomers",
                                                 "epsilon_mm",
@@ -228,8 +222,8 @@ class HELIX(modelBase):
 
         self.kT = self.getUnits().getConstant("kT")
 
-        self.init      = params.get("init","random")
-        self.mode      = params.get("mode","bulk")
+        self.init                 = params.get("init","random")
+        self.mode,self.modeParams = getSubParameters("mode",params)
 
         if self.mode not in ["bulk","surface"]:
             self.logger.error(f"[HELIX] Mode {self.mode} not supported")
@@ -237,26 +231,7 @@ class HELIX(modelBase):
 
         self.nMonomers      = params["nMonomers"]
 
-        #box and bounds are mutually exclusive
-        #but at least one of them is required
-        if "box" in params and "bounds" in params:
-            self.logger.error(f"[HELIX] Both box and bounds were specified")
-            raise Exception("Both box and bounds were specified")
-        elif "box" in params:
-            self.box = params["box"]
-            self.bounds = None
-            if self.mode == "surface":
-                self.plateTop    = params["plateTop"]
-                self.plateBottom = params["plateBottom"]
-        elif "bounds" in params:
-            self.bounds = params["bounds"]
-            self.box    = self.bounds.getSimulationBox()
-            if self.mode == "surface":
-                self.plateTop    = self.bounds.getSimulationBounds()["plateTop"]
-                self.plateBottom = self.bounds.getSimulationBounds()["plateBottom"]
-        else:
-            self.logger.error(f"[HELIX] Neither box nor bounds were specified")
-            raise Exception("Neither box nor bounds were specified")
+        self.box = self.getEnsemble().getEnsembleComponent("box")
 
         self.monomerRadius = params.get("monomerRadius",0.5)
         self.patchRadius   = params.get("patchRadius",0.1)
@@ -275,19 +250,27 @@ class HELIX(modelBase):
 
         if self.mode=="surface":
             #Check parameters Es,beta0,El,Sl are present in params
-            surfaceParams = ["Es","beta0","El","Sl"]
-            for sPar in surfaceParams:
-                if sPar not in params:
-                    self.logger.error(f"[HELIX] Requiered parameter {sPar} for surface mode not found")
+            requiredSurfaceParams = ["Es","beta0","El","Sl","plateTop","plateBottom"]
+
+            for sPar in requiredSurfaceParams:
+                if sPar not in self.modeParams:
+                    self.logger.error(f"[HELIX] Requiered parameter {sPar} for surface mode not found."
+                                      f"Required parameters are {requiredSurfaceParams}")
                     raise Exception(f"Required parameter not given")
 
-            self.Es     = params["Es"]
+            self.Es     = self.modeParams["Es"]
 
-            self.beta0  = params["beta0"]
+            self.beta0  = self.modeParams["beta0"]
 
-            self.El     = params["El"]
-            self.Sl     = params["Sl"]
+            self.El     = self.modeParams["El"]
+            self.Sl     = self.modeParams["Sl"]
 
+            self.plateTop    = self.modeParams["plateTop"]
+            self.plateBottom = self.modeParams["plateBottom"]
+
+            self.checker = platesChecker(self.box,self.plateTop,self.plateBottom,2.0*self.monomerRadius)
+        else:
+            self.checker = boxChecker(self.box)
 
         if "varDst" in params:
             varDst   = params["varDst"]
@@ -327,7 +310,7 @@ class HELIX(modelBase):
 
         ##############################################
 
-        self.variantName, self.variantParams = readVariant(params)
+        self.variantName, self.variantParams = getSubParameters("variant",params)
 
         if self.variantName == "twoStates":
             self.logger.info(f"[HELIX] Using two states variant")
@@ -576,10 +559,9 @@ class HELIX(modelBase):
 
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]={}
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]["type"]       =  ["SurfacePatches", "Linker"]
-            forceField["surface"]["patchesTopology"]["forceField"]["linker"]["parameters"] =  {"surfacePosition":self.plateBottom-2.0*self.monomerRadius}
+            forceField["surface"]["patchesTopology"]["forceField"]["linker"]["parameters"] =  {"surfacePosition":self.plateBottom-self.monomerRadius}
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]["labels"]     =  ["name", "epsilon", "sigma"]
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]["data"]       =  [["L",self.El,self.Sl]]
-
 
         ##############################################
 
@@ -590,8 +572,6 @@ class HELIX(modelBase):
     def processSelection(self,**params):
 
         sel = []
-
         if "particleId" in params:
             sel += params["particleId"]
-
         return sel

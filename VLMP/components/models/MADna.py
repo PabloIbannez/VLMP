@@ -7,7 +7,7 @@ import logging
 import itertools
 
 from . import modelBase
-from ...utils.input import readVariant
+from ...utils.input import getSubParameters
 
 import math
 
@@ -167,7 +167,7 @@ class MADna(modelBase):
 
         self.debyeFactor = params.get("debyeFactor",4.0)
 
-        self.variantName, self.variantParams = readVariant(params)
+        self.variantName, self.variantParams = getSubParameters("variant",params)
         if   self.variantName is None:
             pass
         elif self.variantName == "fast":

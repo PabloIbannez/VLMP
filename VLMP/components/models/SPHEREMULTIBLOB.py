@@ -47,7 +47,7 @@ class SPHEREMULTIBLOB(modelBase):
 
     def __sphere(self, rSphere):
 
-        if self.icoN != 31:
+        if self.sphereType == "icosphere":
 
             mu = int(np.sqrt(0.1*(self.icoN-12)+1))
             N  = 12+10*(mu**2-1)
@@ -60,7 +60,11 @@ class SPHEREMULTIBLOB(modelBase):
             edgeIco    = rSphere/np.sin(2*np.pi/5)
             edgeLength = edgeIco/mu
 
-        else:
+        elif self.sphereType == "icosidodecahedron":
+
+            if self.icoN != 31:
+                self.logger.error("Number of particles for icosidodecahedron must be 31")
+                raise Exception("Number of particles for icosidodecahedron must be 31")
 
             goldenRatio = (1.0 + np.sqrt(5.0))/2.0
 
@@ -99,26 +103,35 @@ class SPHEREMULTIBLOB(modelBase):
             ic[18] = 3
             pos = edgeLength * pos
 
+        else:
+            self.logger.error("Sphere type not recognized")
+            raise Exception("Sphere type not recognized")
+
         return pos, edgeLength
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"particleName","particleMass","particleRadius","particleCharge",
+                         availableParameters = {"sphereType",
+                                                "particleName",
+                                                "particleMass","particleRadius","particleCharge",
                                                 "numberOfSpheres",
                                                 "particlesPerSphere",
                                                 "radiusOfSphere",
                                                 "K",
-                                                "box",
                                                 "heightMean","heightStd",
                                                 "heightReference"},
                          requiredParameters  = {"K"},
                          definedSelections   = {"particleId"},
                          **params)
 
-        self.maxTries    = 100
-
         ############################################################
+
+        self.sphereType  = params.get("sphereType", "icosidodecahedron")
+
+        if self.sphereType not in ["icosphere","icosidodecahedron"]:
+            self.logger.error("Sphere type not recognized")
+            raise Exception("Sphere type not recognized")
 
         self.icoN        = params.get("particlesPerSphere",31)
 
@@ -144,7 +157,9 @@ class SPHEREMULTIBLOB(modelBase):
 
         heightReference = params.get("heightReference",0.0)
 
-        box = params.get("box",[0.0,0.0,0.0])
+        box = self.getEnsemble().getEnsembleComponent("box")
+
+        self.maxTries    = params.get("maxTries",100)
 
         #TODO: apply pbc, now box size is reduced by 2*radiusOfSphere
 
@@ -161,7 +176,8 @@ class SPHEREMULTIBLOB(modelBase):
             raise ValueError("Height reference is out of box")
 
         if heightMean + heightReference > Z or heightMean + heightReference < -Z:
-            self.logger.error(f"Generation height is out of box {heightMean + heightReference} > {Z} or {heightMean + heightReference} < {-Z}")
+            self.logger.error(f"Generation height is out of box {heightMean + heightReference} > {Z} or "
+                              f"{heightMean + heightReference} < {-Z}")
             raise ValueError("Generation height is out of box")
 
         ############################################################
@@ -267,9 +283,7 @@ class SPHEREMULTIBLOB(modelBase):
     def processSelection(self,**params):
 
         sel = []
-
         if "particleId" in params:
             sel += params["particleId"]
-
         return sel
 

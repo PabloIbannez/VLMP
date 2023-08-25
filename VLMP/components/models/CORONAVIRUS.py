@@ -42,9 +42,15 @@ class CORONAVIRUS(modelBase):
                                                 "vesicleRadius",
                                                 "center",
                                                 "nSpikes",
-                                                "epsilonLipids_kT","muLipids","chiLipids","thetaLipids",
-                                                "epsilonLipidLipidWithProtein_kT","muLipidLipidWithProtein","chiLipidLipidWithProtein","thetaLipidLipidWithProtein",
-                                                "epsilonLipidWithProtein_kT","muLipidWithProtein","chiLipidWithProtein","thetaLipidWithProtein",
+                                                "epsilonLipids_kT",
+                                                "muLipids","chiLipids",
+                                                "thetaLipids",
+                                                "epsilonLipidLipidWithProtein_kT",
+                                                "muLipidLipidWithProtein","chiLipidLipidWithProtein",
+                                                "thetaLipidLipidWithProtein",
+                                                "epsilonLipidWithProtein_kT",
+                                                "muLipidWithProtein","chiLipidWithProtein",
+                                                "thetaLipidWithProtein",
                                                 "proteinProteinEpsilon_kT",
                                                 "proteinLipidEpsilon_kT",
                                                 "proteinSurfaceEpsilon_kT",
@@ -67,7 +73,8 @@ class CORONAVIRUS(modelBase):
         units = self.getUnits()
 
         if units.getName() != "KcalMol_A":
-            self.logger.error(f"[CORONAVIRUS] Units are not set correctly. Please set units to \"KcalMol_A\" (selected: {units.getName()})")
+            self.logger.error(f"[CORONAVIRUS] Units are not set correctly. "
+                              f"Please set units to \"KcalMol_A\" (selected: {units.getName()})")
             raise Exception("Not correct units")
 
         ########################################################

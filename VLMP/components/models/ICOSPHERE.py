@@ -17,7 +17,8 @@ class ICOSPHERE(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"particleName","particleMass","particleRadius","particleCharge",
+                         availableParameters = {"particleName",
+                                                "particleMass","particleRadius","particleCharge",
                                                 "position",
                                                 "resolution",
                                                 "radius",
