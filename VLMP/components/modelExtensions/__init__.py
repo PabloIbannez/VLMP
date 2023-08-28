@@ -94,6 +94,7 @@ class modelExtensionBase(idsHandler):
         ########################################################
 
         self._extension = None
+        self._group = None
 
     ########################################################
 
@@ -131,6 +132,34 @@ class modelExtensionBase(idsHandler):
 
         return self._extension
 
+    def setGroup(self,selSelections):
+
+        #If selSelections is not a list, make it a list
+        if not isinstance(selSelections,list):
+            selSelections = [selSelections]
+
+        #Check if all sel in selSelections are available selections
+        if not set(selSelections).issubset(self.availableSelections):
+            notAvailable = set(selSelections).difference(self.availableSelections)
+            self.logger.error(f"[ModelExtension] ({self._type}) Some selections ({notAvailable}),"
+                              f" requested to set a group, are not available selections for modelExtension {self._name}")
+            raise Exception(f"Selections not available")
+
+        selections = [sel for sel in self._selection.keys() if sel in selSelections]
+
+        ids = []
+        for sel in selections:
+            ids.extend(self.getSelection(sel))
+
+        #If ids is empty, then no particles were selected. Do nothing
+        if len(ids) == 0:
+            return
+
+        self._group = {"type":["Groups","GroupsList"],
+                       "parameters":{},
+                       "labels":["name","type","selection"],
+                       "data":[[self.getName(),"Ids",list(set(ids)).copy()]]}
+
     ########################################################
 
     def getSelection(self,selectionName):
@@ -155,6 +184,12 @@ class modelExtensionBase(idsHandler):
 
         sim["topology"] = {}
         sim["topology"]["forceField"] = self.getExtension()
+
+        if self._group is not None:
+            groupName = "group_"+self.getName()
+            for ext in sim["topology"]["forceField"]:
+                sim["topology"]["forceField"][ext]["parameters"]["group"] = groupName
+            sim["topology"]["forceField"][groupName] = self._group
 
         return simulation(copy.deepcopy(sim),DEBUG_MODE)
 

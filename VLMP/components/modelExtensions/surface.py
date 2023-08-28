@@ -24,8 +24,7 @@ class surface(modelExtensionBase):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
                          availableParameters = {"epsilon",
-                                                "surfacePosition",
-                                                "ignoredTypes"},
+                                                "surfacePosition"},
                          requiredParameters  = {"surfacePosition"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
@@ -48,12 +47,9 @@ class surface(modelExtensionBase):
         extension[name]["data"] = []
 
         types = self.getTypes()
-        ignoredTypes = params.get("ignoredTypes",[])
         for typ,info in types.getTypes().items():
-            if typ not in ignoredTypes:
-                extension[name]["data"].append([typ,epsilon,info["radius"]])
+            extension[name]["data"].append([typ,epsilon,info["radius"]])
 
         ############################################################
-
 
         self.setExtension(extension)

@@ -1,34 +1,50 @@
 import VLMP
+import copy
 
 from VLMP.utils.units import picosecond2KcalMol_A_time
-
 ps2AKMA = picosecond2KcalMol_A_time()
 
-copies = 1
+from VLMP.experiments.HighThroughputAFM import HighThroughputAFM
 
-simulationPool = []
-for i in range(copies):
-    print("testSimulation_"+str(i))
-    simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":"testSimulation_"+str(i)}}],
-                           "units":[{"type":"KcalMol_A"}],
-                           "types":[{"type":"basic"}],
-                           "ensemble":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
-                           "integrators":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0,"integrationSteps":10000000}}],
-                           "models":[{"type":"SOP",
-                                     "parameters":{"PDB":"3dkt.pdb",
-                                                   "epsilonNC":1.5}
-                                     }],
-                           "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":100000,
-                                                                                "outputFilePath":"test",
-                                                                                "outputFormat":"pdb"}},
-                                              {"type":"info","parameters":{"intervalStep":10000}}]
+samples = {
+            "ccmv":[{
+            "type":"FILE",
+            "parameters":{"inputFilePath":"ccmv.json"},
+            }],
+            "encapsulin": [{
+            "type":"FILE",
+            "parameters":{"inputFilePath":"encapsulin.json"},
+            }]
+           }
 
-                           })
+parameters = {"AFM":{"K":0.05,
+                     "Kxy":100.0,
+                     "epsilon":1.0,
+                     "tipVelocity":0.0/ps2AKMA,
+                     "surfacePosition":0.0,
+                     "thermalizationSteps":100000,
+                     "indentationSteps":10000000,
+                     "tipMass":1000.0,
+                     "tipRadius":250.0,
+                     "initialTipSampleDistance":50.0
+                    },
+              "surface":{"epsilon":-1.0},
+              "simulation":{"units":"KcalMol_A",
+                            "types":"basic",
+                            "temperature":300.0,
+                            "box":[2000.0, 2000.0, 4000.0],
+                            "samples":copy.deepcopy(samples),
+                            "integrator":{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,
+                                                                     "frictionConstant":1.0}}},
+              "output":{"infoIntervalStep":10000,
+                        "saveStateIntervalStep":100000,
+                        "saveStateOutputFilePath":"output",
+                        "saveStateOutputFormat":"sp"}
+              }
 
+htafm = HighThroughputAFM(parameters)
 
-vlmp = VLMP.VLMP()
-
-vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("one")
-vlmp.setUpSimulation("TEST")
+htafm.generateSimulationPool()
+htafm.distributeSimulationPool("none")
+htafm.setUpSimulation("TEST")
 

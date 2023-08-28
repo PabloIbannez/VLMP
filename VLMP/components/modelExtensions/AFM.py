@@ -21,9 +21,6 @@ class AFM(modelExtensionBase):
     :type tipVelocity: float
     :param startChipPosition: initial position of the chip
     :type startChipPosition: list of float [x,y,z]
-    :param surfacePosition: position of the surface
-    :type surfacePosition: float, z coordinate
-
     """
 
     def __init__(self,name,**params):
@@ -31,14 +28,10 @@ class AFM(modelExtensionBase):
                          _name = name,
                          availableParameters = {"epsilon",
                                                 "K","Kxy",
-                                                "tipVelocity",
-                                                "startChipPosition",
-                                                "surfacePosition"},
+                                                "tipVelocity"},
                          requiredParameters  = {"epsilon",
                                                 "K","Kxy",
-                                                "tipVelocity",
-                                                "startChipPosition",
-                                                "surfacePosition"},
+                                                "tipVelocity"},
                          availableSelections = {"tip","sample"},
                          requiredSelections  = {"tip","sample"},
                          **params)
@@ -50,13 +43,21 @@ class AFM(modelExtensionBase):
 
         tipVelocity = params["tipVelocity"]
 
-        startChipPosition = params["startChipPosition"]
-        surfacePosition   = params["surfacePosition"]
-
         ############################################################
 
         tipIds    = self.getSelection("tip")
         sampleIds = self.getSelection("sample")
+
+        # Check tipIds has only one element
+        if len(tipIds) != 1:
+            self.logger.error("AFM model extension only supports tips made of one particle")
+            raise Exception("Not supported tip selection")
+        else:
+            tipPos = self.getIdsState(tipIds,"position")
+            startChipPosition = tipPos[0]
+
+            self.logger.debug(f"AFM model extension, startChipPosition: {startChipPosition}")
+
 
         extension = {}
 
@@ -64,8 +65,8 @@ class AFM(modelExtensionBase):
         extension[name]["type"]       = ["AFM","SphericalTip"]
         extension[name]["parameters"] = {}
 
-        extension[name]["labels"] = ["idSet_i","idSet_j","epsilon","K","Kxy","tipVelocity","startChipPosition","surfacePosition"]
-        extension[name]["data"]   = [[tipIds,sampleIds,epsilon,K,Kxy,tipVelocity,startChipPosition,surfacePosition]]
+        extension[name]["labels"] = ["idSet_i","idSet_j","epsilon","K","Kxy","tipVelocity","startChipPosition"]
+        extension[name]["data"]   = [[tipIds,sampleIds,epsilon,K,Kxy,tipVelocity,startChipPosition]]
 
         ############################################################
 
