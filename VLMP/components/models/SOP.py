@@ -26,7 +26,8 @@ class SOP(modelBase):
                          availableParameters = {"PDB",
                                                 "centerInput",
                                                 "SASA",
-                                                "aggregateChains"},
+                                                "aggregateChains",
+                                                "epsilonNC"},
                          requiredParameters  = {"PDB"},
                          definedSelections   = {"particleId"},
                          **params)
