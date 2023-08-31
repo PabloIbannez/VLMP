@@ -43,17 +43,25 @@ class HighThroughputAFM(VLMP.VLMP):
         self.thermalizationSteps = parameters["AFM"]["thermalizationSteps"]
         self.indentationSteps    = parameters["AFM"]["indentationSteps"]
 
+        self.maxForce             = parameters["AFM"].get("maxForce",None)
+        self.maxForceIntervalStep = parameters["AFM"].get("maxForceIntervalStep",None)
+
         if "surface" in parameters.keys():
             self.addSurface = True
 
             self.epsilonSurface  = parameters["surface"].get("epsilon",1.0)
             self.surfacePosition = parameters["surface"].get("position",0.0)
 
+            self.absorptionHeight = parameters["surface"].get("absorptionHeight",None)
+
+            if self.absorptionHeight is not None:
+                self.absorptionK = parameters["surface"]["absorptionK"]
+                if self.absorptionHeight < self.surfacePosition:
+                    self.logger.error("[AFM] Absorption height is below surface!")
+                    raise Exception("Absorption height is below surface!")
+
         else:
             self.addSurface = False
-
-        #Measurements
-        #TODO
 
         #Load simulation parameters
 
@@ -119,6 +127,10 @@ class HighThroughputAFM(VLMP.VLMP):
                 self.logger.error("[AFM] All the save state parameters must be specified")
                 raise Exception("All the save state parameters must be specified")
 
+        #Measurements
+        self.afmMeasurementIntervalStep   = parameters["output"].get("afmMeasurementIntervalStep",None)
+        self.afmMeasurementOutputFilePath = parameters["output"].get("afmMeasurementOutputFilePath","afm.dat")
+
     def generateSimulationPool(self):
 
         ########################################
@@ -153,29 +165,48 @@ class HighThroughputAFM(VLMP.VLMP):
 
 
             #Add tip
-            sim["models"].append({"name":"TIP","type":"PARTICLE","parameters":{"particleName":"TIP",
-                                                                               "particleMass":self.tipMass,
-                                                                               "particleRadius":self.tipRadius,
-                                                                               "particleCharge":self.tipCharge}})
+            if len(smpModels) > 0:
+                sim["models"].append({"name":"TIP","type":"PARTICLE","parameters":{"particleName":"TIP",
+                                                                                   "particleMass":self.tipMass,
+                                                                                   "particleRadius":self.tipRadius,
+                                                                                   "particleCharge":self.tipCharge}})
+            else:
+                sim["models"].append({"name":"TIP","type":"PARTICLE","parameters":{"particleName":"TIP",
+                                                                                   "particleMass":self.tipMass,
+                                                                                   "particleRadius":self.tipRadius,
+                                                                                   "particleCharge":self.tipCharge,
+                                                                                   "position":[0.0,0.0,self.initialTipSampleDistance+self.tipRadius]}})
+
+
             #Declare selections
-            sampleSelection = []
-            for mdl in smpModels:
-                if "name" in mdl["parameters"]:
-                    sampleSelection.append(mdl["name"])
-                else:
-                    sampleSelection.append(mdl["type"])
-
             tipSelection = ["TIP"]
+            sampleSelection = []
 
-            ###Model operations
-            sim["modelOperations"].append({"type":"setParticleLowestPosition","parameters":{"position":self.surfacePosition+10.0,
-                                                                                            "considerRadius":True,
-                                                                                            "selection":{"models":sampleSelection.copy()}}})
+            if len(smpModels) > 0:
 
-            sim["modelOperations"].append({"type":"setContactDistance","parameters":{"distance":self.initialTipSampleDistance,
-                                                                                     "invert":True,
-                                                                                     "reference":{"models":sampleSelection.copy()},
-                                                                                     "mobile":{"models":tipSelection.copy()}}})
+                for mdl in smpModels:
+                    if "name" in mdl["parameters"]:
+                        sampleSelection.append(mdl["name"])
+                    else:
+                        sampleSelection.append(mdl["type"])
+
+
+                ###Model operations
+                #if self.maxForce is not None:
+                #    sim["modelOperations"].append({"type":"setParticleLowestPosition","parameters":{"position":self.surfacePosition,
+                #                                                                                    "considerRadius":True,
+                #                                                                                    "radiusFactor":2.0,
+                #                                                                                    "selection":{"models":copy.deepcopy(sampleSelection)}}})
+                #else:
+
+                sim["modelOperations"].append({"type":"setParticleLowestPosition","parameters":{"position":self.surfacePosition,
+                                                                                                "considerRadius":True,
+                                                                                                "selection":{"models":copy.deepcopy(sampleSelection)}}})
+
+                sim["modelOperations"].append({"type":"setContactDistance","parameters":{"distance":self.initialTipSampleDistance,
+                                                                                         "invert":True,
+                                                                                         "reference":{"models":copy.deepcopy(sampleSelection)},
+                                                                                         "mobile":{"models":copy.deepcopy(tipSelection)}}})
             ###Model extensions
 
             #Add AFM
@@ -183,15 +214,31 @@ class HighThroughputAFM(VLMP.VLMP):
             sim["modelExtensions"].append({"type":"AFM","parameters":{"K":self.K,"Kxy":self.Kxy,
                                                                       "epsilon":self.epsilon,
                                                                       "tipVelocity":self.tipVelocity,
-                                                                      "tip":{"models":tipSelection.copy()},
-                                                                      "sample":{"models":sampleSelection.copy()}}})
+                                                                      "tip":{"models":copy.deepcopy(tipSelection)},
+                                                                      "sample":{"models":copy.deepcopy(sampleSelection)}}})
 
-            #Add surface
+            ##Add surface
             if self.addSurface:
 
-                sim["modelExtensions"].append({"type":"surface","parameters":{"epsilon":self.epsilonSurface,
-                                                                              "surfacePosition":self.surfacePosition,
-                                                                              "selection":{"models":sampleSelection.copy()}}})
+                if self.maxForce is not None:
+                    sim["modelExtensions"].append({"type":"surfaceMaxForce","parameters":{"epsilon":self.epsilonSurface,
+                                                                                          "surfacePosition":self.surfacePosition,
+                                                                                          "maxForce":self.maxForce,
+                                                                                          "selection":{"models":copy.deepcopy(sampleSelection)}}})
+                else:
+                    sim["modelExtensions"].append({"type":"surface","parameters":{"epsilon":self.epsilonSurface,
+                                                                                  "surfacePosition":self.surfacePosition,
+                                                                                  "selection":{"models":copy.deepcopy(sampleSelection)}}})
+
+                if self.absorptionHeight is not None:
+                    sim["modelExtensions"].append({"type":"absortionSurface","parameters":{"heightThreshold":self.absorptionHeight,
+                                                                                           "K":self.absorptionK,
+                                                                                           "startStep":self.thermalizationSteps}})
+
+            #Add maxForce
+            if self.maxForce is not None:
+                sim["simulationSteps"].append({"type":"AFMMaxForce","parameters":{"maxForce":self.maxForce,
+                                                                                  "intervalStep":self.maxForceIntervalStep}})
 
             #Add measures
 
@@ -209,7 +256,13 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                                 "outputFilePath":self.saveStateOutputFilePath,
                                                                                 "outputFormat":self.saveStateOutputFormat}})
 
-            simulationPool.append(sim.copy())
+            #Add AFM measurement
+            if self.afmMeasurementIntervalStep is not None:
+                sim["simulationSteps"].append({"type":"afmMeasurement","parameters":{"intervalStep":self.afmMeasurementIntervalStep,
+                                                                                     "outputFilePath":self.afmMeasurementOutputFilePath}})
+
+
+            simulationPool.append(copy.deepcopy(sim))
 
         self.loadSimulationPool(copy.deepcopy(simulationPool))
 

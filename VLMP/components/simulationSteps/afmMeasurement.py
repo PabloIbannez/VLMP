@@ -4,23 +4,23 @@ import logging
 
 from . import simulationStepBase
 
-class potentialMeasurement(simulationStepBase):
+class afmMeasurement(simulationStepBase):
     """
-    Component name: potentialMeasurement
+    Component name: afmMeasurement
     Component type: simulationStep
 
     Author: Pablo Ibáñez-Freire
-    Date: 09/04/2023
+    Date: 13/03/2023
 
     """
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath"},
-                         requiredParameters  = {"outputFilePath"},
-                         availableSelections = {"selection"},
-                         requiredSelections  = {"selection"},
+                         availableParameters = {"outputFilePath",},
+                         requiredParameters  = {"outputFilePath",},
+                         availableSelections = set(),
+                         requiredSelections  = set(),
                          **params)
 
         ############################################################
@@ -29,14 +29,12 @@ class potentialMeasurement(simulationStepBase):
 
         parameters = {}
 
-        parameters["outputFilePath"] = params.get("outputFilePath")
+        parameters["outputFilePath"] = params["outputFilePath"]
 
         simulationStep = {
             name:{
-              "type":["ParticlesListMeasure","PotentialMeasure"],
-              "parameters":{**parameters},
-              "labels":["id"],
-              "data":[[i] for i in self.getSelection("selection")]
+              "type":["ExperimentMeasures","AFMMeasure"],
+              "parameters":{**parameters}
             }
         }
 

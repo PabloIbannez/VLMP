@@ -23,7 +23,7 @@ class setParticleLowestPosition(modelOperationBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"position","considerRadius"},
+                         availableParameters = {"position","considerRadius","radiusFactor"},
                          requiredParameters  = {"position"},
                          availableSelections = {"selection"},
                          requiredSelections  = {"selection"},
@@ -39,6 +39,8 @@ class setParticleLowestPosition(modelOperationBase):
 
         if params.get("considerRadius",False):
             rad = np.asarray(self.getIdsProperty(selectedIds,"radius"))
+            radFactor = params.get("radiusFactor",1.0)
+            rad = radFactor*rad
 
         # Find the lowest position
         lowestPosIndex = np.argmin(pos[:,2])
