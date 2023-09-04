@@ -52,17 +52,27 @@ class surfaceMaxForce(modelExtensionBase):
         for typ,info in types.getTypes().items():
             radius = info["radius"]
 
-            sgm = radius*np.power(maxForce*radius/(12.0*epsilon), 1/12) #Tentative sigma
-            sgm,_,ier,msg = fsolve(self.__LJtype2_maxForce_fit, sgm, args=(radius, epsilon, maxForce), full_output=True)
+            sgm = radius*np.power(maxForce*radius/(12.0*abs(epsilon)), 1/12) #Tentative sigma
+            sgm,_,ier,msg = fsolve(self.__LJtype2_maxForce_fit, sgm, args=(radius, abs(epsilon), maxForce), full_output=True)
 
             if ier != 1:
-                self.logger.error(f"[ModelExtension] (surfaceMaxForce) Could not find sigma for type {typ}. Message: {msg}")
-                raise Exception("Error in sigma calculation")
-            else:
-                sgm = sgm[0]
-                self.logger.debug(f"[ModelExtension] (surfaceMaxForce) Sigma for type {typ} with radius {radius} is {sgm}")
 
-            extension[name]["data"].append([typ,epsilon,sgm])
+                maxForceSteps = np.linspace(maxForce/4.0, maxForce, 10)
+                for mFS in maxForceSteps:
+                    sgm = radius*np.power(mFS*radius/(12.0*abs(epsilon)), 1/12)
+                    sgm,_,ier,msg = fsolve(self.__LJtype2_maxForce_fit, sgm, args=(radius, abs(epsilon), mFS), full_output=True)
+
+                    if ier == 1:
+                        break
+
+                if ier != 1:
+                    self.logger.error(f"[ModelExtension] (surfaceMaxForce) Could not find sigma for type {typ}. Message: {msg}")
+                    raise Exception("Error in sigma calculation")
+
+            sgm = sgm[0]
+            self.logger.debug(f"[ModelExtension] (surfaceMaxForce) Sigma for type {typ} with radius {radius} is {sgm}")
+
+            extension[name]["data"].append([typ,epsilon,round(sgm,2)])
 
         ############################################################
 

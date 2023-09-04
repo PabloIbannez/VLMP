@@ -1,4 +1,5 @@
 import sys, os
+import copy
 
 import logging
 
@@ -44,8 +45,10 @@ class constraintCenterOfMassPosition(modelExtensionBase):
 
         K        = params.get("K")
         #Check if K is a float
-        if not isinstance(K,float):
-            raise Exception("K must be a float")
+        if not isinstance(K,float) and not isinstance(K,list):
+            raise Exception("K must be a float or a list of floats")
+        if isinstance(K,float):
+            K = [K,K,K]
 
         r0       = params.get("r0")
         #Check if r0 is a float
@@ -67,7 +70,7 @@ class constraintCenterOfMassPosition(modelExtensionBase):
 
         selectedIds = self.getSelection("selection")
 
-        extension[name]["data"].append([selectedIds,[K,K,K],[r0,r0,r0],position])
+        extension[name]["data"].append([selectedIds,copy.deepcopy(K),[r0,r0,r0],position])
 
         ############################################################
 

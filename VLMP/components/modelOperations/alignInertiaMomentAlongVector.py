@@ -71,11 +71,12 @@ class alignInertiaMomentAlongVector(modelOperationBase):
 
                 # Find the rotation angle
                 rotAngle = np.arccos(np.dot(maxInertiaVec,vector))
-
-                # Rotate the model, create rotation matrix using scipy
                 rot = R.from_rotvec(rotAngle*rotAxis)
 
-                for i in range(len(selectedIds)):
-                    pos[i] = rot.apply(pos[i])
+                # Rotate the model, create rotation matrix using scipy
+                center = np.sum(pos*masses[:,np.newaxis],axis=0)/np.sum(masses)
+                pos -= center
+                pos = rot.apply(pos)
+                pos += center
 
                 self.setIdsState(selectedIds,"position",pos.tolist())

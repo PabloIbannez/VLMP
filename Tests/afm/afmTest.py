@@ -7,37 +7,20 @@ ps2AKMA = picosecond2KcalMol_A_time(1.0)
 from VLMP.experiments.HighThroughputAFM import HighThroughputAFM
 
 samples = {
-            "encapsulin": [{
-            "type":"FILE",
-            "parameters":{"inputFilePath":"encapsulin.json"},
-            }],
-            "ccmv":[{
-            "type":"FILE",
-            "parameters":{"inputFilePath":"ccmv.json"},
-            }]
+            #"encapsulin": {"models":[{"type":"FILE",
+            #                          "parameters":{"inputFilePath":"encapsulin.json"}}]},
+            #"ccmv":{"models":[{"type":"FILE",
+            #                          "parameters":{"inputFilePath":"ccmv.json"}}]},
+            "tmv":{"models":[{"type":"FILE",
+                              "parameters":{"inputFilePath":"tmv.json"}}],
+                   "modelOperations":[{"type":"rotation",
+                                       "parameters":{"axis":[1.0,0.0,0.0],
+                                                     "angle":3.141592/2.0,
+                                                     "selection":{"models":["FILE"]}}}]
+                   }
            }
 
-#samples = {"none1":[],
-#           "none2":[],
-#           "none3":[],
-#           "none4":[]}
-
-parameters = {"AFM":{"K":0.05,
-                     "Kxy":100.0,
-                     "epsilon":1.0,
-                     "tipVelocity":-0.1/ps2AKMA,
-                     "thermalizationSteps":10000,
-                     "indentationSteps":10000000,
-                     "tipMass":1000.0,
-                     "tipRadius":250.0,
-                     "initialTipSampleDistance":20.0,
-                     "maxForce":nanonewton2KcalMol_A_force(4.0),
-                     "maxForceIntervalStep":1000
-                    },
-              #"surface":{"epsilon":-1.0,
-              #           "absorptionHeight":10.0,
-              #           "absorptionK":10.0},
-              "surface":{"epsilon":1.0},
+parameters = {
               "simulation":{"units":"KcalMol_A",
                             "types":"basic",
                             "temperature":300.0,
@@ -45,6 +28,21 @@ parameters = {"AFM":{"K":0.05,
                             "samples":copy.deepcopy(samples),
                             "integrator":{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,
                                                                      "frictionConstant":1.0}}},
+              "AFM":{"K":0.05,
+                     "Kxy":100.0,
+                     "epsilon":1.0,
+                     "tipVelocity":[0.0],
+                     "thermalizationSteps":100000000,
+                     "indentationSteps":10000000,
+                     "tipMass":1000.0,
+                     "tipRadius":250.0,
+                     "initialTipSampleDistance":10.0
+                    },
+              "surface":{"epsilon":-1.0,
+                         "absorptionHeight":10.0,
+                         "absorptionK":10.0},
+              "maxForce":{"force":nanonewton2KcalMol_A_force(5.0),
+                          "maxForceIntervalStep":1000},
               "output":{"infoIntervalStep":10000,
                         "saveStateIntervalStep":10000,
                         "afmMeasurementIntervalStep":1000,

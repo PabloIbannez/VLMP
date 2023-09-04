@@ -13,6 +13,8 @@ class AFM(modelExtensionBase):
 
     :param epsilon: epsilon parameter for tip-particle interaction
     :type epsilon: float
+    :param sigma: sigma parameter for tip-particle interaction
+    :type sigma: float
     :param K: spring constant
     :type K: float
     :param Kxy: xy spring constant
@@ -27,9 +29,12 @@ class AFM(modelExtensionBase):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
                          availableParameters = {"epsilon",
+                                                "sigma",
                                                 "K","Kxy",
-                                                "tipVelocity"},
+                                                "tipVelocity",
+                                                "indentationStartStep"},
                          requiredParameters  = {"epsilon",
+                                                "sigma",
                                                 "K","Kxy",
                                                 "tipVelocity"},
                          availableSelections = {"tip","sample"},
@@ -37,11 +42,14 @@ class AFM(modelExtensionBase):
                          **params)
 
         epsilon = params["epsilon"]
+        sigma   = params["sigma"]
 
         K   = params["K"]
         Kxy = params["Kxy"]
 
         tipVelocity = params["tipVelocity"]
+
+        indentationStartStep = params.get("indentationStartStep",0)
 
         ############################################################
 
@@ -65,8 +73,8 @@ class AFM(modelExtensionBase):
         extension[name]["type"]       = ["AFM","SphericalTip"]
         extension[name]["parameters"] = {}
 
-        extension[name]["labels"] = ["idSet_i","idSet_j","epsilon","K","Kxy","tipVelocity","startChipPosition"]
-        extension[name]["data"]   = [[tipIds,sampleIds,epsilon,K,Kxy,tipVelocity,startChipPosition]]
+        extension[name]["labels"] = ["idSet_i","idSet_j","epsilon","sigma","K","Kxy","tipVelocity","startChipPosition","indentationStartStep"]
+        extension[name]["data"]   = [[tipIds,sampleIds,epsilon,sigma,K,Kxy,tipVelocity,startChipPosition,indentationStartStep]]
 
         ############################################################
 

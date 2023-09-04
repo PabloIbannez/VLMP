@@ -20,9 +20,14 @@ sopParamsBase = {"SASA":False,
                  "aggregateChains":True,
                  "parameters":{}}
 
-names     = ["encapsulin","ccmv"]
-pdbs      = ["encapsulin.pdb","ccmv.pdb"]
-epsilonNC = [1.5,1.5]
+#names     = ["encapsulin","ccmv"]
+#pdbs      = ["encapsulin.pdb","ccmv.pdb"]
+
+names     = ["tmv"]
+pdbs      = ["tmv.pdb"]
+
+#epsilonNC = [1.5,1.5]
+epsilonNC = [1.5]
 
 for name,pdb,eps in zip(names,pdbs,epsilonNC):
     sopParams = sopParamsBase.copy()
