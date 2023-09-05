@@ -518,7 +518,7 @@ class HELIX(modelBase):
 
             forceField["plateBottom"]={}
             forceField["plateBottom"]["type"]       = ["Surface", "ParabolaSurface"]
-            forceField["plateBottom"]["parameters"] = {"surfacePosition":self.plateBottom}
+            forceField["plateBottom"]["parameters"] = {"surfacePosition":self.plateBottom+self.monomerRadius}
             forceField["plateBottom"]["labels"]     = ["name", "epsilon"]
             forceField["plateBottom"]["data"]       = [["M",self.Es]]
 
@@ -559,7 +559,7 @@ class HELIX(modelBase):
 
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]={}
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]["type"]       =  ["SurfacePatches", "Linker"]
-            forceField["surface"]["patchesTopology"]["forceField"]["linker"]["parameters"] =  {"surfacePosition":self.plateBottom-self.monomerRadius}
+            forceField["surface"]["patchesTopology"]["forceField"]["linker"]["parameters"] =  {"surfacePosition":self.plateBottom}
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]["labels"]     =  ["name", "epsilon", "sigma"]
             forceField["surface"]["patchesTopology"]["forceField"]["linker"]["data"]       =  [["L",self.El,self.Sl]]
 
