@@ -1,6 +1,8 @@
 import os
 import logging
 
+import copy
+
 from tqdm import tqdm
 
 import json
@@ -321,6 +323,8 @@ class VLMP:
 
     def loadSimulationPool(self,simulationPool:list):
 
+        self.simulationsInfo = {}
+
         for simulationInfo in simulationPool:
 
             #Check all keys are available components
@@ -509,7 +513,8 @@ class VLMP:
             ###############################################
 
             #Store the simulation
-            self.simulations[simulationName] = sim
+            self.simulationsInfo[simulationName] = copy.deepcopy(simulationInfo)
+            self.simulations[simulationName]     = sim
 
         ###############################################
 
@@ -677,7 +682,8 @@ class VLMP:
 
                 VLMPsession["simulations"].append([simName,
                                                    os.path.join(*simulationFolder.split("/")[1:]),
-                                                   os.path.join(*simulationResultFolder.split("/")[1:])])
+                                                   os.path.join(*simulationResultFolder.split("/")[1:]),
+                                                   self.simulationsInfo[simName]])
 
                 #Updating file path
                 def getValuesAndPaths(d, key, path=None):
