@@ -18,19 +18,25 @@ class HighThroughputAFM(VLMP.VLMP):
     def __init__(self,parameters):
         super().__init__()
 
-        requiredParameters = ["K","Kxy",
-                              "epsilon",
-                              "sigma",
-                              "tipVelocity",
-                              "tipMass","tipRadius",
-                              "initialTipSampleDistance",
-                              "thermalizationSteps","indentationSteps"]
+        requiredAFMParameters = ["K","Kxy",
+                                 "epsilon",
+                                 "sigma",
+                                 "tipVelocity",
+                                 "tipMass","tipRadius",
+                                 "initialTipSampleDistance"]
+
+        requiredIndentationParameters = ["indentationSteps","thermalizationSteps"]
 
         self.logger.info("[AFM] Initializing ...")
 
-        for parameter in requiredParameters:
+        for parameter in requiredAFMParameters:
             if parameter not in parameters["AFM"]:
-                self.logger.error("[AFM] Required parameter %s not found!" % parameter)
+                self.logger.error("[AFM] Required AFM parameter %s not found!" % parameter)
+                raise Exception("Required parameter not found!")
+
+        for parameter in requiredIndentationParameters:
+            if parameter not in parameters["indentation"]:
+                self.logger.error("[AFM] Required indentation parameter %s not found!" % parameter)
                 raise Exception("Required parameter not found!")
 
         self.K   = parameters["AFM"]["K"]
@@ -47,10 +53,23 @@ class HighThroughputAFM(VLMP.VLMP):
 
         self.initialTipSampleDistance = parameters["AFM"]["initialTipSampleDistance"]
 
-        self.thermalizationSteps = parameters["AFM"]["thermalizationSteps"]
-        self.indentationSteps    = parameters["AFM"]["indentationSteps"]
+        ############################################################################
 
-        self.fixSampleDuringThermalization = parameters["AFM"].get("fixSampleDuringThermalization",False)
+        self.thermalizationSteps = parameters["indentation"]["thermalizationSteps"]
+        self.indentationSteps    = parameters["indentation"]["indentationSteps"]
+
+        self.fixSampleDuringThermalization = parameters["indentation"].get("fixSampleDuringThermalization",False)
+        self.fixSampleDuringIndentation    = parameters["indentation"].get("fixSampleDuringIndentation",False)
+        self.KxyFixing                     = parameters["indentation"].get("KxyFixing",None)
+
+        ############################################################################
+
+        if ( self.fixSampleDuringThermalization or self.fixSampleDuringIndentation ) and self.KxyFixing is None:
+            self.logger.error("[AFM] Sample fixing requested, but no KxyFixing provided!")
+            raise Exception("KxyFixing not provided!")
+        if self.KxyFixing is not None and not ( self.fixSampleDuringThermalization or self.fixSampleDuringIndentation ):
+            self.logger.error("[AFM] KxyFixing provided, but no sample fixing requested!")
+            raise Exception("No sample fixing requested!")
 
         if "maxForce" in parameters.keys():
             self.maxForce             = parameters["maxForce"].get("force",None)
@@ -157,7 +176,7 @@ class HighThroughputAFM(VLMP.VLMP):
                          "tipVelocity",
                          "tipMass", "tipRadius", "tipCharge",
                          "initialTipSampleDistance",
-                         "thermalizationSteps", "indentationSteps"]
+                         "KxyFixing"]
 
         if self.addSurface:
             allParameters.extend(["epsilonSurface","surfacePosition"])
@@ -222,9 +241,7 @@ class HighThroughputAFM(VLMP.VLMP):
             tipCharge_smp = self.tipCharge[index]
 
             initialTipSampleDistance_smp = self.initialTipSampleDistance[index]
-
-            thermalizationSteps_smp = self.thermalizationSteps[index]
-            indentationSteps_smp    = self.indentationSteps[index]
+            KxyFixing_smp                = self.KxyFixing[index]
 
             if self.addSurface:
                 epsilonSurface_smp  = self.epsilonSurface[index]
@@ -268,6 +285,9 @@ class HighThroughputAFM(VLMP.VLMP):
                 #                                                                                    "selection":{"models":copy.deepcopy(sampleSelection)}}})
                 #else:
 
+                sim["modelOperations"].append({"type":"setCenterOfMassPosition","parameters":{"position":[0.0,0.0,0.0],
+                                                                                              "selection":{"models":copy.deepcopy(sampleSelection)}}})
+
                 if self.addSurface:
                     sim["modelOperations"].append({"type":"setParticleLowestPosition","parameters":{"position":surfacePosition_smp,
                                                                                                     "considerRadius":True,
@@ -285,20 +305,36 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                       "epsilon":epsilon_smp,
                                                                       "sigma":sigma_smp,
                                                                       "tipVelocity":tipVelocity_smp,
-                                                                      "indentationStartStep":thermalizationSteps_smp,
+                                                                      "indentationStartStep":self.thermalizationSteps,
                                                                       "tip":{"models":copy.deepcopy(tipSelection)},
                                                                       "sample":{"models":copy.deepcopy(sampleSelection)}}})
 
-            #Add sample constraint during thermalization
-            if self.fixSampleDuringThermalization:
-                sim["modelExtensions"].append({"type":"constraintCenterOfMassPosition",
-                                               "parameters":{"K":[Kxy_smp,Kxy_smp,0.0],
-                                                             "r0":0.0,
-                                                             "position":[0.0,0.0,0.0],
-                                                             "endStep":thermalizationSteps_smp,
-                                                             "selection":{"models":copy.deepcopy(sampleSelection)}
-                                                            }
-                                               })
+            fixingStartStep = None
+            fixingEndStep   = None
+            if       self.fixSampleDuringThermalization and not self.fixSampleDuringIndentation:
+                fixingEndStep   = self.thermalizationSteps
+            elif not self.fixSampleDuringThermalization and     self.fixSampleDuringIndentation:
+                fixingStartStep = self.thermalizationSteps
+            elif not self.fixSampleDuringThermalization and not self.fixSampleDuringIndentation:
+                pass
+
+            #Add sample
+            if self.fixSampleDuringThermalization or self.fixSampleDuringIndentation:
+                entry = {"type":"constraintCenterOfMassPosition",
+                         "parameters":{"K":[KxyFixing_smp,KxyFixing_smp,0.0],
+                                       "r0":0.0,
+                                       "position":[0.0,0.0,0.0],
+                                       "selection":{"models":copy.deepcopy(sampleSelection)}
+                                      }
+                         }
+
+                if fixingStartStep is not None:
+                    entry["parameters"]["startStep"] = fixingStartStep
+
+                if fixingEndStep is not None:
+                    entry["parameters"]["endStep"] = fixingEndStep
+
+                sim["modelExtensions"].append(copy.deepcopy(entry))
 
             ##Add surface
             if self.addSurface:
@@ -316,7 +352,7 @@ class HighThroughputAFM(VLMP.VLMP):
                 if self.absorptionHeight is not None:
                     sim["modelExtensions"].append({"type":"absortionSurface","parameters":{"heightThreshold":absorptionHeight_smp,
                                                                                            "K":absorptionK_smp,
-                                                                                           "startStep":thermalizationSteps_smp}})
+                                                                                           "startStep":self.thermalizationSteps}})
 
             #Add maxForce
             if self.maxForce is not None:
@@ -343,7 +379,7 @@ class HighThroughputAFM(VLMP.VLMP):
             if self.afmMeasurementIntervalStep is not None:
                 sim["simulationSteps"].append({"type":"afmMeasurement","parameters":{"intervalStep":self.afmMeasurementIntervalStep,
                                                                                      "outputFilePath":self.afmMeasurementOutputFilePath,
-                                                                                     "startStep":thermalizationSteps_smp}})
+                                                                                     "startStep":self.thermalizationSteps}})
 
             simulationPool.append(copy.deepcopy(sim))
 
