@@ -1,6 +1,5 @@
 import VLMP
-
-import VLMP.components.units as _units
+import VLMP.utils.units as unitsUtils
 
 import os
 
@@ -391,11 +390,62 @@ class HighThroughputAFM(VLMP.VLMP):
 class AnalysisAFM:
 
     def __init__(self,
-                 infoFilePath):
+                 VLMPsessionFilePath,
+                 outputUnits,
+                 maxForce = None):
 
         self.logger = logging.getLogger("VLMP")
 
         ########################################################
 
+        self.VLMPsessionFilePath = VLMPsessionFilePath
+
+        with open(VLMPsessionFilePath,"r") as f:
+            self.VLMPsession = json.load(f)
+
+        self.outputUnits = outputUnits
+        self.maxForce    = maxForce
+
     def run(self):
-        pass
+
+        measureKey = ["simulationSteps","afmMeasurement","outputFilePath"]
+
+        for sim in self.VLMPsession["simulations"]:
+            name,_,results,info = sim
+
+            outputFilePath = None
+            if measureKey[0] in info:
+                for entry in info[measureKey[0]]:
+                    if entry["type"] == measureKey[1]:
+                        outputFilePath = entry["parameters"][measureKey[2]]
+
+            if outputFilePath is None:
+                self.logger.warning("[AnalysisAFM] No AFM measurement found for simulation {}".format(name))
+                continue
+
+            indentationFilePath = "/".join(self.VLMPsessionFilePath.split("/")[:-1]) + "/results/" + name + "/afm.dat"
+            indentationData = np.loadtxt(indentationFilePath,skiprows=1)
+
+            X = indentationData[:,0]
+            F = indentationData[:,1]
+
+            # Input units
+            inputUnits = info["units"][0]["type"]
+
+            if inputUnits == "KcalMol_A" and self.outputUnits == "nN_nm":
+                #From
+
+                Xunits = "nm"
+                Funits = "nN"
+
+                X = X*0.1
+                F = unitsUtils.KcalMol_A_force2nanonewton(F)
+
+            plt.plot(X,F)
+            plt.xlabel(f"Indentation ({Xunits})")
+            plt.ylabel(f"Force ({Funits})")
+            plt.title(f"Indentation for {name}")
+
+            if self.maxForce is not None:
+                plt.ylim([np.min(F),self.maxForce])
+            plt.show()
