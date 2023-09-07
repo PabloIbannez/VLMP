@@ -13,16 +13,17 @@ class saveState(simulationStepBase):
     Date: 13/03/2023
 
     This component is used to save the state of the simulation.
-    Availble formats are:
-        - .coord
-        - .sp
-        - .xyz
-        - .pdb
-        - .itpv
-        - .itpd
-        - .dcd
-        - .lammpstrj
-        - .vel
+
+    Avalible formats are:
+        * .coord
+        * .sp
+        * .xyz
+        * .pdb
+        * .itpv
+        * .itpd
+        * .dcd
+        * .lammpstrj
+        * .vel
 
     :param outputFilePath: Path to the output file
     :type outputFilePath: str

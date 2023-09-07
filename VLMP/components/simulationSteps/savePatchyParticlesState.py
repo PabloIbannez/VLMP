@@ -5,7 +5,6 @@ import logging
 from . import simulationStepBase
 
 class savePatchyParticlesState(simulationStepBase):
-
     """
     Component name: savePatchyParticlesState
     Component type: simulationStep
@@ -15,22 +14,22 @@ class savePatchyParticlesState(simulationStepBase):
 
     This component is used to save the state of the simulation incliding the
     patchy particles.
-    Availble formats are:
-        - .coord
-        - .sp
-        - .xyz
-        - .pdb
-        - .itpv
-        - .itpd
-        - .dcd
-        - .lammpstrj
-        - .vel
+
+    Avalible formats are:
+        * .coord
+        * .sp
+        * .xyz
+        * .pdb
+        * .itpv
+        * .itpd
+        * .dcd
+        * .lammpstrj
+        * .vel
 
     :param outputFilePath: Path to the output file
     :type outputFilePath: str
     :param outputFormat: Format of the output file
     :type outputFormat: str
-
     """
 
     def __init__(self,name,**params):
