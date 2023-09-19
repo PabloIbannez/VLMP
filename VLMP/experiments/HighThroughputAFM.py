@@ -197,12 +197,6 @@ class HighThroughputAFM(VLMP.VLMP):
 
     def generateSimulationPool(self):
 
-        ########################################
-
-        unitsComponent = eval(f"_units.{self.units}")(name="units")
-
-        ########################################
-
         simulationPool = []
 
         #Check sample names are unique
