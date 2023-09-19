@@ -63,9 +63,10 @@ class HELIX(modelBase):
         while(n<=self.nMonomers):
             self.logger.debug(f"[HELIX] Trying to add monomer {n}")
 
-            x=np.random.uniform(low=-boxX,high=boxX)
-            y=np.random.uniform(low=-boxY,high=boxY)
-            z=np.random.uniform(low=-boxZ,high=boxZ)
+            #We take into account the monomer radius for avoiding problems with PBC
+            x=np.random.uniform(low=-boxX + self.monomerRadius, high=boxX - self.monomerRadius)
+            y=np.random.uniform(low=-boxY + self.monomerRadius, high=boxY - self.monomerRadius)
+            z=np.random.uniform(low=-boxZ + self.monomerRadius, high=boxZ - self.monomerRadius)
 
             currentMonomerPosition = np.asarray([x,y,z])
 
