@@ -197,6 +197,7 @@ class HighThroughputAFM(VLMP.VLMP):
 
     def generateSimulationPool(self):
 
+
         simulationPool = []
 
         #Check sample names are unique
@@ -435,11 +436,21 @@ class AnalysisAFM:
                 X = X*0.1
                 F = unitsUtils.KcalMol_A_force2nanonewton(F)
 
+            f = plt.figure()
             plt.plot(X,F)
             plt.xlabel(f"Indentation ({Xunits})")
             plt.ylabel(f"Force ({Funits})")
             plt.title(f"Indentation for {name}")
+            f.show()
 
             if self.maxForce is not None:
                 plt.ylim([np.min(F),self.maxForce])
-            plt.show()
+
+            indentationProcessedFilePath = "/".join(self.VLMPsessionFilePath.split("/")[:-1]) + "/results/" + name + "/afm_processed.dat"
+            with open(indentationProcessedFilePath,"w") as f:
+                f.write("# {} {}\n".format(Xunits,Funits))
+                for i in range(len(X)):
+                    f.write("{} {}\n".format(X[i],F[i]))
+
+        #Wait for plots to be closed
+        input("Press enter to continue...")
