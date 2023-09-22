@@ -6,8 +6,6 @@ import VLMP
 
 import numpy as np
 
-from VLMP.utils import bounds
-
 import json
 import jsbeautifier
 

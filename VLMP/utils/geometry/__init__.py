@@ -7,6 +7,7 @@ from scipy.spatial.transform import Rotation as R
 from pyquaternion import Quaternion
 
 from .bounds import *
+from .particlesDistribution import *
 
 #Geometry utils
 

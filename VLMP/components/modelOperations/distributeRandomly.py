@@ -9,8 +9,8 @@ from . import modelOperationBase
 
 from ...utils.selections import splitStateAccordingStructure
 from ...utils.input import getSubParameters
+from ...utils.geometry import distributeRandomlyGeneratorChecker
 
-from MDAnalysis.lib.pkdtree import PeriodicKDTree
 from scipy.spatial.transform import Rotation
 
 import numpy as np
@@ -37,7 +37,7 @@ class distributeRandomly(modelOperationBase):
 
     """
 
-    def __randomBoxPoint(self,index):
+    def __randomBoxPoint(self):
         mp = np.random.uniform(low  = [-self.boxX,-self.boxY,-self.boxZ],
                                high = [ self.boxX, self.boxY, self.boxZ])
         return mp
@@ -61,12 +61,14 @@ class distributeRandomly(modelOperationBase):
 
         return False
 
-    def __randomSpherePoint(self,index):
+    def __randomSpherePoint(self):
         # Generate a random point in a sphere
         # of center self.center and radius self.radius
 
+        maxRad = np.max([np.max(r) for r in self.modelsRads])
+
         # Generate random radius
-        rho = (self.radius - self.modelsRads[index])* (random.random() ** (1/3))
+        rho = (self.radius-maxRad)*(random.random() ** (1/3))
 
         # Generate random angles
         theta = math.acos(2 * random.random() - 1)  # Polar angle
@@ -177,17 +179,6 @@ class distributeRandomly(modelOperationBase):
         self.modelsRads = splitStateAccordingStructure(state=rads,
                                                        structure=mods)
 
-        for i in range(len(self.modelsPos)):
-            # Compute the radius of the model, as the max distance
-            # between the center and the particles
-            mp = np.asarray(self.modelsPos[i])
-            mp = mp - np.mean(mp,axis=0)
-
-            mr = np.asarray(self.modelsRads[i])
-            mr = np.max(np.sqrt(np.sum(mp**2,axis=1))+mr)
-
-            self.modelsRads[i] = mr
-
         if self.randomRotation:
             for i in range(len(self.modelsPos)):
 
@@ -206,65 +197,23 @@ class distributeRandomly(modelOperationBase):
                 self.modelsPos[i] = mp
 
         if not avoidClashes:
+            newPositions = []
             for i in range(len(self.modelsPos)):
+                center = np.mean(self.modelsPos[i],axis=0)
                 # Generete a random 3D position
-                mp = self.getRandomPoint(i)
+                mp = self.getRandomPoint()
 
-                self.modelsPos[i] = [list(p+mp) for p in self.modelsPos[i]]
+                transVec = mp - center
+
+                newPositions.append([list(p+transVec) for p in self.modelsPos[i]])
+
+            newPositions = [p for mp in newPositions for p in mp]
         else:
-
-            maxRadius = np.max(self.modelsRads)
-
-            centroidModelPos = []
-            # We use kd-tree to find the closest particle
-            # to the centroid of the model
-            for i in range(len(self.modelsPos)):
-
-                if len(centroidModelPos) == 0:
-                    # Generate a random position
-                    mp = self.getRandomPoint(i)
-                    centroidModelPos.append(list(mp))
-                    continue
-
-                tree = PeriodicKDTree(box=np.asarray(self.box+[90,90,90],dtype=np.float32))
-                tree.set_coords(coords=np.asarray(centroidModelPos,dtype=np.float32),
-                                cutoff=maxRadius*2.0)
-
-                # Try to add the particle in a random position
-                added = False
-                tries = 0
-                while not added and tries < avoidClashes:
-
-                    # Generate a random position
-                    mp = self.getRandomPoint(i)
-
-                    # Find the closest particle to the centroid
-                    # of the model
-                    indices = tree.search(np.asarray(mp,dtype=np.float32),maxRadius*2.0)
-
-                    toAdd = True
-                    for index in indices:
-                        toAdd = self.checkDistance(mp,centroidModelPos[index],self.modelsRads[i],self.modelsRads[index])
-                        if not toAdd:
-                            break
-                    if toAdd:
-                        centroidModelPos.append(list(mp))
-                        added = True
-                        self.logger.debug(f"Added particle {i}/{len(self.modelsPos)} at try {tries}/{avoidClashes}")
-                    else:
-                        tries += 1
-
-                if not added:
-                    self.logger.error("The number of tries to avoid clashes has been reached.")
-                    raise Exception("Clash avoidance failed")
-
-            for i in range(len(self.modelsPos)):
-                self.modelsPos[i] = [list(p+centroidModelPos[i]) for p in self.modelsPos[i]]
-
-        #Cat modelsPos
-        newPositions = []
-        for mp in self.modelsPos:
-            newPositions += mp
+            newPositions = distributeRandomlyGeneratorChecker(self.box,
+                                                              self.modelsPos,self.modelsRads,
+                                                              self.getRandomPoint,self.checkDistance,
+                                                              avoidClashes,
+                                                              1.05)
 
         self.setIdsState(selectedIds,"position",newPositions)
 

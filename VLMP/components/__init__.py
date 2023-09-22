@@ -126,7 +126,8 @@ class idsHandler:
 
             #Check if state is valid
             if type(s) != type(mdl.getState()["data"][localId][stateIndex]):
-                logger.error(f"[ModelOperation] State value {s} for state \"{stateName}\" is not valid")
+                logger.error(f"[ModelOperation] State value {s} for state \"{stateName}\" is not valid."
+                             f" State value type is {type(s)} but should be {type(mdl.getState()['data'][localId][stateIndex])}")
                 raise Exception(f"State is not valid")
             else:
                 if type(s) == list:
