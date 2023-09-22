@@ -31,7 +31,7 @@ class WLC(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"N","mass","b","Kb","Ka","typeName"},
+                         availableParameters = {"N","mass","b","Kb","Ka","typeName","stericInteraction"},
                          requiredParameters  = {"N"},
                          definedSelections   = {"particleId","polymerIndex"},
                          **params)
@@ -53,6 +53,8 @@ class WLC(modelBase):
 
         typeName = params.get("typeName","A")
 
+        stericInteraction = params.get("stericInteraction",False)
+
         self.logger.debug(f"[WLC] Generating a WLC model with {self.N} particles")
         self.logger.debug(f"[WLC] Parameters: mass={mass}, b={b}, Kb={Kb}, Ka={Ka}")
 
@@ -62,7 +64,8 @@ class WLC(modelBase):
 
         #Add particle types
         types = self.getTypes()
-        types.addType(name=typeName,mass=mass,radius=0.5*b)
+        radius = 0.5*b
+        types.addType(name=typeName,mass=mass,radius=radius)
 
         #Generate positions, a line along the z axis
         state = {}
@@ -98,6 +101,27 @@ class WLC(modelBase):
 
         for i in range(self.N-2):
             forceField["angles"]["data"].append([i,i+1,i+2,Ka])
+
+        ########################################################
+
+        if stericInteraction:
+
+            forceField["steric_nl"]={}
+            forceField["steric_nl"]["type"]       =  ["VerletConditionalListSet", "nonExclIntra_nonExclInter"]
+            forceField["steric_nl"]["parameters"] =  {"cutOffVerletFactor":1.1}
+            forceField["steric_nl"]["labels"]     =  ["id","id_list"]
+            forceField["steric_nl"]["data"]       =  []
+
+            forceField["steric_nl"]["data"].append([0,[1]])
+            for i in range(1,self.N-1):
+                forceField["steric_nl"]["data"].append([i,[i-1,i+1]])
+            forceField["steric_nl"]["data"].append([self.N-1,[self.N-2]])
+
+            forceField["steric"] = {}
+            forceField["steric"]["type"]       = ["NonBonded","WCAType2"]
+            forceField["steric"]["parameters"] = {"cutOffFactor":1.0,"condition":"intra"}
+            forceField["steric"]["labels"]     = ["name_i","name_j","epsilon","sigma"]
+            forceField["steric"]["data"]       = [[typeName,typeName,1.0,2.0*radius]]
 
         ########################################################
 
