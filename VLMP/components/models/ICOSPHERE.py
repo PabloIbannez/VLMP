@@ -91,14 +91,14 @@ class ICOSPHERE(modelBase):
             dst = np.linalg.norm(vertices[bond[0]]-vertices[bond[1]])
             forceField["bonds"]["data"].append([bond[0],bond[1],dst,Kb])
 
-        # List all pairs of faces that share an edge
-        facesPairs = set()
-        for i in range(len(faces)):
-            for j in range(i+1,len(faces)):
-                if len(set(faces[i]).intersection(set(faces[j]))) == 2:
-                    facesPairs.add((i,j))
-
         if Kd > 0.0:
+            # List all pairs of faces that share an edge
+            facesPairs = set()
+            for i in range(len(faces)):
+                for j in range(i+1,len(faces)):
+                    if len(set(faces[i]).intersection(set(faces[j]))) == 2:
+                        facesPairs.add((i,j))
+
             forceField["dihedrals"] = {}
             forceField["dihedrals"]["type"]       = ["Bond4","Dihedral"]
             forceField["dihedrals"]["labels"]     = ["id_i","id_j","id_k","id_l","phi0","K","n"]
