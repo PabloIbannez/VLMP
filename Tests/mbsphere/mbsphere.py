@@ -1,4 +1,4 @@
-#!/home/pablo/anaconda3/bin/python 
+#!/home/pablo/anaconda3/bin/python
 
 import os,sys
 
@@ -21,8 +21,6 @@ with open('data_main.txt') as f:
 #
 
 sessionName = 'TEST'
-
-
 
 #Read the parameters
 temperature    = 1.0
@@ -76,13 +74,13 @@ if not isKappaList:
     nKappa = [nKappa]
 else:
     nLists += 1
-    
+
 isz0List = isinstance(nz0, list)
 if not isz0List:
     nz0 = [nz0]
 else:
     nLists += 1
-    
+
 isnBlobsPerParticleList = isinstance(nnBlobsPerParticle, list)
 if not isnBlobsPerParticleList:
     nnBlobsPerParticle = [nnBlobsPerParticle]
@@ -117,7 +115,7 @@ for n in nSpheres:
                                        "units":[{"type":"none"}],
                                        "types":[{"type":"basic"}],
                                        "ensemble":[{"type":"NVT","parameters":{"box":[X,Y,Z],"temperature":1.0}}],
-                                       "integrators":[{"type":"BBK","parameters":{"timeStep":0.0001,"frictionConstant":1.0,"integrationSteps":1}}],
+                                       "integrators":[{"type":"BBK","parameters":{"timeStep":0.0001,"frictionConstant":1.0,"integrationSteps":100000}}],
                                        "models":[{"type":"SPHEREMULTIBLOB",
                                                   "parameters":{"numberOfSpheres":n,
                                                                 "particlesPerSphere":nbp,
@@ -128,7 +126,7 @@ for n in nSpheres:
                                                                 "heightMean":heightMean,
                                                                 "heightStd":heightStd,
                                                                 "heightReference":-Z/2.0}}],
-                                       "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
+                                       "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
                                                                                             "outputFilePath":sessionName+"_"+str(n)+"_"+str(k),
                                                                                             "outputFormat":"sp"}},
                                                           {"type":"info","parameters":{"intervalStep":10000}}]

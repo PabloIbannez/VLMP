@@ -49,27 +49,32 @@ class SPHEREMULTIBLOB(modelBase):
 
         if self.sphereType == "icosphere":
 
-            mu = int(np.sqrt(0.1*(self.icoN-12)+1))
-            N  = 12+10*(mu**2-1)
+            mu = int(np.sqrt(0.1*(self.sphN-12)+1))
+            N    = 12+10*(mu**2-1)
+            Nmax = 12+10*((mu+1)**2-1)
+
+            if self.sphN != N:
+                self.logger.error(f"The given number of spheres for sphere multiblob ({self.sphN}) is not valid for icosphere."
+                                  f"The lower valid number is {N} and the upper valid number is {Nmax}.")
+                raise Exception("Invalid number of spheres for icosphere")
 
             pos, _ = icosphere(mu)
             pos    = np.append(pos, [[0, 0, 0]], axis=0)
             pos   *= rSphere
 
-            self.icoN  = len(pos)
             edgeIco    = rSphere/np.sin(2*np.pi/5)
             edgeLength = edgeIco/mu
 
         elif self.sphereType == "icosidodecahedron":
 
-            if self.icoN != 31:
-                self.logger.error("Number of particles for icosidodecahedron must be 31")
-                raise Exception("Number of particles for icosidodecahedron must be 31")
+            if self.sphN != 30:
+                self.logger.error("Number of particles for icosidodecahedron must be 30")
+                raise Exception("Number of particles for icosidodecahedron must be 30")
 
             goldenRatio = (1.0 + np.sqrt(5.0))/2.0
 
-            pos = np.zeros((self.icoN, 3), dtype=float)
-            ic = np.zeros(self.icoN, dtype=int)
+            pos = np.zeros((self.sphN+1, 3), dtype=float)
+            ic  = np.zeros(self.sphN+1, dtype=int)
             edgeLength = rSphere / goldenRatio
 
             a = 0
@@ -133,7 +138,7 @@ class SPHEREMULTIBLOB(modelBase):
             self.logger.error("Sphere type not recognized")
             raise Exception("Sphere type not recognized")
 
-        self.icoN        = params.get("particlesPerSphere",31)
+        self.sphN        = params.get("particlesPerSphere",31)
 
         particleName = params.get("particleName","A")
 
@@ -182,7 +187,7 @@ class SPHEREMULTIBLOB(modelBase):
 
         ############################################################
 
-        icoPositions = []
+        sphPositions = []
 
         i=0
         tries=0
@@ -205,10 +210,10 @@ class SPHEREMULTIBLOB(modelBase):
             if height > Z - radiusOfSphere or height < -Z + radiusOfSphere:
                 continue
 
-            if icoPositions:
-                #minDst,minDstIndex = cKDTree(icoPositions).query(center, 1)
+            if sphPositions:
+                #minDst,minDstIndex = cKDTree(sphPositions).query(center, 1)
                 minDst = np.inf
-                for p in icoPositions:
+                for p in sphPositions:
                     dst = np.linalg.norm(p-np.asarray(center))
                     minDst = min(dst,minDst)
 
@@ -216,7 +221,7 @@ class SPHEREMULTIBLOB(modelBase):
                 minDst = np.inf
 
             if minDst > 2.0*radiusOfSphere*1.1:
-                icoPositions.append(center)
+                sphPositions.append(center)
                 i+=1
 
         # Generate spheres
@@ -226,9 +231,9 @@ class SPHEREMULTIBLOB(modelBase):
         state["data"]  =[]
 
         idCounter = 0
-        ico2ids = []
-        ico2pos = []
-        for center in icoPositions:
+        sph2ids = []
+        sph2pos = []
+        for center in sphPositions:
             pos, edgeLength = self.__sphere(radiusOfSphere)
             pos += center
             ids = []
@@ -236,15 +241,15 @@ class SPHEREMULTIBLOB(modelBase):
                 state["data"].append([idCounter,list(p)])
                 ids.append(idCounter)
                 idCounter += 1
-            ico2ids.append(ids.copy())
-            ico2pos.append(pos.copy())
+            sph2ids.append(ids.copy())
+            sph2pos.append(pos.copy())
 
         structure = {}
         structure["labels"] = ["id", "type", "modelId"]
         structure["data"]   = []
 
         for i in range(numberOfSpheres):
-            for j in ico2ids[i]:
+            for j in sph2ids[i]:
                 structure["data"].append([j,particleName,i])
 
         forceField = {}
@@ -256,19 +261,19 @@ class SPHEREMULTIBLOB(modelBase):
 
         bonds = []
         for i in range(numberOfSpheres):
-            for n in range(self.icoN):
-                for m in range(n + 1, self.icoN):
-                    pn = ico2pos[i][n]
-                    pm = ico2pos[i][m]
+            for n in range(self.sphN):
+                for m in range(n + 1, self.sphN):
+                    pn = sph2pos[i][n]
+                    pm = sph2pos[i][m]
 
                     dst = np.linalg.norm(pn - pm)
 
                     if dst < 1.25 * edgeLength:
-                        bonds.append([ico2ids[i][n], ico2ids[i][m], K, edgeLength])
+                        bonds.append([sph2ids[i][n], sph2ids[i][m], K, edgeLength])
 
             #All particles are bonded to central particle, which is the last one
-            for j in ico2ids[i][:-1]:
-                bonds.append([ico2ids[i][-1], j, K, radiusOfSphere])
+            for j in sph2ids[i][:-1]:
+                bonds.append([sph2ids[i][-1], j, K, radiusOfSphere])
 
         for i,j,k,r0 in bonds:
             forceField["Bond"]["data"].append([i,j,k,r0])
