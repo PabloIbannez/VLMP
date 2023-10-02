@@ -49,8 +49,10 @@ class interLennardJones(modelExtensionBase):
 
         if addVerletList:
             extension["nl"]={}
-            extension["nl"]["type"]       =  ["VerletConditionalListSet", "intra_inter"]
+            extension["nl"]["type"]       =  ["VerletConditionalListSet",  "nonExclIntra_nonExclInter"]
             extension["nl"]["parameters"] =  {}
+            extension["nl"]["labels"]      = ["id","id_list"]
+            extension["nl"]["data"]        = []
 
         extension[name] = {}
         extension[name]["type"] = ["NonBonded","GeneralLennardJonesType2"]
