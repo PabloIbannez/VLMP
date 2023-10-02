@@ -103,6 +103,9 @@ class modelOperationBase(idsHandler):
     def getEnsemble(self):
         return self._ensemble
 
+    def getModels(self):
+        return self._models
+
     ########################################################
 
     def getSelection(self,selectionName):

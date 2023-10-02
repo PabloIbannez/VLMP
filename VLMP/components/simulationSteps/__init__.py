@@ -114,6 +114,9 @@ class simulationStepBase(idsHandler):
     def getEnsemble(self):
         return self._ensemble
 
+    def getModels(self):
+        return self._models
+
     ########################################################
 
     def setSimulationStep(self, simulationStep):
