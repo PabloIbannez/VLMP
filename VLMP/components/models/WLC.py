@@ -31,7 +31,7 @@ class WLC(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"N","mass","b","Kb","Ka","typeName","stericInteraction"},
+                         availableParameters = {"N","mass","b","Kb","Ka","typeName"},
                          requiredParameters  = {"N"},
                          definedSelections   = {"particleId","polymerIndex"},
                          **params)
@@ -53,8 +53,6 @@ class WLC(modelBase):
 
         typeName = params.get("typeName","A")
 
-        stericInteraction = params.get("stericInteraction",False)
-
         self.logger.debug(f"[WLC] Generating a WLC model with {self.N} particles")
         self.logger.debug(f"[WLC] Parameters: mass={mass}, b={b}, Kb={Kb}, Ka={Ka}")
 
@@ -72,7 +70,7 @@ class WLC(modelBase):
         state["labels"] = ["id","position"]
         state["data"]   = []
         for i in range(self.N):
-            state["data"].append([i, [0.0,0.0,i*b]])
+            state["data"].append([i, [0.0,0.0,i*b-0.5*(self.N-1)*b]])
 
         #Generate structure
         structure = {}
@@ -84,44 +82,23 @@ class WLC(modelBase):
         #Generate forceField
         forceField = {}
 
-        forceField["bonds"] = {}
-        forceField["bonds"]["type"]       = ["Bond2","Harmonic"]
-        forceField["bonds"]["parameters"] = {}
-        forceField["bonds"]["labels"]     = ["id_i","id_j","K","r0"]
-        forceField["bonds"]["data"]       = []
+        forceField["bonds_wlc"] = {}
+        forceField["bonds_wlc"]["type"]       = ["Bond2","Harmonic"]
+        forceField["bonds_wlc"]["parameters"] = {}
+        forceField["bonds_wlc"]["labels"]     = ["id_i","id_j","K","r0"]
+        forceField["bonds_wlc"]["data"]       = []
 
         for i in range(self.N-1):
-            forceField["bonds"]["data"].append([i,i+1,Kb,b])
+            forceField["bonds_wlc"]["data"].append([i,i+1,Kb,b])
 
-        forceField["angles"] = {}
-        forceField["angles"]["type"]       = ["Bond3","KratkyPorod"]
-        forceField["angles"]["parameters"] = {}
-        forceField["angles"]["labels"]     = ["id_i","id_j","id_k","K"]
-        forceField["angles"]["data"]       = []
+        forceField["angles_wlc"] = {}
+        forceField["angles_wlc"]["type"]       = ["Bond3","KratkyPorod"]
+        forceField["angles_wlc"]["parameters"] = {}
+        forceField["angles_wlc"]["labels"]     = ["id_i","id_j","id_k","K"]
+        forceField["angles_wlc"]["data"]       = []
 
         for i in range(self.N-2):
-            forceField["angles"]["data"].append([i,i+1,i+2,Ka])
-
-        ########################################################
-
-        if stericInteraction:
-
-            forceField["steric_nl"]={}
-            forceField["steric_nl"]["type"]       =  ["VerletConditionalListSet", "nonExclIntra_nonExclInter"]
-            forceField["steric_nl"]["parameters"] =  {"cutOffVerletFactor":1.1}
-            forceField["steric_nl"]["labels"]     =  ["id","id_list"]
-            forceField["steric_nl"]["data"]       =  []
-
-            forceField["steric_nl"]["data"].append([0,[1]])
-            for i in range(1,self.N-1):
-                forceField["steric_nl"]["data"].append([i,[i-1,i+1]])
-            forceField["steric_nl"]["data"].append([self.N-1,[self.N-2]])
-
-            forceField["steric"] = {}
-            forceField["steric"]["type"]       = ["NonBonded","WCAType2"]
-            forceField["steric"]["parameters"] = {"cutOffFactor":1.0,"condition":"intra"}
-            forceField["steric"]["labels"]     = ["name_i","name_j","epsilon","sigma"]
-            forceField["steric"]["data"]       = [[typeName,typeName,1.0,2.0*radius]]
+            forceField["angles_wlc"]["data"].append([i,i+1,i+2,Ka])
 
         ########################################################
 
