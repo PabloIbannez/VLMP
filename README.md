@@ -1,6 +1,6 @@
 # VLMP (Virtual Laboratory Massively Parallelized)
 
-![alt text](http://url/to/img.png)
+![alt text](https://github.com/PabloIbannez/VLMP/blob/main/docs/_images/logo.png)
 
 ## Table of Contents
 
@@ -21,6 +21,10 @@ VLMP is a Python library designed for running parallelized simulations, specific
 - **Optimized for Coarse-grained Models**: Achieve better GPU utilization with small-scale simulations.
 - **Highly Configurable**: Easily adaptable for a variety of scientific phenomena.
 - **Community Sharing**: Distribute new models as VLMP modules.
+
+## Documentation
+
+Coming soon.
 
 ## Installation
 
@@ -130,10 +134,6 @@ python -m VLMP -s VLMPsession.json --local --gpu 0 1
 2. **Simulation Pool Creation**: Prepare multiple configurations for batch execution.
 3. **Simulation Distribution**: Distribute simulations across computational resources.
 4. **Simulation Execution**: Execute simulations on GPU using UAMMD-structured.
-
-## Documentation
-
-Coming soon.
 
 ## License
 
