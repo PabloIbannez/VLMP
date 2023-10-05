@@ -1,6 +1,8 @@
 # VLMP (Virtual Laboratory Massively Parallelized)
 
-<img src="https://github.com/PabloIbannez/VLMP/blob/main/docs/_images/logo.png" width="250">  
+<p align="center">
+    <img src="https://github.com/PabloIbannez/VLMP/blob/main/docs/_images/logo.png" width="250">  
+</p>
 
 ## Table of Contents
 
