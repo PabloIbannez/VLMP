@@ -1,0 +1,11 @@
+#Step ParticleNumber Volume Energy(ANGLES) Energy(BONDS) Energy(DH) Energy(DIHEDRALS) Energy(WCA) KineticEnergy TotalPotentialEnergy TotalEnergy Temperature Virial 
+0 598 8e+06 3.67756 14.1737 85.9275 25.3603 2.26795e+12 0 2.26795e+12 2.26795e+12 0 -2.27554e+10 
+10000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+20000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+30000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+40000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+50000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+60000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+70000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+80000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
+90000 598 8e+06 124995 nan 0 25173.3 0 nan nan nan nan nan 
