@@ -5,6 +5,7 @@ import copy
 import logging
 
 from . import modelBase
+from ...utils.input import getLabelIndex
 
 import pyGrained.models.AlphaCarbon as proteinModel
 
@@ -29,7 +30,7 @@ class SOP(modelBase):
                                                 "aggregateChains",
                                                 "epsilonNC"},
                          requiredParameters  = {"PDB"},
-                         definedSelections   = {"particleId"},
+                         definedSelections   = {"particleId","forceField"},
                          **params)
 
         ############################################################
@@ -63,6 +64,7 @@ class SOP(modelBase):
         for _,t in modelTypes.items():
             types.addType(**t)
 
+        #Set model
         self.setState(sop.getState())
         self.setStructure(sop.getStructure())
         self.setForceField(sop.getForceField())
@@ -74,5 +76,8 @@ class SOP(modelBase):
 
         if "particleId" in params:
             sel += params["particleId"]
+
+        if "forceField" in params:
+            sel += self.getForceFieldSelection(params["forceField"])
 
         return sel

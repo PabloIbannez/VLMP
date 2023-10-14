@@ -22,7 +22,7 @@ class FILE(modelBase):
                          _name= name,
                          availableParameters = {"inputFilePath"},
                          requiredParameters  = {"inputFilePath"},
-                         definedSelections   = {"particleId"},
+                         definedSelections   = {"particleId","forceField"},
                          **params)
 
         ############################################################
@@ -66,5 +66,8 @@ class FILE(modelBase):
 
         if "particleId" in params:
             sel += params["particleId"]
+
+        if "forceField" in params:
+            sel += self.getForceFieldSelection(params["forceField"])
 
         return sel
