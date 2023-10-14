@@ -26,6 +26,7 @@ def getSelections(models,selectionsList,**param):
         else:
             selectedModels = models
 
+        currentSelIdsLen = None
         for mdl in selectedModels:
             if "expression" in param[sel]:
                 mdlSelIds = mdl.getSelection(**param[sel]["expression"])
@@ -33,10 +34,38 @@ def getSelections(models,selectionsList,**param):
                 mdlSelIds = mdl.getSelection()
 
             offSet    = mdl.getIdOffset()
-            mdlSelIds = [i+offSet for i in mdlSelIds]
+
+            #Check if mdlSelIds[0] is a list
+            if isinstance(mdlSelIds[0],list):
+                selIdsLen = len(mdlSelIds[0])
+            else:
+                selIdsLen = 1
+
+            if currentSelIdsLen is None:
+                currentSelIdsLen = selIdsLen
+            elif currentSelIdsLen != selIdsLen:
+                logger.error(f"[getSelections] Selection {sel} has different lengths")
+                raise Exception("Selection has different lengths")
+
+            for i in range(len(mdlSelIds)):
+                if selIdsLen == 1:
+                    mdlSelIds[i] += offSet
+                else:
+                    for j in range(selIdsLen):
+                        mdlSelIds[i][j] += offSet
 
             selections[sel] += mdlSelIds
-        selections[sel] = list(set(selections[sel]))
+
+        if currentSelIdsLen == 1:
+            selections[sel] = list(set(selections[sel]))
+        else:
+            selections[sel] = list(set([tuple(s) for s in selections[sel]]))
+
+#            offSet    = mdl.getIdOffset()
+#            mdlSelIds = [i+offSet for i in mdlSelIds]
+#
+#            selections[sel] += mdlSelIds
+#        selections[sel] = list(set(selections[sel]))
 
     #Selection is a set of global ids
     return copy.deepcopy(selections)
