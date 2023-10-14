@@ -32,7 +32,8 @@ class AFM(modelExtensionBase):
                                                 "sigma",
                                                 "K","Kxy",
                                                 "tipVelocity",
-                                                "indentationStartStep"},
+                                                "indentationStartStep",
+                                                "indentationBackwardStep"},
                          requiredParameters  = {"epsilon",
                                                 "sigma",
                                                 "K","Kxy",
@@ -49,7 +50,8 @@ class AFM(modelExtensionBase):
 
         tipVelocity = params["tipVelocity"]
 
-        indentationStartStep = params.get("indentationStartStep",0)
+        indentationStartStep    = params.get("indentationStartStep",0)
+        indentationBackwardStep = params.get("indentationBackwardStep",0)
 
         ############################################################
 
@@ -73,8 +75,8 @@ class AFM(modelExtensionBase):
         extension[name]["type"]       = ["AFM","SphericalTip"]
         extension[name]["parameters"] = {}
 
-        extension[name]["labels"] = ["idSet_i","idSet_j","epsilon","sigma","K","Kxy","tipVelocity","startChipPosition","indentationStartStep"]
-        extension[name]["data"]   = [[tipIds,sampleIds,epsilon,sigma,K,Kxy,tipVelocity,startChipPosition,indentationStartStep]]
+        extension[name]["labels"] = ["idSet_i","idSet_j","epsilon","sigma","K","Kxy","tipVelocity","startChipPosition","indentationStartStep","indentationBackwardStep"]
+        extension[name]["data"]   = [[tipIds,sampleIds,epsilon,sigma,K,Kxy,tipVelocity,startChipPosition,indentationStartStep,indentationBackwardStep]]
 
         ############################################################
 
