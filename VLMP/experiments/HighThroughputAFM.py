@@ -60,6 +60,7 @@ class HighThroughputAFM(VLMP.VLMP):
         self.fixSampleDuringThermalization = parameters["indentation"].get("fixSampleDuringThermalization",False)
         self.fixSampleDuringIndentation    = parameters["indentation"].get("fixSampleDuringIndentation",False)
         self.KxyFixing                     = parameters["indentation"].get("KxyFixing",None)
+        self.backwardIndentation           = parameters["indentation"].get("backwardIndentation",False)
 
         ############################################################################
 
@@ -71,8 +72,15 @@ class HighThroughputAFM(VLMP.VLMP):
             raise Exception("No sample fixing requested!")
 
         if "maxForce" in parameters.keys():
-            self.maxForce             = parameters["maxForce"].get("force",None)
-            self.maxForceIntervalStep = parameters["maxForce"].get("maxForceIntervalStep",None)
+            self.maxForce             = parameters["maxForce"].get("force")
+            self.maxForceIntervalStep = parameters["maxForce"].get("maxForceIntervalStep")
+
+            if self.backwardIndentation:
+                #Not compatible with maxForce
+                self.logger.error("[AFM] Backward indentation requested, but maxForce is not compatible with it!")
+                raise Exception("Indentation parameters not compatible!")
+        else:
+            self.maxForce = None
 
         if "surface" in parameters.keys():
             self.addSurface = True
@@ -122,6 +130,9 @@ class HighThroughputAFM(VLMP.VLMP):
 
         self.integrator = parameters["simulation"]["integrator"]
         self.integrator["parameters"]["integrationSteps"] = self.thermalizationSteps + self.indentationSteps
+        if self.backwardIndentation:
+            # We perform the same number of steps for forward and backward indentation
+            self.integrator["parameters"]["integrationSteps"] += self.indentationSteps
 
         self.samples = parameters["simulation"]["samples"]
         #Check samples is dict of list
@@ -302,6 +313,8 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                       "indentationStartStep":self.thermalizationSteps,
                                                                       "tip":{"models":copy.deepcopy(tipSelection)},
                                                                       "sample":{"models":copy.deepcopy(sampleSelection)}}})
+            if self.backwardIndentation:
+                sim["modelExtensions"][-1]["parameters"]["indentationBackwardStep"] = self.thermalizationSteps + self.indentationSteps
 
             fixingStartStep = None
             fixingEndStep   = None
@@ -419,10 +432,14 @@ class AnalysisAFM:
                 continue
 
             indentationFilePath = "/".join(self.VLMPsessionFilePath.split("/")[:-1]) + "/results/" + name + "/afm.dat"
+            #Check if indentation file exists
+            if not os.path.isfile(indentationFilePath):
+                self.logger.warning("[AnalysisAFM] Indentation file {} not found for simulation {}".format(indentationFilePath,name))
+                continue
             indentationData = np.loadtxt(indentationFilePath,skiprows=1)
 
-            X = indentationData[:,0]
-            F = indentationData[:,1]
+            X    = indentationData[:,1]
+            F    = indentationData[:,2]
 
             # Input units
             inputUnits = info["units"][0]["type"]
