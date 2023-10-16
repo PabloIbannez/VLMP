@@ -29,14 +29,22 @@ for i in range(copies):
                                                "parameters":{"position":[10,10,10],
                                                              "selection":{"models":["modelTest1"]}}
                                                }],
-                           "modelExtensions":[{"type":"sphericalShell",
+                           #"modelExtensions":[{"type":"sphericalShell",
+                           #                    "parameters":{
+                           #                                  "shellRadius":"auto",
+                           #                                  "shellCenter":[0,0,0],
+                           #                                  "minShellRadius":5.0,
+                           #                                  "radiusVelocity":-0.5,
+                           #                                  "selection":{}
+                           #                                 }
+                           #                    }],
+                           "modelExtensions":[{"type":"constantForce",
                                                "parameters":{
-                                                             "shellRadius":"auto",
-                                                             "shellCenter":[0,0,0],
-                                                             "minShellRadius":5.0,
-                                                             "radiusVelocity":-0.5,
-                                                             "selection":{}
-                                                            }
+                                                             "force":[1.0,2.0,3.0],
+                                                             "selection":{"models":["modelTest1"],
+                                                                          "expression":{"particleId":[1,2,3],"polymerIndex":[2,-2]}}
+                                                            },
+
                                                }],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                                                 "outputFilePath":"test",

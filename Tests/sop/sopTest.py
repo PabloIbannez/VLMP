@@ -1,6 +1,6 @@
 import VLMP
 
-from VLMP.utils.utils import picosecond2KcalMol_A_time
+from VLMP.utils.units import picosecond2KcalMol_A_time
 
 ps2AKMA = picosecond2KcalMol_A_time()
 
@@ -21,10 +21,12 @@ for i in range(copies):
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                                                 "outputFilePath":"test",
                                                                                 "outputFormat":"sp"}},
+                                              {"type":"nativeContactsMeasurement","parameters":{"intervalStep":10000,
+                                                                                                "outputFilePath":"nativeContacts.dat",
+                                                                                                "selection":{"expression":{"potential":"nativeContacts"}}}},
                                               {"type":"info","parameters":{"intervalStep":10000}}]
 
                            })
-
 
 vlmp = VLMP.VLMP()
 
