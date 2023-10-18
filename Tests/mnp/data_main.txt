@@ -1,0 +1,17 @@
+{
+    "nParticles":1000,
+    "coreRadius":2,
+    "coreRadiusStd":0.25,
+    "coatingWidth":0.2,
+    "coatingWidthStd":0.01,
+    "msat":10,
+    "anisotropy":5,
+    "anisotropyStd":1,
+    "lbox":40,
+    "viscosity":1,
+    "gyroRatio":5,
+    "damping":0.1,
+    "temperature":5,
+    "timeStep":0.001,
+    "nSteps":5000000
+}
