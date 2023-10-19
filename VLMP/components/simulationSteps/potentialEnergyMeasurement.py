@@ -4,26 +4,21 @@ import logging
 
 from . import simulationStepBase
 
-class meanMagnetizationMeasurement(simulationStepBase):
+class potentialEnergyMeasurement(simulationStepBase):
     """
-    Component name: meanMagnetizationMeasurement
+    Component name: potentialEnergyMeasurement
     Component type: simulationStep
 
-    Author: P. Palacios Alonso
+    Author: Pablo Ibáñez-Freire
     Date: 18/10/2023
-
-    This component writes the mean magnetization of the system to a file.
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
 
     """
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath"},
-                         requiredParameters  = {"outputFilePath"},
+                         availableParameters = {"outputFilePath","potentials"},
+                         requiredParameters  = {"outputFilePath","potentials"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
@@ -34,11 +29,12 @@ class meanMagnetizationMeasurement(simulationStepBase):
 
         parameters = {}
 
-        parameters["outputFilePath"] = params["outputFilePath"]
+        parameters["outputFilePath"]  = params["outputFilePath"]
+        parameters["interactorsList"] = params["potentials"]
 
         simulationStep = {
             name:{
-              "type":["MagneticMeasure","MeasureMeanMagnetization"],
+              "type":["ThermodynamicMeasure","InteractorsListEnergyMeasure"],
               "parameters":{**parameters}
             }
         }

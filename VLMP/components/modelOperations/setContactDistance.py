@@ -5,6 +5,7 @@ import logging
 from . import modelOperationBase
 
 import numpy as np
+from scipy.spatial import cKDTree
 
 class setContactDistance(modelOperationBase):
 
@@ -24,8 +25,8 @@ class setContactDistance(modelOperationBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"distance","invert"},
-                         requiredParameters  = {"distance"},
+                         availableParameters = {"distance","resolution","inverse"},
+                         requiredParameters  = {"distance","resolution"},
                          availableSelections = {"reference","mobile"},
                          requiredSelections  = {"reference","mobile"},
                          **params)
@@ -35,7 +36,8 @@ class setContactDistance(modelOperationBase):
         ############################################################
 
         dst = params["distance"]
-        inv = params.get("invert",False)
+        res = params["resolution"]
+        inv = params.get("inverse",False)
 
         referenceIds = self.getSelection("reference")
         mobileIds    = self.getSelection("mobile")
@@ -48,26 +50,62 @@ class setContactDistance(modelOperationBase):
 
         # Compute the total radius of each selection
         refCenter = np.mean(referencePos,axis=0)
-        refMaxRad = np.max(np.linalg.norm(referencePos-refCenter,axis=1)+referenceRads)
-
         mobCenter = np.mean(mobilePos,axis=0)
-        mobMaxRad = np.max(np.linalg.norm(mobilePos-mobCenter,axis=1)+mobileRads)
 
         # Compute the vector between the centers
         centersVec = mobCenter-refCenter
         if inv:
+            for i in range(mobilePos.shape[0]):
+                mobilePos[i] = mobCenter-2.0*centersVec
             centersVec = -centersVec
+        centersVec = centersVec/np.linalg.norm(centersVec)
 
-        targetCenterDist = refMaxRad + mobMaxRad + dst
+        stepSize = res
+        prevDist = None
+        while True:
 
-        # Compute the final position of the mobile selection in order to
-        # have the desired distance
-        newMobileCenter = refCenter + (centersVec/np.linalg.norm(centersVec))*targetCenterDist
-        translation = newMobileCenter - mobCenter
+            minDst,minDstIndex = cKDTree(referencePos).query(mobilePos, 1)
+
+            ############################################################
+
+            mobileClosestIndex = np.argmin(minDst)
+            mobileClosestDst   = minDst[mobileClosestIndex]
+
+            mobileClosestPos = mobilePos[mobileClosestIndex]
+            mobileClosestRad = mobileRads[mobileClosestIndex]
+
+            ############################################################
+
+            referenceClosestIndex = minDstIndex[mobileClosestIndex]
+            referenceClosestDst   = minDst[mobileClosestIndex]
+
+            referenceClosestPos = referencePos[referenceClosestIndex]
+            referenceClosestRad = referenceRads[referenceClosestIndex]
+
+            ############################################################
+
+            currentDst = mobileClosestDst - (mobileClosestRad + referenceClosestRad)
+
+            if np.abs(currentDst-dst) < res:
+                break
+
+            if prevDist is not None:
+                if np.abs(currentDst-dst) > np.abs(prevDist-dst):
+                    stepSize = stepSize/2
+
+            if (currentDst < dst):
+                for i in range(mobilePos.shape[0]):
+                    mobilePos[i] = mobilePos[i] + centersVec * stepSize
+                prevDist = currentDst
+
+            if (currentDst > dst):
+                for i in range(mobilePos.shape[0]):
+                    mobilePos[i] = mobilePos[i] - centersVec * stepSize
+                prevDist = currentDst
 
         newPos = []
         for i in range(len(mobileIds)):
-            newPos.append(list(mobilePos[i]+translation))
+            newPos.append(list(mobilePos[i]))
 
         self.setIdsState(mobileIds,"position",newPos)
 

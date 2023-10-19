@@ -28,7 +28,7 @@ class ACMagneticField(modelExtensionBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"b0", "frequency"},
+                         availableParameters = {"b0", "frequency", "direction"},
                          requiredParameters  = {"b0", "frequency"},
                          availableSelections = set(),
                          requiredSelections  = set(),
@@ -38,8 +38,9 @@ class ACMagneticField(modelExtensionBase):
         ############################################################
         ############################################################
 
-        frequency = params.get("frequency")
-        b0        = params.get("b0")
+        frequency = params["frequency"]
+        b0        = params["b0"]
+        direction = params.get("direction", [0,0,1])
 
         extension = {}
 
@@ -48,7 +49,7 @@ class ACMagneticField(modelExtensionBase):
         extension[name]["parameters"] = {}
         extension[name]["parameters"]["b0"] = b0
         extension[name]["parameters"]["frequency"] = frequency
-        extension[name]["parameters"]["direction"] = [0,0,1]
+        extension[name]["parameters"]["direction"] = direction.copy()
         ############################################################
 
         self.setExtension(extension)

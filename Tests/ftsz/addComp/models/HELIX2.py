@@ -330,10 +330,10 @@ class HELIX2(modelBase):
             else:
 
                 Rprev = monomersOrientations[-1]
-                Rcurrent    = Rprev@self.Rhelix
-                Rcurrent=Rcurrent@R.random().as_matrix()
+                Rcurrent = Rprev@self.Rhelix
 
-                x,y,z       = np.asarray(monomersPositions[-1]) + sigma*Rcurrent[:,0]
+                x,y,z   = np.asarray(monomersPositions[-1]) + sigma*Rcurrent[:,0]
+                #x,y,z    = self.__helixEquation(n*sigma)
 
             currentMonomerPosition    = np.asarray([x,y,z])
             currentMonomerOrientation = Rcurrent.copy()
@@ -344,6 +344,10 @@ class HELIX2(modelBase):
         centroid = np.mean(monomersPositions,axis=0)
         monomersPositions-=centroid
 
+        #for j in range(len(monomersOrientations)):
+        #    randomRotation = R.random()
+        #    monomersOrientations[j] = randomRotation.as_matrix()@monomersOrientations[j]
+
         for p in monomersPositions:
             if not self.checker.check(p):
                 self.logger.error(f"[HELIX] Box too small")
@@ -353,9 +357,16 @@ class HELIX2(modelBase):
             #Angular
             energy = 0.0
             for i in range(self.nMonomers-1):
-                A = ori[i]
-                B = ori[i+1]
-                energyX = 1.0-np.dot(B[:,0],A@self.Rhelix[:,0])
+                A = ori[i].copy()
+                B = ori[i+1].copy()
+
+                optimalB = A@(self.Rhelix[:,0])
+
+                product = np.dot(optimalB,B[:,0])
+                #product = np.where(np.abs(product)<1e-6,0.0,product)
+                #product = np.where(product>0.9999999,1.0,product)
+
+                energyX = 1.0-product
                 #energyY = 1.0-np.dot(B[:,1],self.Rhelix@A[:,1])
 
                 #energy+=(np.abs(energyX)+np.abs(energyY))*0.5
@@ -365,7 +376,12 @@ class HELIX2(modelBase):
             for i in range(self.nMonomers-1):
                 A = ori[i]
                 B = ori[i+1]
-                energyX = 1.0-np.dot(A[:,0],B@(self.Rhelix.T)[:,0])
+
+                optimalA = B@(self.Rhelix.T[:,0])
+
+                product = np.dot(optimalA,A[:,0])
+
+                energyX = 1.0-product
                 #energyY = 1.0-np.dot(B[:,1],self.Rhelix@A[:,1])
 
                 #energy2+=(np.abs(energyX)+np.abs(energyY))*0.5
@@ -394,8 +410,8 @@ class HELIX2(modelBase):
 
         f = open("helix.sp","w")
         for i in range(20):
-            randomRotation = R.random()
-            monomersPositions    = randomRotation.apply(monomersPositions)
+            randomRotation    = R.random()
+            monomersPositions = randomRotation.apply(monomersPositions)
             for j in range(len(monomersOrientations)):
                 monomersOrientations[j] = randomRotation.as_matrix()@monomersOrientations[j]
             writeHelix(monomersPositions,monomersOrientations,f)
@@ -479,7 +495,7 @@ class HELIX2(modelBase):
 
         self._sOne  = self.__computeHelixParticlesDistance()
         self.Rhelix = self.__computeHelixMatrix()
-        #self.Rpoly  = self.__computePolymerMatrix()
+        #self.Rhelix  = self.__computePolymerMatrix()
 
         #Check both are the same
         #assert np.allclose(self.Rhelix,self.Rpoly)

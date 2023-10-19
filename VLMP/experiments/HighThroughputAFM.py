@@ -51,11 +51,17 @@ class HighThroughputAFM(VLMP.VLMP):
         self.tipCharge = parameters["AFM"].get("tipCharge",0.0)
 
         self.initialTipSampleDistance = parameters["AFM"]["initialTipSampleDistance"]
+        self.contactResolution        = parameters["AFM"].get("contactResolution",0.1)
 
         ############################################################################
 
         self.thermalizationSteps = parameters["indentation"]["thermalizationSteps"]
         self.indentationSteps    = parameters["indentation"]["indentationSteps"]
+
+        if not isinstance(self.thermalizationSteps,list):
+            self.thermalizationSteps = [self.thermalizationSteps]
+        if not isinstance(self.indentationSteps,list):
+            self.indentationSteps = [self.indentationSteps]
 
         self.fixSampleDuringThermalization = parameters["indentation"].get("fixSampleDuringThermalization",False)
         self.fixSampleDuringIndentation    = parameters["indentation"].get("fixSampleDuringIndentation",False)
@@ -129,10 +135,11 @@ class HighThroughputAFM(VLMP.VLMP):
                 raise Exception("The box must be a list of 3 floats")
 
         self.integrator = parameters["simulation"]["integrator"]
-        self.integrator["parameters"]["integrationSteps"] = self.thermalizationSteps + self.indentationSteps
+
+        self.integrator["parameters"]["integrationSteps"] = max(self.thermalizationSteps) + max(self.indentationSteps)
         if self.backwardIndentation:
             # We perform the same number of steps for forward and backward indentation
-            self.integrator["parameters"]["integrationSteps"] += self.indentationSteps
+            self.integrator["parameters"]["integrationSteps"] += max(self.indentationSteps)
 
         self.samples = parameters["simulation"]["samples"]
         #Check samples is dict of list
@@ -147,6 +154,22 @@ class HighThroughputAFM(VLMP.VLMP):
 
         nSamples = len(self.samples)
         self.logger.info("[AFM] Number of samples: %d" % nSamples)
+
+        if len(self.thermalizationSteps) != nSamples:
+            if len(self.thermalizationSteps) == 1:
+                self.logger.info("[AFM] Same thermalization steps for all samples")
+                self.thermalizationSteps = [self.thermalizationSteps[0]]*nSamples
+            else:
+                self.logger.error("[AFM] Different number of thermalization steps and samples!")
+                raise Exception("Different number of thermalization steps and samples!")
+
+        if len(self.indentationSteps) != nSamples:
+            if len(self.indentationSteps) == 1:
+                self.logger.info("[AFM] Same indentation steps for all samples")
+                self.indentationSteps = [self.indentationSteps[0]]*nSamples
+            else:
+                self.logger.error("[AFM] Different number of indentation steps and samples!")
+                raise Exception("Different number of indentation steps and samples!")
 
         self.backupIntervalStep = parameters["simulation"].get("backupIntervalStep",None)
 
@@ -233,6 +256,9 @@ class HighThroughputAFM(VLMP.VLMP):
                    "simulationSteps":copy.deepcopy(smpModels.get("simulationSteps",[])),
                    }
 
+            thermSteps_smp  = self.thermalizationSteps[index]
+            indentSteps_smp = self.indentationSteps[index]
+
             K_smp   = self.K[index]
             Kxy_smp = self.Kxy[index]
 
@@ -299,7 +325,8 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                                                     "selection":{"models":copy.deepcopy(sampleSelection)}}})
 
                 sim["modelOperations"].append({"type":"setContactDistance","parameters":{"distance":initialTipSampleDistance_smp,
-                                                                                         "invert":True,
+                                                                                         "resolution":self.contactResolution,
+                                                                                         "inverse":True,
                                                                                          "reference":{"models":copy.deepcopy(sampleSelection)},
                                                                                          "mobile":{"models":copy.deepcopy(tipSelection)}}})
             ###Model extensions
@@ -310,18 +337,18 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                       "epsilon":epsilon_smp,
                                                                       "sigma":sigma_smp,
                                                                       "tipVelocity":tipVelocity_smp,
-                                                                      "indentationStartStep":self.thermalizationSteps,
+                                                                      "indentationStartStep":thermSteps_smp,
                                                                       "tip":{"models":copy.deepcopy(tipSelection)},
                                                                       "sample":{"models":copy.deepcopy(sampleSelection)}}})
             if self.backwardIndentation:
-                sim["modelExtensions"][-1]["parameters"]["indentationBackwardStep"] = self.thermalizationSteps + self.indentationSteps
+                sim["modelExtensions"][-1]["parameters"]["indentationBackwardStep"] = thermSteps_smp + indentSteps_smp
 
             fixingStartStep = None
             fixingEndStep   = None
             if       self.fixSampleDuringThermalization and not self.fixSampleDuringIndentation:
-                fixingEndStep   = self.thermalizationSteps
+                fixingEndStep   = thermSteps_smp
             elif not self.fixSampleDuringThermalization and     self.fixSampleDuringIndentation:
-                fixingStartStep = self.thermalizationSteps
+                fixingStartStep = thermSteps_smp
             elif not self.fixSampleDuringThermalization and not self.fixSampleDuringIndentation:
                 pass
 
@@ -359,7 +386,7 @@ class HighThroughputAFM(VLMP.VLMP):
                 if self.absorptionHeight is not None:
                     sim["modelExtensions"].append({"type":"absortionSurface","parameters":{"heightThreshold":absorptionHeight_smp,
                                                                                            "K":absorptionK_smp,
-                                                                                           "startStep":self.thermalizationSteps}})
+                                                                                           "startStep":thermSteps_smp}})
 
             #Add maxForce
             if self.maxForce is not None:
@@ -386,7 +413,7 @@ class HighThroughputAFM(VLMP.VLMP):
             if self.afmMeasurementIntervalStep is not None:
                 sim["simulationSteps"].append({"type":"afmMeasurement","parameters":{"intervalStep":self.afmMeasurementIntervalStep,
                                                                                      "outputFilePath":self.afmMeasurementOutputFilePath,
-                                                                                     "startStep":self.thermalizationSteps}})
+                                                                                     "startStep":thermSteps_smp}})
 
             simulationPool.append(copy.deepcopy(sim))
 
@@ -438,6 +465,7 @@ class AnalysisAFM:
                 continue
             indentationData = np.loadtxt(indentationFilePath,skiprows=1)
 
+            T    = indentationData[:,0]
             X    = indentationData[:,1]
             F    = indentationData[:,2]
 
@@ -453,15 +481,18 @@ class AnalysisAFM:
                 X = X*0.1
                 F = unitsUtils.KcalMol_A_force2nanonewton(F)
 
-            f = plt.figure()
-            plt.plot(X,F)
-            plt.xlabel(f"Indentation ({Xunits})")
-            plt.ylabel(f"Force ({Funits})")
-            plt.title(f"Indentation for {name}")
+            f,ax = plt.subplots()
+            ax.plot(X,F)
+            ax.set_xlabel(f"Indentation ({Xunits})")
+            ax.set_ylabel(f"Force ({Funits})")
+            ax.set_title(f"Indentation for {name}")
+
+            ax2 = ax.twinx()
+            ax2.plot(X,T,"--",color="red")
             f.show()
 
             if self.maxForce is not None:
-                plt.ylim([np.min(F),self.maxForce])
+                ax.set_ylim([np.min(F),self.maxForce])
 
             indentationProcessedFilePath = "/".join(self.VLMPsessionFilePath.split("/")[:-1]) + "/results/" + name + "/afm_processed.dat"
             with open(indentationProcessedFilePath,"w") as f:

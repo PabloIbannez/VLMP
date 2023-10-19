@@ -64,32 +64,32 @@ for i in range(copies):
                                                         "integrationSteps": nSteps}}
         ],
         "models": [
-            {"type": "MAGNETICNP2", "parameters": {"msat":msat,
-                                                   "nParticles":nParticles,
-                                                   "coreRadius":coreRadius,
-                                                   "coreRadiusStd":coreRadiusStd,
-                                                   "coatingWidth":coatingWidth,
-                                                   "coatingWidthStd":coatingWidthStd,
-                                                   "anisotropy":anisotropy,
-                                                   "anisotropyStd":anisotropyStd,
-                                                   "initOrientation":"random"}}
+            {"type": "MAGNETICNP", "parameters": {"msat":msat,
+                                                  "nParticles":nParticles,
+                                                  "coreRadius":coreRadius,
+                                                  "coreRadiusStd":coreRadiusStd,
+                                                  "coatingWidth":coatingWidth,
+                                                  "coatingWidthStd":coatingWidthStd,
+                                                  "anisotropy":anisotropy,
+                                                  "anisotropyStd":anisotropyStd,
+                                                  "initOrientation":"random"}}
         ],
 
-        "modelExtensions":[{"type":"ACMagneticField",
-                            "parameters":{
-                                "b0":b0,
-                                "frequency":f
-                            }
-                        }],
+        ##"modelExtensions":[{"type":"ACMagneticField",
+        #                    "parameters":{
+        #                        "b0":b0,
+        #                        "frequency":f
+        #                    }
+        #                }],
 
         "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":10000,
                                                              "outputFilePath":"test",
-                                                             "outputFormat":"svvma"}},
+                                                             "outputFormat":"spo"}},
                            {"type":"meanMagnetizationMeasurement","parameters":{"intervalStep":10000,
                                                                                 "outputFilePath":"test.magnet",
                                                                                 }},
                            {"type":"info","parameters":{"intervalStep":10000}}]
-    
+
     })
 
 vlmp = VLMP.VLMP("addComp")
