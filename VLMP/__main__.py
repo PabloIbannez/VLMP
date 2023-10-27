@@ -121,7 +121,7 @@ def liquidLauncher(simulationSetsInfo,nodeGPUList,postScript):
                     Simulation folder: \"{simSetFolder}\"\n\
                     Binary: \"UAMMDlauncher\"\n\
                     Simulation options: \"{simSetOptions}\"\n\
-                    Node: compute-0-{nodeId}')
+                    Node: {nodeId}')
 
         ############################################################
 
@@ -146,7 +146,7 @@ def liquidLauncher(simulationSetsInfo,nodeGPUList,postScript):
 
         subprocess.run(["bsub","-N",jobName,
                         "-q","gpu.q",
-                        "-l",f"hostname=compute-0-{nodeId}",
+                        "-l",f"hostname={nodeId}",
                         "-o",f"{os.getcwd()}/stdout.log",
                         "-e",f"{os.getcwd()}/stderr.log",
                         ".job"])
@@ -157,28 +157,106 @@ def liquidLauncher(simulationSetsInfo,nodeGPUList,postScript):
 
     logger.info("All simulation sets job have been submitted")
 
+def slurmLauncher(simulationSetsInfo,nodeList,partitionList,modules,postScript):
+
+    modules = " ".join(modules)
+
+    lenNodeList      = len(nodeList)
+    lenPartitionList = len(partitionList)
+
+    if(lenNodeList!=lenPartitionList):
+        self.logger.error("The number of nodes and the number of partitions must be the same")
+        sys.exit(1)
+
+    nodePartitionList = list(zip(nodeList,partitionList))
+    nodePartitionList = itertools.cycle(nodePartitionList)
+
+    simulationName  = simulationSetsInfo["name"]
+    simulationsInfo = simulationSetsInfo["simulations"]
+    simulationSets  = simulationSetsInfo["simulationSets"]
+
+    logger = logging.getLogger("VLMP")
+
+    logger.info("Starting slurm ...")
+    logger.info("Simulation name: {}".format(simulationName))
+
+    for jobIndex,[simSetName,simSetFolder,simSetOptions,simSetComponents] in enumerate(simulationSets):
+        node,partition = next(nodePartitionList)
+
+        jobName = f"{simulationName}_{simSetName}"
+
+        logger.info(f'Launching simulation ...\n\
+                    Job name: \"{jobName}\"\n\
+                    Simulation folder: \"{simSetFolder}\"\n\
+                    Binary: \"UAMMDlauncher\"\n\
+                    Simulation options: \"{simSetOptions}\"\n\
+                    Node: \"{node}\"\n\
+                    Partition: \"{partition}\"')
+
+        ############################################################
+
+        cwd = os.getcwd()
+        os.chdir(simSetFolder)
+
+        with open("./.job","w") as f:
+            batch = ("#!/bin/bash\n"
+                     f"#SBATCH --job-name={jobName}\n"
+                     f"#SBATCH --partition={partition}\n"
+                      "#SBATCH --nodes=1\n"
+                      "#SBATCH --ntasks-per-node=1\n"
+                      "#SBATCH --cpus-per-task=1\n"
+                      "#SBATCH --gres=gpu:1\n"
+                      "#SBATCH --output=stdout.log\n"
+                      "#SBATCH --error=stderr.log\n"
+                     f"#SBATCH --nodelist={node}\n"
+                     f"module purge\n"
+                     f"module load {modules}\n"
+                     f"UAMMDlauncher {simSetOptions}\n"
+                     f"{postScript}\n")
+
+            f.write(batch)
+
+        subprocess.run(["sbatch",".job"])
+        time.sleep(1.0)
+
+        os.chdir(cwd)
+
+        ############################################################
+    return
+
 if __name__ == "__main__":
 
     #Create argument parser
-    parser = argparse.ArgumentParser(description='Run a set of simulations')
+    mainParser = argparse.ArgumentParser(description='Run a set of simulations')
 
     #Add arguments
-    parser.add_argument('-s', '--simulationSetsInfo', type=str, help='Simulation sets info file', required=True)
+    mainParser.add_argument('-s', '--simulationSetsInfo', type=str, help='Simulation sets info file', required=True)
 
     #There are two simualtions options, local and liquid (cluster lsf). If none is selected, local is used.
     #Add mutually exclusive group
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('--local', action='store_true', help='Run simulations locally')
+    group = mainParser.add_mutually_exclusive_group()
+    group.add_argument('--local' , action='store_true', help='Run simulations locally')
     group.add_argument('--liquid', action='store_true', help='Run simulations in liquid cluster')
+    group.add_argument('--slurm' , action='store_true', help='Run simulations in slurm cluster')
 
-    parser.add_argument('--gpu', nargs='+', type=int, help='List of gpu ids to use',required=True)
-    parser.add_argument('--postScript', type=str, help='Post script to run after simulations are finished',required=False)
+    mainArgs,_ = mainParser.parse_known_args()
+
+    parser = argparse.ArgumentParser(parents=[mainParser],add_help=False)
+    if mainArgs.local:
+        parser.add_argument('--gpu', nargs='+', type=int, help='List of gpu ids to use',required=True)
+
+    if mainArgs.liquid:
+        parser.add_argument('--node', nargs='+', type=int, help='List of node ids to use',required=True)
+        parser.add_argument('--postScript', type=str, help='Post script to run after simulation',required=False)
+
+    if mainArgs.slurm:
+        parser.add_argument('--node', nargs='+', type=int, help='List of node ids to use',required=True)
+        parser.add_argument('--postScript', type=str, help='Post script to run after simulation',required=False)
 
     #Parse arguments
     args = parser.parse_args()
 
-    if args.postScript and not args.liquid:
-        parser.error("--postScript can only be used with --liquid")
+    #########################################################
 
     #Load simulation sets info
     with open(args.simulationSetsInfo,"r") as f:
@@ -202,7 +280,7 @@ if __name__ == "__main__":
 
     logger.info("Starting VLMP ...")
 
-    if args.local or not args.liquid:
+    if mainArgs.local:
         logger.info("Running simulations locally ...")
         child_pid = os.fork()
 
@@ -210,10 +288,19 @@ if __name__ == "__main__":
             localLauncher(simulationSetsInfo,args.gpu)
         else:
             sys.exit(0)
-    else:
+    elif mainArgs.liquid:
         logger.info("Running simulations in liquid cluster ...")
 
         postScript = args.postScript if args.postScript else ""
-        liquidLauncher(simulationSetsInfo,args.gpu,postScript)
+        liquidLauncher(simulationSetsInfo,args.node,postScript)
+    elif mainArgs.slurm:
+        logger.info("Running simulations in slurm cluster ...")
+
+        postScript = args.postScript if args.postScript else ""
+        slurmLauncher(simulationSetsInfo,args.node,postScript)
+
+    else:
+        logger.error("No simulation option selected")
+        sys.exit(1)
 
     sys.exit(0)
