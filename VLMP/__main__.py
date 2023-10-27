@@ -157,16 +157,41 @@ def liquidLauncher(simulationSetsInfo,nodeGPUList,postScript):
 
     logger.info("All simulation sets job have been submitted")
 
-def slurmLauncher(simulationSetsInfo,nodeList,partitionList,modules,postScript):
+def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,postScript):
 
-    modules = " ".join(modules)
+    if modules[0] != "":
+        modules = " ".join(modules)
+        modules = f"module purge\n module load {modules}\n"
 
     lenNodeList      = len(nodeList)
+    lenFilling       = len(filling)
     lenPartitionList = len(partitionList)
 
-    if(lenNodeList!=lenPartitionList):
-        self.logger.error("The number of nodes and the number of partitions must be the same")
-        sys.exit(1)
+    if(lenPartitionList == 1 and lenNodeList !=1):
+        part = partitionList[0]
+        partitionList    = [part]*lenNodeList
+        lenPartitionList = len(partitionList)
+
+    if(lenNodeList == 0):
+        nodeList = [None]*lenPartitionList
+    else:
+        if(lenNodeList!=lenPartitionList):
+            self.logger.error("The number of nodes and the number of partitions must be the same")
+            sys.exit(1)
+
+        if(lenNodeList!=lenFilling):
+            self.logger.error("The number of nodes and the number of filling entries must be the same")
+            sys.exit(1)
+
+        nodeListTmp      = []
+        partitionListTmp = []
+        for i,f in enumerate(filling):
+            for _ in range(f):
+                nodeListTmp.append(nodeList[i])
+                partitionListTmp.append(partitionList[i])
+
+        nodeList      = nodeListTmp.copy()
+        partitionList = partitionListTmp.copy()
 
     nodePartitionList = list(zip(nodeList,partitionList))
     nodePartitionList = itertools.cycle(nodePartitionList)
@@ -198,6 +223,12 @@ def slurmLauncher(simulationSetsInfo,nodeList,partitionList,modules,postScript):
         cwd = os.getcwd()
         os.chdir(simSetFolder)
 
+        if node == None:
+            nodeSBATCH = ""
+        else:
+            nodeSBATCH = f"#SBATCH --nodelist={node}"
+
+
         with open("./.job","w") as f:
             batch = ("#!/bin/bash\n"
                      f"#SBATCH --job-name={jobName}\n"
@@ -208,9 +239,8 @@ def slurmLauncher(simulationSetsInfo,nodeList,partitionList,modules,postScript):
                       "#SBATCH --gres=gpu:1\n"
                       "#SBATCH --output=stdout.log\n"
                       "#SBATCH --error=stderr.log\n"
-                     f"#SBATCH --nodelist={node}\n"
-                     f"module purge\n"
-                     f"module load {modules}\n"
+                     f"{nodeSBATCH}\n"
+                     f"{modules}\n"
                      f"UAMMDlauncher {simSetOptions}\n"
                      f"{postScript}\n")
 
@@ -230,7 +260,7 @@ if __name__ == "__main__":
     mainParser = argparse.ArgumentParser(description='Run a set of simulations')
 
     #Add arguments
-    mainParser.add_argument('-s', '--simulationSetsInfo', type=str, help='Simulation sets info file', required=True)
+    mainParser.add_argument('--session', type=str, help='VLMP session info', required=True)
 
     #There are two simualtions options, local and liquid (cluster lsf). If none is selected, local is used.
     #Add mutually exclusive group
@@ -246,11 +276,14 @@ if __name__ == "__main__":
         parser.add_argument('--gpu', nargs='+', type=int, help='List of gpu ids to use',required=True)
 
     if mainArgs.liquid:
-        parser.add_argument('--node', nargs='+', type=int, help='List of node ids to use',required=True)
+        parser.add_argument('--node', nargs='+', type=str, help='List of node ids to use',required=True)
         parser.add_argument('--postScript', type=str, help='Post script to run after simulation',required=False)
 
     if mainArgs.slurm:
-        parser.add_argument('--node', nargs='+', type=int, help='List of node ids to use',required=True)
+        parser.add_argument('--node', nargs='+', type=str, help='List of node ids to use',required=True)
+        parser.add_argument('--partition', nargs='+', type=str, help='List of node ids to use',required=True)
+        parser.add_argument('--filling',nargs='+', type=int, help='List of sim per node',required=False)
+        parser.add_argument('--modules', nargs='+', type=str, help='List of modules used',required=False)
         parser.add_argument('--postScript', type=str, help='Post script to run after simulation',required=False)
 
     #Parse arguments
@@ -259,7 +292,7 @@ if __name__ == "__main__":
     #########################################################
 
     #Load simulation sets info
-    with open(args.simulationSetsInfo,"r") as f:
+    with open(args.session,"r") as f:
         simulationSetsInfo = json.load(f)
 
     #Start VLMP
@@ -296,8 +329,24 @@ if __name__ == "__main__":
     elif mainArgs.slurm:
         logger.info("Running simulations in slurm cluster ...")
 
+        if args.node:
+            node       = args.node
+            filling    = args.filling if args.filling else [1]*len(args.node)
+        else:
+            if args.filling:
+                logger.error("Filling only can be used when a node list is given")
+                sys.exit(1)
+            node    = []
+            filling = []
+
+        if len(node) != len(filling):
+            logger.error("The size of node and filling must match")
+            sys.exit(1)
+
+        partition  = args.partition
+        modules    = args.modules if args.modules else [""]
         postScript = args.postScript if args.postScript else ""
-        slurmLauncher(simulationSetsInfo,args.node,postScript)
+        slurmLauncher(simulationSetsInfo,node,filling,partition,modules,postScript)
 
     else:
         logger.error("No simulation option selected")
