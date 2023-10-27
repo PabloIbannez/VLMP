@@ -427,7 +427,8 @@ class AnalysisAFM:
     def __init__(self,
                  VLMPsessionFilePath,
                  outputUnits,
-                 maxForce = None):
+                 maxForce = None,
+                 plotTime = False):
 
         self.logger = logging.getLogger("VLMP")
 
@@ -440,6 +441,7 @@ class AnalysisAFM:
 
         self.outputUnits = outputUnits
         self.maxForce    = maxForce
+        self.plotTime    = plotTime
 
     def run(self):
 
@@ -487,8 +489,9 @@ class AnalysisAFM:
             ax.set_ylabel(f"Force ({Funits})")
             ax.set_title(f"Indentation for {name}")
 
-            ax2 = ax.twinx()
-            ax2.plot(X,T,"--",color="red")
+            if self.plotTime:
+                ax2 = ax.twinx()
+                ax2.plot(X,T,"--",color="red")
             f.show()
 
             if self.maxForce is not None:

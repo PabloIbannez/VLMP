@@ -161,7 +161,7 @@ class CORONAVIRUS(modelBase):
                 self.logger.error(f"[CORONAVIRUS] Unknown type {params['type']}")
                 raise Exception("Unknown type")
 
-        return sel
+        return list(sel)
 
     def __generateSphere(self,N,radius):
 
@@ -605,7 +605,7 @@ class CORONAVIRUS(modelBase):
         #Lipids
 
         forceField["lipidsLipids"] = {}
-        forceField["lipidsLipids"]["type"] = ["NonBonded", "Atzberger"]
+        forceField["lipidsLipids"]["type"] = ["NonBonded", "Zhang"]
         forceField["lipidsLipids"]["parameters"] = {"condition":"intra","group":"pgLipids"}
         forceField["lipidsLipids"]["labels"] = ["name_i", "name_j", "radius", "epsilon", "mu", "chi", "theta"]
         forceField["lipidsLipids"]["data"]   = [

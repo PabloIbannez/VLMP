@@ -160,6 +160,7 @@ class SurfaceUmbrellaSampling(VLMP.VLMP):
                        "simulationSteps":[]
 
                        }
+
                 for ik,k in enumerate(self.K):
                     sim["modelExtensions"].append({"name":f"constraint_{ik}",
                                                    "type":"constraintCenterOfMassPosition",
