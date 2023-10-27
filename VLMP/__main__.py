@@ -167,7 +167,7 @@ def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,post
     lenFilling       = len(filling)
     lenPartitionList = len(partitionList)
 
-    if(lenPartitionList == 1 and lenNodeList !=1):
+    if(lenPartitionList == 1 and lenNodeList >1):
         part = partitionList[0]
         partitionList    = [part]*lenNodeList
         lenPartitionList = len(partitionList)
@@ -280,7 +280,7 @@ if __name__ == "__main__":
         parser.add_argument('--postScript', type=str, help='Post script to run after simulation',required=False)
 
     if mainArgs.slurm:
-        parser.add_argument('--node', nargs='+', type=str, help='List of node ids to use',required=True)
+        parser.add_argument('--node', nargs='+', type=str, help='List of node ids to use',required=False)
         parser.add_argument('--partition', nargs='+', type=str, help='List of node ids to use',required=True)
         parser.add_argument('--filling',nargs='+', type=int, help='List of sim per node',required=False)
         parser.add_argument('--modules', nargs='+', type=str, help='List of modules used',required=False)
