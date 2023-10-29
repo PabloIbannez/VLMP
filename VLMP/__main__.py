@@ -254,6 +254,25 @@ def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,post
         ############################################################
     return
 
+def rebuildResults(simulationSetsInfo):
+
+    logger = logging.getLogger("VLMP")
+
+    #Check if results folder exists
+    if os.path.exists("results"):
+        logger.error("The results folder already exists")
+        sys.exit(1)
+    else:
+        os.mkdir("results")
+
+    simulationName  = simulationSetsInfo["name"]
+    simulationsInfo = simulationSetsInfo["simulations"]
+    simulationSets  = simulationSetsInfo["simulationSets"]
+
+    for simName,simSet,simResult,_ in simulationsInfo:
+        #Create a symbolic link to the simulation results
+        os.symlink(f"../{simSet}",f"./{simResult}")
+
 if __name__ == "__main__":
 
     #Create argument parser
@@ -265,9 +284,10 @@ if __name__ == "__main__":
     #There are two simualtions options, local and liquid (cluster lsf). If none is selected, local is used.
     #Add mutually exclusive group
     group = mainParser.add_mutually_exclusive_group()
-    group.add_argument('--local' , action='store_true', help='Run simulations locally')
-    group.add_argument('--liquid', action='store_true', help='Run simulations in liquid cluster')
-    group.add_argument('--slurm' , action='store_true', help='Run simulations in slurm cluster')
+    group.add_argument('--rebuild' , action='store_true', help='Rebuild results')
+    group.add_argument('--local'   , action='store_true', help='Run simulations locally')
+    group.add_argument('--liquid'  , action='store_true', help='Run simulations in liquid cluster')
+    group.add_argument('--slurm'   , action='store_true', help='Run simulations in slurm cluster')
 
     mainArgs,_ = mainParser.parse_known_args()
 
@@ -306,14 +326,19 @@ if __name__ == "__main__":
     #Get the same formatter as the logger
     fileHandler.setFormatter(logger.handlers[0].formatter)
 
-    #Remove console handler
-    logger.removeHandler(logger.handlers[0])
     #Add file handler to logger
     logger.addHandler(fileHandler)
 
     logger.info("Starting VLMP ...")
 
-    if mainArgs.local:
+    if mainArgs.rebuild:
+        logger.info("Rebuilding results folders ...")
+        rebuildResults(simulationSetsInfo)
+
+    elif mainArgs.local:
+        #Remove console handler
+        logger.removeHandler(logger.handlers[0])
+
         logger.info("Running simulations locally ...")
         child_pid = os.fork()
 
@@ -322,11 +347,17 @@ if __name__ == "__main__":
         else:
             sys.exit(0)
     elif mainArgs.liquid:
+        #Remove console handler
+        logger.removeHandler(logger.handlers[0])
+
         logger.info("Running simulations in liquid cluster ...")
 
         postScript = args.postScript if args.postScript else ""
         liquidLauncher(simulationSetsInfo,args.node,postScript)
     elif mainArgs.slurm:
+        #Remove console handler
+        logger.removeHandler(logger.handlers[0])
+
         logger.info("Running simulations in slurm cluster ...")
 
         if args.node:
