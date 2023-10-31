@@ -1,5 +1,6 @@
 from VLMP.components.models import modelBase
-from VLMP.components.models import ICOSPHERE
+
+from VLMP.components.models.ICOSPHERE import ICOSPHERE
 
 import numpy as np
 
