@@ -18,7 +18,7 @@ class potentialEnergyMeasurement(simulationStepBase):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
                          availableParameters = {"outputFilePath","potentials"},
-                         requiredParameters  = {"outputFilePath","potentials"},
+                         requiredParameters  = {"outputFilePath"},
                          availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
@@ -30,7 +30,9 @@ class potentialEnergyMeasurement(simulationStepBase):
         parameters = {}
 
         parameters["outputFilePath"]  = params["outputFilePath"]
-        parameters["interactorsList"] = params["potentials"]
+
+        if "potentials" in params:
+            parameters["interactorsList"] = params["potentials"]
 
         simulationStep = {
             name:{
