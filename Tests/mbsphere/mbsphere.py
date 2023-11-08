@@ -25,7 +25,6 @@ sessionName = 'TEST'
 #Read the parameters
 temperature    = 1.0
 
-tolerance       = param["tolerance"]
 vwall           = param["vwall"] #nm/us?
 z0              = param["z0"]  #nm
 zstd            = param["zSTD"] #nm
@@ -47,8 +46,7 @@ overtone        = param["overtone"]
 f0              = param["f0"] #MHz
 kappa           = param["kappa"] #K/mw^2
 
-maxNIter        = param["maxNIterations"]
-nGammas         = param["nGammas"]
+maxNIter             = param["maxNIterations"]
 toleranceConvergence = param["toleranceConvergence"]
 
 #Process the parameters
@@ -115,7 +113,7 @@ for n in nSpheres:
                                        "units":[{"type":"none"}],
                                        "types":[{"type":"basic"}],
                                        "ensemble":[{"type":"NVT","parameters":{"box":[X,Y,Z],"temperature":1.0}}],
-                                       "integrators":[{"type":"BBK","parameters":{"timeStep":0.0001,"frictionConstant":1.0,"integrationSteps":100000}}],
+                                       "integrators":[{"type":"BBK","parameters":{"timeStep":0.001,"frictionConstant":1.0,"integrationSteps":100000}}],
                                        "models":[{"type":"SPHEREMULTIBLOB",
                                                   "parameters":{"sphereType":"icosphere",
                                                                 "numberOfSpheres":n,
@@ -130,6 +128,15 @@ for n in nSpheres:
                                        "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
                                                                                             "outputFilePath":sessionName+"_"+str(n)+"_"+str(k),
                                                                                             "outputFormat":"sp"}},
+                                                          {"type":"vqcmMeasurement","parameters":{"intervalStep":10000,
+                                                                                                  "outputFilePath":sessionName+"_"+str(n)+"_"+str(k)+".json",
+                                                                                                  "f0":f0,
+                                                                                                  "overtone":[overtone],
+                                                                                                  "hydrodynamicRadius":particleRadius,
+                                                                                                  "viscosity":viscosity,
+                                                                                                  "fluidDensity":fluidDensity,
+                                                                                                  "vwall":vwall,
+                                                                                                  "printSteps":10}},
                                                           {"type":"info","parameters":{"intervalStep":10000}}]
 
                                        })
@@ -139,31 +146,3 @@ vlmp = VLMP.VLMP()
 vlmp.loadSimulationPool(simulationPool)
 vlmp.distributeSimulationPool("one")
 vlmp.setUpSimulation(sessionName)
-
-#######################################
-
-processedParameters = {}
-processedParameters["outputFilePath"]   = "vqcm.dat"
-processedParameters["H"]   = 0.5*Lz
-processedParameters["Lxy"] = Lxy
-processedParameters["fluidDensity"]         = fluidDensity
-processedParameters["viscosity"]            = viscosity
-processedParameters["particleDensity"]      = particleDensity
-processedParameters["tolerance"]            = tolerance
-processedParameters["toleranceConvergence"] = toleranceConvergence
-processedParameters["hydrodynamicRadius"]   = particleRadius
-processedParameters["omega"]                = omega
-processedParameters["maxNIterations"]       = maxNIter
-processedParameters["nGammas"]              = nGammas
-processedParameters["vwall"]                = vwall
-
-with open(os.path.join(sessionName, "VLMPsession.json"), 'r') as sessionFile:
-    session = json.load(sessionFile)
-
-for s in session["simulations"]:
-    qcm = os.path.join(sessionName, s[2],"QCM.json")
-    with open(qcm, "w") as f:
-        opts = jsbeautifier.default_options()
-        opts.indent_size  = 2
-        f.write(jsbeautifier.beautify(json.dumps(processedParameters), opts))
-
