@@ -201,6 +201,8 @@ def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,post
     logger.info("Starting slurm ...")
     logger.info("Simulation name: {}".format(simulationName))
 
+    jobIds = []
+
     for jobIndex,[simSetName,simSetFolder,simSetOptions,simSetComponents] in enumerate(simulationSets):
         node,partition = next(nodePartitionList)
 
@@ -214,6 +216,8 @@ def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,post
                     Node: \"{node}\"\n\
                     Partition: \"{partition}\"')
 
+        print("Launching job: {}".format(jobName))
+
         ############################################################
 
         cwd = os.getcwd()
@@ -223,7 +227,6 @@ def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,post
             nodeSBATCH = ""
         else:
             nodeSBATCH = f"#SBATCH --nodelist={node}"
-
 
         with open("./.job","w") as f:
             batch = ("#!/bin/bash\n"
@@ -242,13 +245,31 @@ def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,post
 
             f.write(batch)
 
-        subprocess.run(["sbatch",".job"])
+        result = subprocess.run(["sbatch", ".job"], capture_output=True, text=True)
+
+        # The output is in result.stdout
+        if result.returncode == 0:  # Checking if the sbatch command was successful
+            output = result.stdout.strip()
+            # The job ID is typically in the format "Submitted batch job <job_id>"
+            if "Submitted batch job" in output:
+                job_id = output.split()[-1]  # Extracting the job ID from the output
+                logger.info(f"Job submitted successfully. Job ID: {job_id}")
+                jobIds.append(job_id)
+            else:
+                logger.error("Failed to submit job")
+                logger.error(output)
+                sys.exit(1)
+        else:
+            logger.error("Failed to submit job")
+            logger.error(result.stderr)
+            sys.exit(1)
+
         time.sleep(1.0)
 
         os.chdir(cwd)
 
         ############################################################
-    return
+    return jobIds
 
 def rebuildResults(simulationSetsInfo):
 
