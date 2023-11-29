@@ -136,7 +136,7 @@ class MADna(modelBase):
                                                 "debyeFactor",
                                                 "variant"},
                          requiredParameters  = {"sequence"},
-                         definedSelections   = {"type","strand","basePairIndex","basePairType"},
+                         definedSelections   = {"type","strand","basePairIndex","basePairType","particleId"},
                          **params)
 
         ############################################################
@@ -200,10 +200,17 @@ class MADna(modelBase):
             if type(selInfo) != list:
                 selection[selType]=[selInfo]
 
+        idsSel      = set()
         typeSel     = set()
         strandSel   = set()
         basePairIndexSel = set()
         basePairTypeSel  = set()
+
+        if "particleId" in selection.keys():
+            for p in selection["particleId"]:
+                idsSel.add(p)
+        else:
+            idsSel=set(range(self.nAtoms))
 
         if "type" in selection.keys():
             for t in selection["type"]:
@@ -241,14 +248,15 @@ class MADna(modelBase):
             basePairTypeSel = set(["A","C","G","T"])
 
         for info in self.structure.values():
+            i=info["index"]
             t=info["type"]
             s=info["strand"]
             bpi=info["basePairIndex"]
             bpt=info["basePairType"]
-            if (t in typeSel) and (s in strandSel) and (bpi in basePairIndexSel) and (bpt in basePairTypeSel):
+            if (i in idsSel) and (t in typeSel) and (s in strandSel) and (bpi in basePairIndexSel) and (bpt in basePairTypeSel):
                 indices.append(info["index"])
 
-        return indices
+        return list(set(indices))
 
     def __generateCoordinatesAndTopology(self):
 
