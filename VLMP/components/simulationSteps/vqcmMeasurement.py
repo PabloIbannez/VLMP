@@ -31,8 +31,7 @@ class vqcmMeasurement(simulationStepBase):
                                                 "toleranceConvergence",
                                                 "maxNIterations",
                                                 "memory",
-                                                "dampingAnderson",
-                                                "dampingPiccard",
+                                                "damping",
                                                 "notAcceleratedInterval",
                                                 "h",
                                                 "printSteps"},
@@ -70,8 +69,7 @@ class vqcmMeasurement(simulationStepBase):
         parameters["maxNIterations"]         = params.get("maxNIterations", 10000)
         parameters["toleranceConvergence"]   = params.get("toleranceConvergence", 1e-4)
         parameters["memory"]                 = params.get("memory", 5)
-        parameters["dampingAnderson"]        = params.get("dampingAnderson", 1e-5)
-        parameters["dampingPiccard"]         = params.get("dampingPiccard", 1e-5)
+        parameters["damping"]                = params.get("damping", 1e-5)
         parameters["notAcceleratedInterval"] = params.get("notAcceleratedInterval", 2)
         parameters["h"]                      = params.get("h", 0.0) # 0.0 means it is computed by UAMMD
         
