@@ -18,10 +18,9 @@ class thermodynamicIntegration(simulationStepBase):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
                          availableParameters = {"outputFilePath",
-                                                "stepLambda","lambdaIntervalLength",
-                                                "initLambda","finalLambda"},
+                                                "stepLambda","lambdaValues"},
                          requiredParameters  = {"outputFilePath",
-                                                "stepLambda","lambdaIntervalLength"},
+                                                "stepLambda","lambdaValues"},
                          availableSelections = set(),
                          requiredSelections  = set(),
                          **params)
@@ -34,11 +33,8 @@ class thermodynamicIntegration(simulationStepBase):
 
         parameters["outputFilePath"] = params["outputFilePath"]
 
-        parameters["stepLambda"]           = params["stepLambda"]
-        parameters["lambdaIntervalLength"] = params["lambdaIntervalLength"]
-
-        parameters["initLambda"]  = params.get("initLambda",1.0)
-        parameters["finalLambda"] = params.get("finalLambda",0.0)
+        parameters["stepLambda"]     = params["stepLambda"]
+        parameters["lambdaValues"]   = params["lambdaValues"]
 
         simulationStep = {
             name:{
