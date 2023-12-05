@@ -312,7 +312,7 @@ class MADna(modelBase):
         dr = pf - p0
         dr = dr/np.linalg.norm(dr)
 
-        z  = np.array([0.0,0.0,1.0])
+        z  = np.array([0.0,0.0,-1.0])
 
         axis = np.cross(dr,z)
         axis = axis/np.linalg.norm(axis)
