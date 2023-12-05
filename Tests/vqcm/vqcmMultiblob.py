@@ -50,7 +50,7 @@ if not isKappaList:
     kappa_list = [kappa]
 else:
     kappa_list = kappa
-    
+
 isz0List = isinstance(z0_mean, list)
 if not isz0List:
     z0_mean_list = [z0_mean]
@@ -75,7 +75,7 @@ simulationPool = []
 
 for n in nSpheres_list:
     for bps in blobsPerSphere:
-        
+
         if bps == 30:
             sphereType = "icosidodecahedron"
         else:
@@ -124,14 +124,14 @@ for n in nSpheres_list:
                                                                                                           "notAcceleratedInterval":notAcceleratedInterval,
                                                                                                           "damping":damping}},
                                                                   {"type":"info","parameters":{"intervalStep":10000}}]
-                                               
-                                               
+
+
                                                })
-                        
-                        
+
+
 vlmp = VLMP.VLMP()
 
 vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("none")
+vlmp.distributeSimulationPool("one")
 vlmp.setUpSimulation(sessionName)
 
