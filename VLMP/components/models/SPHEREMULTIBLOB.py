@@ -59,7 +59,6 @@ class SPHEREMULTIBLOB(modelBase):
                 raise Exception("Invalid number of spheres for icosphere")
 
             pos, _ = icosphere(mu)
-            pos    = np.append(pos, [[0, 0, 0]], axis=0)
             pos   *= rSphere
 
             edgeIco    = rSphere/np.sin(2*np.pi/5)
@@ -100,7 +99,6 @@ class SPHEREMULTIBLOB(modelBase):
             self.__even_permutation(a, bm, cm, pos, 24)
             self.__even_permutation(am, bm, cm, pos, 27)
 
-            pos[30, :] = 0  # central
             ic[0] = 2
             ic[6] = 3
             ic[9] = 3
@@ -142,20 +140,8 @@ class SPHEREMULTIBLOB(modelBase):
 
         particleName = params.get("particleName","A")
 
-        particleMass   = params.get("particleMass",1.0)
-        particleRadius = params.get("particleRadius",1.0)
-        particleCharge = params.get("particleCharge",0.0)
-
-        types = self.getTypes()
-        types.addType(name = particleName,
-                      mass = particleMass,
-                      radius = particleRadius,
-                      charge = particleCharge)
-
         numberOfSpheres = params.get("numberOfSpheres",1)
         radiusOfSphere  = params.get("radiusOfSphere",1.0)
-
-        K = params["K"]
 
         heightMean = params.get("heightMean",0.0)
         heightStd  = params.get("heightStd",0.0)
@@ -244,6 +230,20 @@ class SPHEREMULTIBLOB(modelBase):
             sph2ids.append(ids.copy())
             sph2pos.append(pos.copy())
 
+        
+        particleMass   = params.get("particleMass",1.0)
+        particleRadius = params["particleRadius"]
+        particleCharge = params.get("particleCharge",0.0)
+
+        K = params["K"]
+        
+        types = self.getTypes()
+        types.addType(name = particleName,
+                      mass = particleMass,
+                      radius = particleRadius,
+                      charge = particleCharge)
+
+        
         structure = {}
         structure["labels"] = ["id", "type", "modelId"]
         structure["data"]   = []
@@ -268,12 +268,8 @@ class SPHEREMULTIBLOB(modelBase):
 
                     dst = np.linalg.norm(pn - pm)
 
-                    if dst < 1.25 * edgeLength:
-                        bonds.append([sph2ids[i][n], sph2ids[i][m], K, edgeLength])
-
-            #All particles are bonded to central particle, which is the last one
-            for j in sph2ids[i][:-1]:
-                bonds.append([sph2ids[i][-1], j, K, radiusOfSphere])
+                    if dst < 1.75 * edgeLength:
+                        bonds.append([sph2ids[i][n], sph2ids[i][m], K, dst])
 
         for i,j,k,r0 in bonds:
             forceField["Bond"]["data"].append([i,j,k,r0])

@@ -1,0 +1,23 @@
+{
+"overtone":7,
+"f0":5,
+"fluidDensity": 1e-3,
+"blobDensity": 1e-3,
+"viscosity":1e3,
+"vwall":[1,0],
+"kernel":"Peskin3p",
+"Lxy":300,
+"Lz":100,
+"numberOfSpheres":1,
+"blobsPerSphere":42,
+"sphereRadius":23.84,
+"surfaceRatio":0.196,
+"kappa":100000,
+"z0_mean":[25,30,35,40],
+"z0_std":0,
+"memory":5,
+"damping":0.01,
+"toleranceConvergence":1e-4,
+"notAcceleratedInterval":2,
+"maxNIterations":10000
+}
