@@ -26,7 +26,7 @@ class surface(modelExtensionBase):
                          availableParameters = {"epsilon",
                                                 "surfacePosition"},
                          requiredParameters  = {"surfacePosition"},
-                         availableSelections = {"selection"},
+                         availableSelections = set(),
                          requiredSelections  = set(),
                          **params)
 
