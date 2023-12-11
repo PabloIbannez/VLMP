@@ -6,10 +6,10 @@ import numpy as np
 
 from . import modelExtensionBase
 
-class UniformMagneticField(modelExtensionBase):
+class uniformMagneticField(modelExtensionBase):
 
     """
-    Component name: UniformMagneticField
+    Component name: uniformMagneticField
     Component type: modelExtension
 
     Author: P. Palacios-Alonso
