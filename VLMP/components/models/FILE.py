@@ -44,7 +44,7 @@ class FILE(modelBase):
             typInfo = {l:typ[i] for i,l in enumerate(typesLabels)}
             types.addType(**typInfo)
 
-        #Generate positions, a line along the z axis
+        #Generate positions
         state = copy.deepcopy(inputJSON["state"])
 
         #Generate structure
