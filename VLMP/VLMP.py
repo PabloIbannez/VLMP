@@ -179,6 +179,13 @@ class VLMP:
     ########################################
 
     def __checkComponent(self,component,componentClass,simulationBuffer):
+
+        # Check if all component.keys() are in self.availableComponentEntries
+        for key in component.keys():
+            if key not in self.availableComponentEntries:
+                self.logger.error("[VLMP] Component \"%s\" has an invalid entry \"%s\"",componentClass,key)
+                raise Exception("Invalid component entry")
+
         componentType = component.get("type",None)
 
         if componentType is None:
@@ -308,6 +315,8 @@ class VLMP:
                                     "models","modelOperations","modelExtensions",
                                     "integrators",
                                     "simulationSteps"]
+
+        self.availableComponentEntries = ["type","name","parameters"]
 
         self.componentsModules = {"system"          : {"base":_systems        },
                                   "units"           : {"base":_units          },
