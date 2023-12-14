@@ -33,7 +33,7 @@ class WLC(modelBase):
                          _name = name,
                          availableParameters = {"N","mass","b","Kb","Ka","typeName"},
                          requiredParameters  = {"N"},
-                         definedSelections   = {"particleId","polymerIndex"},
+                         definedSelections   = {"particleId","polymerIndex","forceField"},
                          **params)
 
         ############################################################
@@ -124,5 +124,12 @@ class WLC(modelBase):
                     sel.append(pIndex-1)
                 if pIndex < 0:
                     sel.append(self.N+pIndex)
+
+        if "forceField" in params:
+
+            ffEntries = params["forceField"]
+            ffEntries = [entry + "_wlc" for entry in ffEntries]
+
+            sel += self.getForceFieldSelection(ffEntries)
 
         return sel
