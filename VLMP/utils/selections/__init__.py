@@ -60,6 +60,7 @@ def getSelections(models,selectionsList,**param):
             selections[sel] = list(set(selections[sel]))
         else:
             selections[sel] = list(set([tuple(s) for s in selections[sel]]))
+            selections[sel] = [list(s) for s in selections[sel]]
 
 #            offSet    = mdl.getIdOffset()
 #            mdlSelIds = [i+offSet for i in mdlSelIds]
