@@ -216,7 +216,7 @@ def slurmLauncher(simulationSetsInfo,nodeList,filling,partitionList,modules,post
                     Node: \"{node}\"\n\
                     Partition: \"{partition}\"')
 
-        print("Launching job: {}".format(jobName))
+        logger.info("Launching job: {}".format(jobName))
 
         ############################################################
 
