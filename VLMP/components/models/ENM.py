@@ -9,15 +9,15 @@ from ...utils.input import getLabelIndex
 
 import pyGrained.models.AlphaCarbon as proteinModel
 
-class SOP(modelBase):
+class ENM(modelBase):
     """
-    Component name: SOP
+    Component name: ENM
     Component type: model
 
     Author: Pablo Ibáñez-Freire
     Date: 24/03/2023
 
-    Self organized polymer.
+    Elastic Network Model (ENM) model for proteins.
 
     """
 
@@ -28,7 +28,8 @@ class SOP(modelBase):
                                                 "centerInput",
                                                 "SASA",
                                                 "aggregateChains",
-                                                "epsilonNC"},
+                                                "K",
+                                                "enmCut"},
                          requiredParameters  = {"PDB"},
                          definedSelections   = {"particleId","forceField"},
                          **params)
@@ -47,27 +48,27 @@ class SOP(modelBase):
         else:
             raise NotImplementedError("PDB ID download not implemented yet.")
 
-        sopParams = {"SASA":params.get("SASA",False),
+        enmParams = {"SASA":params.get("SASA",False),
                      "centerInput":params.get("centerInput",True),
                      "aggregateChains":params.get("aggregateChains",True),
                      "parameters": copy.deepcopy(params)}
 
-        sop = proteinModel.SelfOrganizedPolymer(name = name,
-                                                inputPDBfilePath = inputPDBfilePath,
-                                                params = sopParams)
+        enm = proteinModel.ElasticNetworkModel(name = name,
+                                               inputPDBfilePath = inputPDBfilePath,
+                                               params = enmParams)
 
         ########################################################
 
         types = self.getTypes()
-        modelTypes = sop.getTypes()
+        modelTypes = enm.getTypes()
 
         for _,t in modelTypes.items():
             types.addType(**t)
 
         #Set model
-        self.setState(sop.getState())
-        self.setStructure(sop.getStructure())
-        self.setForceField(sop.getForceField())
+        self.setState(enm.getState())
+        self.setStructure(enm.getStructure())
+        self.setForceField(enm.getForceField())
 
 
     def processSelection(self,**params):
