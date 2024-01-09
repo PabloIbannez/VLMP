@@ -15,11 +15,6 @@ class info(simulationStepBase):
     Simple info step, it shows the current step,
     an estimation of the remaining time and the mean FPS.
 
-    :param startStep: first step to show the info
-    :type startStep: int, optional
-    :param endStep: last step to show the info
-    :type endStep: int, optional
-
     """
 
     def __init__(self,name,**params):

@@ -60,6 +60,8 @@ class saveState(simulationStepBase):
             }
         }
 
+        self.setGroup("selection")
+
         ############################################################
 
         self.setSimulationStep(simulationStep)

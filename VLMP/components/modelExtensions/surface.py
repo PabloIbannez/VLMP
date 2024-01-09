@@ -26,7 +26,7 @@ class surface(modelExtensionBase):
                          availableParameters = {"epsilon",
                                                 "surfacePosition"},
                          requiredParameters  = {"surfacePosition"},
-                         availableSelections = set(),
+                         availableSelections = {"selection"},
                          requiredSelections  = set(),
                          **params)
 
@@ -36,6 +36,11 @@ class surface(modelExtensionBase):
 
         surfacePosition = params.get("surfacePosition",0.0)
         epsilon         = params.get("epsilon",1.0)
+
+        if "selection" in params:
+            self.setGroup("selection")
+
+        ############################################################
 
         extension = {}
 

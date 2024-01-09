@@ -6,17 +6,19 @@ import numpy as np
 
 from . import modelExtensionBase
 
-class interWCA(modelExtensionBase):
+class WCA(modelExtensionBase):
 
     """
-    Component name: interWCA
+    Component name: WCA
     Component type: modelExtension
 
     Author: Pablo Ibáñez-Freire
     Date: 02/01/2024
 
-    WCA interaction between all the particles in the system which belong to different molecules.
+    WCA potential between particles.
 
+    :param condition: Condition for the interaction. Options: "inter", "intra" ...
+    :type condition: str, default="inter"
     :param epsilon: epsilon parameter of the WCA potential
     :type epsilon: float
     :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
@@ -30,7 +32,7 @@ class interWCA(modelExtensionBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"cutOffFactor","epsilon","cutOffFactor","addVerletList"},
+                         availableParameters = {"cutOffFactor","epsilon","cutOffFactor","addVerletList","condition"},
                          requiredParameters  = set(),
                          availableSelections = set(),
                          requiredSelections  = set(),
@@ -44,6 +46,7 @@ class interWCA(modelExtensionBase):
         epsilon       = params.get("epsilon",1.0)
 
         addVerletList = params.get("addVerletList",True)
+        condition     = params.get("condition","inter")
 
         extension = {}
 
@@ -56,7 +59,7 @@ class interWCA(modelExtensionBase):
 
         extension[name] = {}
         extension[name]["type"] = ["NonBonded","WCAType2"]
-        extension[name]["parameters"] = {"cutOffFactor":cutOffFactor,"condition":"inter"}
+        extension[name]["parameters"] = {"cutOffFactor":cutOffFactor,"condition":condition}
         extension[name]["labels"] = ["name_i","name_j","epsilon","sigma"]
         extension[name]["data"]   = []
 

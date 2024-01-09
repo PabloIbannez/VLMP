@@ -189,10 +189,9 @@ class modelExtensionBase(idsHandler):
         sim["topology"]["forceField"] = self.getExtension()
 
         if self._group is not None:
-            groupName = "group_"+self.getName()
             for ext in sim["topology"]["forceField"]:
-                sim["topology"]["forceField"][ext]["parameters"]["group"] = groupName
-            sim["topology"]["forceField"][groupName] = self._group
+                sim["topology"]["forceField"][ext]["parameters"]["group"] = self.getName()
+            sim["topology"]["forceField"]["group_"+self.getName()] = self._group
 
         return simulation(copy.deepcopy(sim),DEBUG_MODE)
 

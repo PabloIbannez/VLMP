@@ -16,8 +16,10 @@ class intraSteric(modelExtensionBase):
     Author: Pablo Ibáñez-Freire
     Date: 21/09/2023
 
-    Steric interactions between atoms of the same molecule. If molecues are bonded, the interaction is not considered.
+    Steric interactions between particles. If molecues are bonded, the interaction is not considered.
 
+    :param condition: Condition for the interaction. Options: "inter", "intra" ...
+    :type condition: str, default="inter"
     :param epsilon: epsilon parameter for the interaction
     :type epsilon: float
     :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
@@ -31,7 +33,7 @@ class intraSteric(modelExtensionBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"epsilon","cutOffFactor","excludedBonds","addVerletList"},
+                         availableParameters = {"epsilon","cutOffFactor","excludedBonds","addVerletList","condition"},
                          requiredParameters  = {"epsilon","cutOffFactor"},
                          availableSelections = set(),
                          requiredSelections  = set(),
@@ -46,6 +48,7 @@ class intraSteric(modelExtensionBase):
 
         excludedBonds      = params.get("excludedBonds",0)
         addVerletList      = params.get("addVerletList",True)
+        condition          = params.get("condition","inter")
 
         if excludedBonds > 0 and addVerletList == False:
             self.logger.error("[intraSteric] excludedBonds > 0 and addVerletList == False. This is not allowed. Exiting...")
@@ -167,7 +170,7 @@ class intraSteric(modelExtensionBase):
 
         extension[name] = {}
         extension[name]["type"] = ["NonBonded","WCAType2"]
-        extension[name]["parameters"] = {"cutOffFactor":cutOffFactor,"condition":"intra"}
+        extension[name]["parameters"] = {"cutOffFactor":cutOffFactor,"condition":condition}
         extension[name]["labels"] = ["name_i","name_j","epsilon","sigma"]
         extension[name]["data"]   = interactionMatrix.copy()
 

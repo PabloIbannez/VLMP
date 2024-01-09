@@ -30,6 +30,5 @@ class none(unitsBase):
 
         self.setUnitsName("None")
 
-        self.addConstant("kT",1.0)
         self.addConstant("KBOLTZ",1.0)
         self.addConstant("ELECOEF",1.0)

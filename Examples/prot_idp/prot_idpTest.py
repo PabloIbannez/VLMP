@@ -29,7 +29,7 @@ for seq in sequences:
                                                             "PDB2_conn":conn2,
                                                             "sequence":sequences[seq]}
                                               }],
-                                   "modelExtensions":[{"type":"interWCA",
+                                   "modelExtensions":[{"type":"WCA",
                                                        "parameters":{"addVerletList":False}
                                                       }],
                                    "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,

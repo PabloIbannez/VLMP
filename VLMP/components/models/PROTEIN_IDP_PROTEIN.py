@@ -237,7 +237,8 @@ class PROTEIN_IDP_PROTEIN(modelBase):
                          _name= name,
                          availableParameters = {"sequence",
                                                 "PDB1","PDB2",
-                                                "PDB1_conn","PDB2_conn"},
+                                                "PDB1_conn","PDB2_conn",
+                                                "cutOffVerletFactor"},
                          requiredParameters  = {"sequence"},
                          definedSelections   = {"particleId"},
                          **params)
@@ -248,6 +249,8 @@ class PROTEIN_IDP_PROTEIN(modelBase):
 
         PDB1 = params.get("PDB1",None)
         PDB2 = params.get("PDB2",None)
+
+        cutOffVerletFactor = params.get("cutOffVerletFactor",1.1)
 
         if PDB1 is not None:
             PDB1_conn = params.get("PDB1_conn","end")
@@ -338,7 +341,6 @@ class PROTEIN_IDP_PROTEIN(modelBase):
         forceField = copy.deepcopy(sim["topology"]["forceField"])
 
         # Remove all neighbor lists
-        cutOffVerletFactor = 0.0
         labels = ["id","id_list"]
         data   = []
 
@@ -347,7 +349,7 @@ class PROTEIN_IDP_PROTEIN(modelBase):
             entryType,_ = forceField[entry]["type"]
             if entryType == "VerletConditionalListSet":
 
-                cutOffVerletFactor = max(cutOffVerletFactor,forceField[entry]["parameters"]["cutOffVerletFactor"])
+                cutOffVerletFactor = min(cutOffVerletFactor,forceField[entry]["parameters"]["cutOffVerletFactor"])
                 data += forceField[entry]["data"]
 
                 entriesToRemove.append(entry)
@@ -356,7 +358,7 @@ class PROTEIN_IDP_PROTEIN(modelBase):
             del forceField[entry]
 
         forceField["nl"] = {}
-        forceField["nl"]["type"]       = ["VerletConditionalListSet","nonExclTypeGroup1Intra_nonExclTypeGroup2Intra_nonExclInter"]
+        forceField["nl"]["type"]       = ["VerletConditionalListSet","nonExclTypeGroup1Intra_nonExclTypeGroup2Intra_nonExclInter_nonExclNoGroup"]
         forceField["nl"]["parameters"] = {"cutOffVerletFactor":cutOffVerletFactor,
                                           "typeGroup1":sorted(list(IDP_types)),
                                           "typeGroup2":sorted(list(PRTN_types))}

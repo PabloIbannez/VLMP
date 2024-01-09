@@ -30,6 +30,5 @@ class KcalMol_A(unitsBase):
 
         self.setUnitsName("KcalMol_A")
 
-        self.addConstant("kT",0.593)
         self.addConstant("KBOLTZ",1.987191E-03)
         self.addConstant("ELECOEF",332.0716)
