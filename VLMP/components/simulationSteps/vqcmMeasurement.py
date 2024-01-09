@@ -19,6 +19,7 @@ class vqcmMeasurement(simulationStepBase):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
                          availableParameters = {"outputFilePath",
+                                                "resonatorImpedance",
                                                 "kernel",
                                                 "tolerance",
                                                 "f0",
@@ -65,13 +66,15 @@ class vqcmMeasurement(simulationStepBase):
         parameters["viscosity"]          = params["viscosity"]
         parameters["vwall"]              = params["vwall"]
         parameters["fluidDensity"]       = params["fluidDensity"]
-
+    
         parameters["maxNIterations"]         = params.get("maxNIterations", 10000)
         parameters["toleranceConvergence"]   = params.get("toleranceConvergence", 1e-4)
         parameters["memory"]                 = params.get("memory", 5)
         parameters["damping"]                = params.get("damping", 1e-5)
         parameters["notAcceleratedInterval"] = params.get("notAcceleratedInterval", 2)
         parameters["h"]                      = params.get("h", 0.0) # 0.0 means it is computed by UAMMD
+        parameters["resonatorImpedance"]     = params.get("resonatorImpedance", -1.0) #-1.0 means UAMMD ignores it
+        
         
         if "printSteps" in params:
             parameters["printSteps"] = params["printSteps"]
