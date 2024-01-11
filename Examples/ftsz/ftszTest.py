@@ -11,76 +11,125 @@ import numpy as np
 
 import logging
 
-padding = 4
-aspectRatio = 0.3
+helixPitch  = 12.0
+helixRadius = 2.0
 
-N = 40
-concentration = 0.00001
+padding = 4
+aspectRatio = 0.4
+
+concentration = {}
+concentration["helix"]  = 0.00001
+concentration["line"]   = 0.00001
+concentration["random"] = 0.01
+
+N = {}
+N["helix"]  = 20
+N["line"]   = 20
+N["random"] = 1000
 
 particleDiameter = 1.0
 
+variants = {"fixedCosine":     {"E":100,"Kb":1000.0,"theta_start":0.0,"theta_end":3.1415,"phi_start":0.0,"phi_end":1.5707},
+            "fixedExponential":{"E":100,"Kb":1000.0,"Ka":1.0,"Kd":1.0},
+            "dynamicCosine":{"energyThreshold":0.0,"Eb":25,"r_start":0.0,"rc":0.25,"theta_start":0.0,"theta_end":3.1415,"phi_start":0.0,"phi_end":1.5707},
+            "dynamicExponential":{"energyThreshold":0.0,"Eb":30,"rc":0.25,"Kb":1.0,"Ka":1.0,"Kd":1.0}}
+
 #mode = "surface"
-mode = "bulk"
-if mode == "bulk":
-    bnd = BoundsBox(N, concentration)
-elif mode == "surface":
-    bnd = BoundsPlates(N, concentration, particleDiameter, padding, aspectRatio)
 
 simulationPool = []
 
-Eb = np.linspace(-100,-30,1)
-El = np.linspace( 20,  1,1)
 
-for eb,el in itertools.product(Eb,El):
+modes = {"bulk":{},
+         "surface":{"Es":10.0,
+                    "beta0":0.0,
+                    "El":5,"Sl":0.1}}
 
-    plates = bnd.getSimulationBounds()
+# variant, mode, init
+toCheck = [("fixedCosine","bulk","helix"),
+           ("fixedExponential","bulk","helix"),
+           ("fixedCosine","surface","helix"),
+           ("fixedExponential","surface","helix"),
+           ("fixedCosine","bulk","line"),
+           ("fixedExponential","bulk","line"),
+           ("dynamicCosine","bulk","helix"),
+           ("dynamicExponential","bulk","helix"),
+           ("dynamicCosine","bulk","line"),
+           ("dynamicExponential","bulk","line"),
+           ("dynamicCosine","bulk","random"),
+           ("dynamicExponential","bulk","random"),
+           ("dynamicCosine","surface","random"),
+           ("dynamicExponential","surface","random"),
+           ("dynamicCosine","surface","helix"),
+           ("dynamicExponential","surface","helix")]
 
-    #mode = {"surface":{"Es":10.0,
-    #                   "beta0":1.57,
-    #                   "El":round(el,2),"Sl":0.1,
-    #                   "plateTop":plates["plateTop"],
-    #                   "plateBottom":plates["plateBottom"]}}
+for v,m,i in toCheck:
 
-    mode = {"bulk":{}}
+    n = N[i]
 
-    simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"ftsz_Eb{round(eb,2)}_El{round(el,2)}"}},
+    c = concentration[i]
+    if m == "bulk":
+        bnd = BoundsBox(n, c)
+    elif m == "surface":
+        bnd = BoundsPlates(n, c, particleDiameter, padding, aspectRatio)
+        plates = bnd.getSimulationBounds()
+
+        modes["surface"]["plateTop"]    = plates["plateTop"]
+        modes["surface"]["plateBottom"] = plates["plateBottom"]
+
+    simulationPool.append({"system":[{"type":"simulationName","parameters":{"simulationName":f"ftsz_{v}_{m}_{i}"}},
                                      {"type":"backup","parameters":{"backupIntervalStep":100000}}],
                            "units":[{"type":"none"}],
                            "types":[{"type":"basic"}],
                            "ensemble":[{"type":"NVT","parameters":{"box":bnd.getSimulationBox(),"temperature":1.0}}],
-                           "integrators":[{"type":"EulerMaruyamaRigidBodyPatchesState","parameters":{"timeStep":0.00001,"viscosity":1.0,"integrationSteps":1}}],
-                           "models":[{"type":"HELIX2",
-                                     "parameters":{"mode":mode,"init":"helix",
-                                                   "nMonomers":N,
+                           "integrators":[{"parameters":{"timeStep":0.0001,"viscosity":1.0,"integrationSteps":100000000}}],
+                           "models":[{"type":"HELIX",
+                                     "parameters":{"mode":{m:modes[m].copy()},
+                                                   "init":i,
+                                                   "nMonomers":n,
                                                    "monomerRadius":particleDiameter/2.0,
-                                                   "epsilon_mm":-0.25,
-                                                   "Eb":round(eb,2),"rc":0.5,
-                                                   #"theta0":0.125,"phi0":0.3,
-                                                   "helixRadius":3.0,"helixPitch":2.0*3.14,"rightHanded":True,
-                                                   "varDst":0.0001,"varTheta":0.0015,"varPhi":0.005,
-                                                   "stiffnessFactor":0.8
-                                                   #"variant":{"twoStates":{"Eb2":round(eb,2)*0.8,"rc2":0.5,
-                                                   #                        "theta02":0.125,"phi02":0.3,
-                                                   #                        "varDst2":0.0001,"varTheta2":0.0015,"varPhi2":0.005,
-                                                   #                        "prob_1_to_2":0.01,"prob_2_to_1":0.01}}}
-                                                   }}
-                                                  ],
+                                                   "epsilon_mm":1.0,
+                                                   "helixPitch":helixPitch,
+                                                   "helixRadius":helixRadius,
+                                                   "variant":{v:variants[v].copy()}}}
+                                    ],
                             "simulationSteps":[
-                                               #{"type":"savePatchyParticlesState","parameters":{"intervalStep":10000,
-                                               #                                                 "outputFilePath":"test",
-                                               #                                                 "outputFormat":"sp"}},
-                                               {"type":"saveState","parameters":{"intervalStep":10000,
-                                                                                 "outputFilePath":"test",
-                                                                                 "outputFormat":"spo"}},
-                                               {"type":"potentialMeasurement","parameters":{"intervalStep":10000,
-                                                                                            "outputFilePath":"potMeasure.dat",
-                                                                                            "selection":{}}},
-                                               {"type":"info","parameters":{"intervalStep":10000}}],
+                                               {"type":"info","parameters":{"intervalStep":10000}}
+                                               #,
+                                               #{"type":"potentialMeasurement","parameters":{"intervalStep":10000,
+                                               #                                             "outputFilePath":"potMeasure.dat",
+                                               #                                             "selection":{}}}
+                                               ]
                            })
 
-vlmp = VLMP.VLMP("addComp")
+    if "fixed" in v:
+
+        simulationPool[-1]["integrators"][0]["type"] = "EulerMaruyamaRigidBody"
+
+    else:
+        simulationPool[-1]["integrators"][0]["type"] = "EulerMaruyamaRigidBodyPatchesState"
+
+    if "dynamic" in v or m == "surface":
+        simulationPool[-1]["simulationSteps"].append(
+                                               {"type":"savePatchyParticlesState","parameters":{"intervalStep":10000,
+                                                                                                "outputFilePath":"test",
+                                                                                                "outputFormat":"sp"}}
+                                               )
+    else:
+        simulationPool[-1]["simulationSteps"].append(
+                                               {"type":"saveState","parameters":{"intervalStep":10000,
+                                                                                 "outputFilePath":"test",
+                                                                                 "outputFormat":"spo"}}
+                                               )
+
+    if "helix" in i and m == "surface":
+        # Add constant force
+        simulationPool[-1]["modelExtensions"] = [{"type":"constantForce","parameters":{"force":[0.0,0.0,-5.0],
+                                                                                       "endStep":250000,
+                                                                                       "selection":{}}}]
+
+vlmp = VLMP.VLMP()
 
 vlmp.loadSimulationPool(simulationPool)
-vlmp.distributeSimulationPool("none")
+vlmp.distributeSimulationPool("one")
 vlmp.setUpSimulation("TEST")
 
