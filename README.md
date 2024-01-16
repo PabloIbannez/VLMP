@@ -1,4 +1,4 @@
-# VLMP (Virtual Laboratory Massively Parallelized)
+# VLMP (Virtual Lab Modeling Platform)
 
 <p align="center">
     <img src="https://github.com/PabloIbannez/VLMP/blob/main/docs/_images/logo.png" width="250">  
