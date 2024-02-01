@@ -6,23 +6,37 @@ from . import systemBase
 
 class simulationName(systemBase):
     """
-    Component name: simulationName
-    Component type: system
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "Essential component for naming a simulation. This component is compulsory
+      in every simulation configuration as each simulation requires a unique name.
+      The 'simulationName' component assigns a descriptive and identifiable name
+      to a simulation, facilitating its management and reference within the system.
+      This name is used as the primary identifier for the simulation across various
+      components and modules.",
 
-    Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
+     "parameters":{
+        "simulationName":{"description":"Unique name assigned to the simulation",
+                          "type":"str"}
+            },
 
-    Simple component to add a name to the simulation.
-
-    :param simulationName: Name of the simulation
-    :type simulationName: str
+     "example":"
+         {
+            \"type\":\"simulationName\",
+            \"simulationName\":\"MyUniqueSimulationName\"
+         }
+        "
+    }
     """
+
+    availableParameters = {"simulationName"}
+    requiredParameters  = {"simulationName"}
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"simulationName"},
-                         requiredParameters  = {"simulationName"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
                          **params)
 
         ############################################################

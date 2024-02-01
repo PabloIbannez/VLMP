@@ -1,28 +1,12 @@
 What is VLMP?
 =============
 
-VLMP, or *Virtual Laboratory Massively Parallelized*, is designed to simplify the process of setting
-up and running parallel simulations. Distributed as a Python library, VLMP provides a 
-comprehensive toolkit that spans a range of models, with a particular focus on molecular 
-dynamics and including continuous models like fluids.
+One of the primary problems of scientific simulations is the very fact that specialized software is by its nature rather complicated, often having substantial barriers for a non-expert user. This complexity manifests itself in various forms as the nitty-gritties of script-based inputs where a user has awareness of detailed command syntax or as complexities of setting up simulation parameters requiring an urbane understanding of the phenomena behind. Moreover, user code to enhance the functionality of software might need all sorts of complicated things such as merging in new algorithms or dependency management, which is particularly frightening for an end-user with no programming experience at all.
 
-The core advantage of VLMP lies in its multi-level parallelization. At the first level, individual
-simulations are parallelized. At the second, multiple simulations can run concurrently on a single
-GPU. The framework also allows for easy distribution of simulations across multiple GPUs. This
-massive parallelization is made possible through VLMP's backend technology, UAMMD-structured, a
-GPU-centric code.
+To ease these challenges and make accessible scientific simulations we have developed the Virtual Lab Modeling Platform (VLMP). VLMP eases the process of performing complex simulations especially within High-Performance Computing (HPC) environments. It makes use of the friendlier language, Python, as opposed to the more complex C/C++ CUDA combination used in UAMMD-structured software. This approach follows recent trends in computational physics where developed Python interfaces have been provided with programs like LAMMPS , GROMACS , and OpenMM. VLMP, on the other hand, does not merely wrap existing tools to check for the presence of formal verification properties in given models, but offers a framework within which various forms of simulation can be developed and run over various computational environments.
 
-While both UAMMD-structured and VLMP are general-purpose, VLMP has been particularly optimized for
-coarse-grained models. These models often underutilize a GPU's computational power due to their
-small size. However, UAMMD-structured solves this inefficiency by employing a batching technique,
-enabling multiple small-scale simulations to run effectively on a single GPU.
+The modular design of VLMP is one of its primary features. It built to ease the simple integration of new components, narrowing the process of extending functionality to some platform. This design supports collaborative development allowing the users to implement new modules developed by community, thus enhancing flexibility of the platform for different research purposes.
 
-VLMP is not just powerful but also adaptable. You can think of each simulation as a puzzle to which
-you can add or remove pieces with minimal effort. Whether you're studying interactions between
-proteins and DNA, or any other scientific phenomena, you can easily select, adapt, and combine
-various models and components. This adaptability extends to the ease of sharing new scientific
-models with the community, as researchers can distribute their models as VLMP modules.
+Additionally, VLMP's multi-level parallelization capability makes it suitable for use in HPC environments. It can efficiently run simulations concurrently on single or multiple GPUs, optimizing computational resource usage.  VLMP effectively manages these tasks, distributing simulations appropriately and organizing results separately for each run.
 
-Imagine running multiple simulations with differing particle counts, all batched together to fully
-utilize the computational capabilities of one or more GPUs. VLMP can manage this complexity,
-distributing simulations as needed and storing results separately for each run.
+The next sections describe the design and operational framework of VLMP, in which we discuss its implementation emphasizing the way this platform does accommodate additions of new components as well as their proper integration with the existing one.

@@ -5,23 +5,31 @@ import logging
 from . import unitsBase
 
 class KcalMol_A(unitsBase):
-
     """
-    Component name: KcalMol_A
-    Component type: units
-
-    Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
-
-    (Kcal/mol)/A
-
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "Component for defining the unit system of (Kcal/mol)/A in a simulation. This unit
+      component, part of the 'units' category, specifies the system's energy and distance
+      units as kilocalories per mole and Angstroms, respectively. It includes fundamental
+      constants relevant to this unit system, such as the Boltzmann constant (KBOLTZ) and
+      the electrostatics coefficient (ELECOEF).",
+     "parameters": {},
+     "example":"
+         {
+            \"type\":\"KcalMol_A\"
+         }
+        "
+    }
     """
+
+    availableParameters = set()
+    requiredParameters  = set()
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = set(),
-                         requiredParameters  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
                          **params)
 
         ############################################################

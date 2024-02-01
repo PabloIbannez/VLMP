@@ -7,31 +7,40 @@ import logging
 from . import integratorBase
 
 class EulerMaruyama(integratorBase):
-
     """
-    Component name: EulerMaruyama
-    Component type: integrator
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "Simple Euler-Maruyama integrator for Brownian dynamics. This integrator is suitable
+      for simulations involving stochastic processes, particularly in fluid environments
+      with defined viscosity.",
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+     "parameters":{
+        "integrationSteps":{"description":"Number of integration steps",
+                            "type":"int"},
+        "timeStep":{"description":"Time step of the integrator",
+                    "type":"float"},
+        "viscosity":{"description":"Viscosity of the fluid",
+                     "type":"float"}
+        },
 
-    Simple Euler-Maruyama integrator for brownian dynamics.
-
-    :param integrationSteps: Number of integration steps.
-    :type integrationSteps: int
-    :param timeStep: Time step of the integrator.
-    :type timeStep: float
-    :param viscosity: Viscosity of the fluid.
-    :type viscosity: float
-
-
+     "example":"
+         {
+            \"type\":\"EulerMaruyama\",
+            \"integrationSteps\":10000,
+            \"timeStep\":0.001,
+            \"viscosity\":0.01
+         }
+        "
+    }
     """
 
-    def __init__(self,name,**params):
-        super().__init__(_type = self.__class__.__name__,
-                         _name = name,
-                         availableParameters = {"integrationSteps","timeStep","viscosity"},
-                         requiredParameters  = {"integrationSteps","timeStep","viscosity"},
+    availableParameters = {"integrationSteps", "timeStep", "viscosity"}
+    requiredParameters  = {"integrationSteps", "timeStep", "viscosity"}
+
+    def __init__(self, name, **params):
+        super().__init__(_type=self.__class__.__name__, _name=name,
+                         availableParameters=self.availableParameters,
+                         requiredParameters=self.requiredParameters,
                          **params)
 
         ############################################################

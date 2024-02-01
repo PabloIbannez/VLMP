@@ -7,32 +7,42 @@ import logging
 from . import integratorBase
 
 class EulerMaruyamaRigidBody(integratorBase):
-
     """
-    Component name: EulerMaruyamaRigidBody
-    Component type: integrator
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "Euler-Maruyama integrator for rigid bodies, based on the approach detailed in
+      DOI: 10.1063/1.4932062. Suitable for simulations involving Brownian dynamics
+      of rigid bodies in a viscous fluid.",
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+     "parameters":{
+        "integrationSteps":{"description":"Number of integration steps",
+                            "type":"int"},
+        "timeStep":{"description":"Time step of the integrator",
+                    "type":"float"},
+        "viscosity":{"description":"Viscosity of the fluid",
+                     "type":"float"}
+        },
 
-    Euler-Maruyama for rigid bodies. https://doi.org/10.1063/1.4932062
-
-    :param integrationSteps: Number of integration steps.
-    :type integrationSteps: int
-    :param timeStep: Time step of the integrator.
-    :type timeStep: float
-    :param viscosity: Viscosity of the fluid.
-    :type viscosity: float
-
-
+     "example":"
+         {
+            \"type\":\"EulerMaruyamaRigidBody\",
+            \"integrationSteps\":10000,
+            \"timeStep\":0.001,
+            \"viscosity\":0.01
+         }
+        "
+    }
     """
 
-    def __init__(self,name,**params):
-        super().__init__(_type = self.__class__.__name__,
-                         _name = name,
-                         availableParameters = {"integrationSteps","timeStep","viscosity"},
-                         requiredParameters  = {"integrationSteps","timeStep","viscosity"},
+    availableParameters = {"integrationSteps", "timeStep", "viscosity"}
+    requiredParameters  = {"integrationSteps", "timeStep", "viscosity"}
+
+    def __init__(self, name, **params):
+        super().__init__(_type=self.__class__.__name__, _name=name,
+                         availableParameters=self.availableParameters,
+                         requiredParameters=self.requiredParameters,
                          **params)
+
 
         ############################################################
         ############################################################

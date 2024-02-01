@@ -7,31 +7,41 @@ import logging
 from . import integratorBase
 
 class BBK(integratorBase):
-
     """
-    Component name: BBK
-    Component type: integrator
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "BBK integrator for the NVT ensemble. This Langevin integrator is designed for
+      simulations that maintain a constant number of particles, volume, and temperature.
+      It is particularly useful for molecular dynamics simulations requiring stochastic
+      thermal noise and friction.",
 
-    Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
+     "parameters":{
+        "integrationSteps":{"description":"Number of integration steps",
+                            "type":"int"},
+        "timeStep":{"description":"Time step of the integrator",
+                    "type":"float"},
+        "frictionConstant":{"description":"Friction constant of the integrator",
+                            "type":"float"}
+        },
 
-    BBK integrator. It is a Langevin integrator for the NVT ensemble.
-
-    :param integrationSteps: Number of integration steps.
-    :type integrationSteps: int
-    :param timeStep: Time step of the integrator.
-    :type timeStep: float
-    :param frictionConstant: Friction constant of the integrator.
-    :type frictionConstant: float
-
-
+     "example":"
+         {
+            \"type\":\"BBK\",
+            \"integrationSteps\":10000,
+            \"timeStep\":0.001,
+            \"frictionConstant\":0.1
+         }
+        "
+    }
     """
 
-    def __init__(self,name,**params):
-        super().__init__(_type = self.__class__.__name__,
-                         _name = name,
-                         availableParameters = {"integrationSteps","timeStep","frictionConstant"},
-                         requiredParameters  = {"integrationSteps","timeStep","frictionConstant"},
+    availableParameters = {"integrationSteps", "timeStep", "frictionConstant"}
+    requiredParameters  = {"integrationSteps", "timeStep", "frictionConstant"}
+
+    def __init__(self, name, **params):
+        super().__init__(_type=self.__class__.__name__, _name=name,
+                         availableParameters=self.availableParameters,
+                         requiredParameters=self.requiredParameters,
                          **params)
 
         ############################################################

@@ -5,22 +5,33 @@ import logging
 from . import typesBase
 
 class none(typesBase):
-
     """
-    Component name: none
-    Component type: types
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "Component representing a 'none' type in a simulation.
+      Essentially, it signifies that no additional components or special characteristics are
+      associated with the entity. This can be useful in simulations where certain entities need
+      to be defined but do not require specific attributes or behaviors.",
 
-    Author: Pablo Ibáñez-Freire
-    Date: 25/04/2023
+     "parameters": {},
 
-    None types. No components are added.
+     "example":"
+         {
+            \"type\":\"none\"
+         }
+        "
+    }
     """
+
+
+    availableParameters = set()
+    requiredParameters  = set()
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = set(),
-                         requiredParameters  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
                          **params)
 
         ############################################################

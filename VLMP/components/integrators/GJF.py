@@ -7,32 +7,41 @@ import logging
 from . import integratorBase
 
 class GFJ(integratorBase):
-
     """
-    Component name: GJF
-    Component type: integrator
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "GJF integrator, a Langevin integrator for the NVT ensemble, as described in
+      DOI: 10.1080/00268976.2012.760055. This integrator is designed for simulations
+      that maintain a constant number of particles, volume, and temperature, incorporating
+      stochastic thermal noise and friction in the dynamics.",
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+     "parameters":{
+        "integrationSteps":{"description":"Number of integration steps",
+                            "type":"int"},
+        "timeStep":{"description":"Time step of the integrator",
+                    "type":"float"},
+        "frictionConstant":{"description":"Friction constant of the integrator",
+                            "type":"float"}
+        },
 
-    GJF integrator. It is a Langevin integrator for the NVT ensemble.
-    https://doi.org/10.1080/00268976.2012.760055
-
-    :param integrationSteps: Number of integration steps.
-    :type integrationSteps: int
-    :param timeStep: Time step of the integrator.
-    :type timeStep: float
-    :param frictionConstant: Friction constant of the integrator.
-    :type frictionConstant: float
-
-
+     "example":"
+         {
+            \"type\":\"GFJ\",
+            \"integrationSteps\":10000,
+            \"timeStep\":0.001,
+            \"frictionConstant\":0.1
+         }
+        "
+    }
     """
 
-    def __init__(self,name,**params):
-        super().__init__(_type = self.__class__.__name__,
-                         _name = name,
-                         availableParameters = {"integrationSteps","timeStep","frictionConstant"},
-                         requiredParameters  = {"integrationSteps","timeStep","frictionConstant"},
+    availableParameters = {"integrationSteps", "timeStep", "frictionConstant"}
+    requiredParameters  = {"integrationSteps", "timeStep", "frictionConstant"}
+
+    def __init__(self, name, **params):
+        super().__init__(_type=self.__class__.__name__, _name=name,
+                         availableParameters=self.availableParameters,
+                         requiredParameters=self.requiredParameters,
                          **params)
 
         ############################################################

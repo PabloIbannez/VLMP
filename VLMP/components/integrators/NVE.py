@@ -7,28 +7,37 @@ import logging
 from . import integratorBase
 
 class NVE(integratorBase):
-
     """
-    Component name: NVE
-    Component type: integrator
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "NVE integrator for simulations maintaining a constant number of particles,
+      volume, and energy. This integrator is suitable for closed-system simulations
+      where energy exchange with the environment is not considered.",
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/01/2024
+     "parameters":{
+        "integrationSteps":{"description":"Number of integration steps",
+                            "type":"int"},
+        "timeStep":{"description":"Time step of the integrator",
+                    "type":"float"}
+        },
 
-    NVE integrator.
-
-    :param integrationSteps: Number of integration steps.
-    :type integrationSteps: int
-    :param timeStep: Time step of the integrator.
-    :type timeStep: float
-
+     "example":"
+         {
+            \"type\":\"NVE\",
+            \"integrationSteps\":10000,
+            \"timeStep\":0.001
+         }
+        "
+    }
     """
 
-    def __init__(self,name,**params):
-        super().__init__(_type = self.__class__.__name__,
-                         _name = name,
-                         availableParameters = {"integrationSteps","timeStep"},
-                         requiredParameters  = {"integrationSteps","timeStep"},
+    availableParameters = {"integrationSteps", "timeStep"}
+    requiredParameters  = {"integrationSteps", "timeStep"}
+
+    def __init__(self, name, **params):
+        super().__init__(_type=self.__class__.__name__, _name=name,
+                         availableParameters=self.availableParameters,
+                         requiredParameters=self.requiredParameters,
                          **params)
 
         ############################################################

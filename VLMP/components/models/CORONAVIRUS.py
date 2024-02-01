@@ -112,14 +112,16 @@ class CORONAVIRUS(modelBase):
 
         self.lipidSurfaceEpsilon = params.get("lipidSurfaceEpsilon_kT",1.0)
 
-        self.epsilonLipids                *= units.getConstant("kT")
-        self.epsilonLipidLipidWithProtein *= units.getConstant("kT")
-        self.epsilonLipidWithProtein      *= units.getConstant("kT")
-        self.proteinProteinEpsilon        *= units.getConstant("kT")
-        self.proteinLipidEpsilon          *= units.getConstant("kT")
-        self.proteinSurfaceEpsilon        *= units.getConstant("kT")
-        self.proteinPeakSurfaceEpsilon    *= units.getConstant("kT")
-        self.lipidSurfaceEpsilon          *= units.getConstant("kT")
+        kT = self.getEnsemble().getEnsembleComponent("temperature")*self.getUnits().getConstant("KBOLTZ")
+
+        self.epsilonLipids                *= kT
+        self.epsilonLipidLipidWithProtein *= kT
+        self.epsilonLipidWithProtein      *= kT
+        self.proteinProteinEpsilon        *= kT
+        self.proteinLipidEpsilon          *= kT
+        self.proteinSurfaceEpsilon        *= kT
+        self.proteinPeakSurfaceEpsilon    *= kT
+        self.lipidSurfaceEpsilon          *= kT
 
         self.surface = params.get("surface",False)
         if self.surface:
