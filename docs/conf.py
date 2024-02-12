@@ -43,7 +43,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ['_static']
+html_static_path = []
 html_logo = "_images/logo.png"
 
 html_sidebars = { '**': ['about.html','navigation.html', 'relations.html','searchbox.html',] }
