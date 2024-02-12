@@ -1,16 +1,16 @@
 [project]
 name="pyVLMP"
-        version="1.0.60"
+        version="1.0.62"
 authors = [
     {name = "Pablo Ibáñez-Freire", email = "p.ibanez.fre@gmail.com"},
 ]
-description = "Virtual Laboratory for the simulation of Macromolecular Properties"
+description = "Virtual Lab Modeling Platform"
 readme = "README.md"
 requires-python = ">=3.7"
-license = {text = "MIT License"}
+license = {text = "GPLv3"}
 classifiers = [
         "Development Status :: 3 - Alpha",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",

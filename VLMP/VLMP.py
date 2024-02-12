@@ -241,7 +241,6 @@ class VLMP:
         else:
 
             if unique:
-                #Only one unit system can be specified
                 if len(simulationInfo[sectionName]) > 1:
                     self.logger.error(f"[VLMP] Only one {sectionName} entry can be specified")
                     raise Exception("Only one entry can be specified")
@@ -391,7 +390,7 @@ class VLMP:
                                                         sectionName    = "units",
                                                         addToSimulationBuffer = True,
                                                         required = True,
-                                                        unique   = False,
+                                                        unique   = True,
                                                         units    = None,
                                                         types    = None,
                                                         ensemble = None,
@@ -406,7 +405,7 @@ class VLMP:
                                                         sectionName    = "types",
                                                         addToSimulationBuffer = True,
                                                         required = True,
-                                                        unique   = False,
+                                                        unique   = True,
                                                         units    = units,
                                                         types    = None,
                                                         ensemble = None,
@@ -421,7 +420,7 @@ class VLMP:
                                                            sectionName    = "ensemble",
                                                            addToSimulationBuffer = True,
                                                            required = True,
-                                                           unique   = False,
+                                                           unique   = True,
                                                            units    = units,
                                                            types    = types,
                                                            ensemble = None,
