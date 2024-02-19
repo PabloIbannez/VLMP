@@ -164,6 +164,7 @@ cython_debug/
 *.spo
 *.json
 *.pdb
+*~
 
 *results*
 *TEST*
