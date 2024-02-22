@@ -74,6 +74,8 @@ class plates(modelExtensionBase):
 
                 self.logger.info("Plates separation set to {}".format(platesSeparation))
                 parameters["platesSeparation"] = platesSeparation
+        else:
+            parameters["platesSeparation"] = float(platesSeparation)
 
         if minPlatesSeparation is not None:
             parameters["minPlatesSeparation"] = minPlatesSeparation
