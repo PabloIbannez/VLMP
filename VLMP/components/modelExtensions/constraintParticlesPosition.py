@@ -54,7 +54,7 @@ class constraintParticlesPosition(modelExtensionBase):
         extension = {}
 
         extension[name] = {}
-        extension[name]["type"] = ["Bond1","FixedHarmonic"]
+        extension[name]["type"] = ["Bond1","FixedHarmonicAnisotropic"]
         extension[name]["parameters"] = {}
         extension[name]["labels"] = ["id_i","position","K","r0"]
         extension[name]["data"]   = []
