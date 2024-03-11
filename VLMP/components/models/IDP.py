@@ -99,7 +99,7 @@ class IDP(modelBase):
         units = self.getUnits()
 
         if units.getName() != "KcalMol_A":
-            self.logger.error(f"[MADna] Units are not set correctly. Please set units to \"KcalMol_A\" (selected: {units.getName()})")
+            self.logger.error(f"[IDP] Units are not set correctly. Please set units to \"KcalMol_A\" (selected: {units.getName()})")
             raise Exception("Not correct units")
 
         ############################################################

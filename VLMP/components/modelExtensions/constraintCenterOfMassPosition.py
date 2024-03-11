@@ -63,7 +63,7 @@ class constraintCenterOfMassPosition(modelExtensionBase):
         extension = {}
 
         extension[name] = {}
-        extension[name]["type"] = ["Set1","FixedHarmonicCenterOfMass"]
+        extension[name]["type"] = ["Set1","FixedHarmonicAnisotropicCenterOfMass"]
         extension[name]["parameters"] = {}
         extension[name]["labels"] = ["idSet_i","K","r0","position"]
         extension[name]["data"]   = []
