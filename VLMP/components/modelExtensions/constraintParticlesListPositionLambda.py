@@ -74,7 +74,7 @@ class constraintParticlesListPositionLambda(modelExtensionBase):
         extension = {}
 
         extension[name] = {}
-        extension[name]["type"] = ["Bond1","LambdaFixedHarmonic"]
+        extension[name]["type"] = ["Bond1","LambdaFixedHarmonicAnisotropic"]
         extension[name]["parameters"] = {"n":n}
         extension[name]["labels"] = ["id_i","position","K","r0"]
         extension[name]["data"]   = []
