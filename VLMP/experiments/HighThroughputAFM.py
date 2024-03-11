@@ -22,7 +22,9 @@ class HighThroughputAFM(VLMP.VLMP):
                                  "sigma",
                                  "tipVelocity",
                                  "tipMass","tipRadius",
-                                 "initialTipSampleDistance"]
+                                 "initialTipSampleDistance",
+                                 "indentationPositionX",
+                                 "indentationPositionY"]
 
         requiredIndentationParameters = ["indentationSteps","thermalizationSteps"]
 
@@ -52,6 +54,9 @@ class HighThroughputAFM(VLMP.VLMP):
 
         self.initialTipSampleDistance = parameters["AFM"]["initialTipSampleDistance"]
         self.contactResolution        = parameters["AFM"].get("contactResolution",0.1)
+
+        self.indentationPositionX = parameters["AFM"].get("indentationPositionX",0.0)
+        self.indentationPositionY = parameters["AFM"].get("indentationPositionY",0.0)
 
         ############################################################################
 
@@ -209,6 +214,8 @@ class HighThroughputAFM(VLMP.VLMP):
                          "tipVelocity",
                          "tipMass", "tipRadius", "tipCharge",
                          "initialTipSampleDistance",
+                         "indentationPositionX",
+                         "indentationPositionY",
                          "KxyFixing"]
 
         if self.addSurface:
@@ -253,7 +260,7 @@ class HighThroughputAFM(VLMP.VLMP):
                    "models":copy.deepcopy(smpModels.get("models",[])),
                    "modelOperations":copy.deepcopy(smpModels.get("modelOperations",[])),
                    "modelExtensions":copy.deepcopy(smpModels.get("modelExtensions",[])),
-                   "simulationSteps":copy.deepcopy(smpModels.get("simulationSteps",[])),
+                   "simulationSteps":copy.deepcopy(smpModels.get("simulationSteps",[]))
                    }
 
             thermSteps_smp  = self.thermalizationSteps[index]
@@ -274,6 +281,9 @@ class HighThroughputAFM(VLMP.VLMP):
             initialTipSampleDistance_smp = self.initialTipSampleDistance[index]
             KxyFixing_smp                = self.KxyFixing[index]
 
+            indentationPositionX_smp = self.indentationPositionX[index]
+            indentationPositionY_smp = self.indentationPositionY[index]
+
             if self.addSurface:
                 epsilonSurface_smp  = self.epsilonSurface[index]
                 surfacePosition_smp = self.surfacePosition[index]
@@ -293,7 +303,9 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                                    "particleMass":tipMass_smp,
                                                                                    "particleRadius":tipRadius_smp,
                                                                                    "particleCharge":tipCharge_smp,
-                                                                                   "position":[0.0,0.0,initialTipSampleDistance_smp+tipRadius_smp]}})
+                                                                                   "position":[indentationPositionX_smp,
+                                                                                               indentationPositionY_smp,
+                                                                                               initialTipSampleDistance_smp+tipRadius_smp]}})
 
             #Declare selections
             tipSelection = ["TIP"]
@@ -329,6 +341,9 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                                          "inverse":True,
                                                                                          "reference":{"models":copy.deepcopy(sampleSelection)},
                                                                                          "mobile":{"models":copy.deepcopy(tipSelection)}}})
+
+                sim["modelOperations"].append({"type":"setParticleXYPosition","parameters":{"position":[indentationPositionX_smp,indentationPositionY_smp],
+                                                                                            "selection":{"models":copy.deepcopy(tipSelection)}}})
             ###Model extensions
 
             #Add AFM
