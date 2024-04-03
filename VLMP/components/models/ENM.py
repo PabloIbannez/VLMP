@@ -22,6 +22,24 @@ class ENM(modelBase):
     Elastic Network Model (ENM) model for proteins.
 
     """
+
+    def __isValidPDB(self, id_pdb):
+        """Checks if the PDB ID is valid."""
+        return len(id_pdb) == 4 and id_pdb.isalnum()
+
+    def __downloadPDB(self, id_pdb, file_path):
+        url = f"https://files.rcsb.org/download/{id_pdb}.pdb"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            with open(file_path, 'wb') as file:
+                file.write(response.content)
+            self.logger.info(f"PDB {id_pdb} downloaded successfully.")
+        else:
+            self.logger.error(f"Error downloading the PDB {id_pdb}. Please verify the PDB ID.")
+            raise RuntimeError("Error downloading the PDB,")
+
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
@@ -49,10 +67,10 @@ class ENM(modelBase):
             inputPDBfilePath = params["PDB"]
         else:
             pdb_id = params["PDB"]
-            if self.isValidPDB(pdb_id):
+            if self.__isValidPDB(pdb_id):
                 downloadedPDB = True
                 inputPDBfilePath = f"tmp_{pdb_id}.pdb"
-                self.download_pdb(params["PDB"], inputPDBfilePath)
+                self.__downloadPDB(params["PDB"], inputPDBfilePath)
             else:
                 self.logger.error("The PDB ID is not valid")
                 raise RuntimeError("Invalid PDB ID")
@@ -93,21 +111,4 @@ class ENM(modelBase):
             sel += self.getForceFieldSelection(params["forceField"])
 
         return sel
-    
-    def isValidPDB(self, id_pdb):
-        """Checks if the PDB ID is valid."""
-        return len(id_pdb) == 4 and id_pdb.isalnum()
-
-    def download_pdb(self, id_pdb, file_path):
-        url = f"https://files.rcsb.org/download/{id_pdb}.pdb"
-        response = requests.get(url)
-        
-        if response.status_code == 200:
-            with open(file_path, 'wb') as file:
-                file.write(response.content)
-            self.logger.info(f"PDB {id_pdb} downloaded successfully.")
-        else:
-            self.logger.error(f"Error downloading the PDB {id_pdb}. Please verify the PDB ID.")
-            raise RuntimeError("Error downloading the PDB,")
-
 
