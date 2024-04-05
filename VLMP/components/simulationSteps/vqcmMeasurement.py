@@ -35,7 +35,8 @@ class vqcmMeasurement(simulationStepBase):
                                                 "damping",
                                                 "notAcceleratedInterval",
                                                 "h",
-                                                "printSteps"},
+                                                "printSteps",
+                                                "tetherInteractorNames"},
                          requiredParameters  = {"outputFilePath",
                                                 "f0","overtone",
                                                 "hydrodynamicRadius",
@@ -79,6 +80,9 @@ class vqcmMeasurement(simulationStepBase):
         parameters["h"]                      = params.get("h", 0.0) # 0.0 means it is computed by UAMMD
         parameters["resonatorImpedance"]     = params.get("resonatorImpedance", -1.0) #-1.0 means UAMMD ignores it
         parameters["printSteps"]             = params.get("printSteps", 0)
+        tetherInteractorNames                = params.get("tetherInteractorNames",[])
+        if len(tetherInteractorNames)>0:
+            paramters["tetherInteractorNames"] = tetherInteractorNames
         
         simulationStep = {
             name:{
