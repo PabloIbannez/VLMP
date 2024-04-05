@@ -69,7 +69,7 @@ class vqcmMeasurementFromMobility(simulationStepBase):
         parameters["resonatorImpedance"]     = params.get("resonatorImpedance", -1.0) #-1.0 means UAMMD ignores it
         tetherInteractorNames                = params.get("tetherInteractorNames",[])
         if len(tetherInteractorNames)>0:
-            paramters["tetherInteractorNames"] = tetherInteractorNames
+            parameters["tetherInteractorNames"] = tetherInteractorNames
         
         simulationStep = {
             name:{

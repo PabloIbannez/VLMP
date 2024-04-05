@@ -82,7 +82,7 @@ class vqcmMeasurement(simulationStepBase):
         parameters["printSteps"]             = params.get("printSteps", 0)
         tetherInteractorNames                = params.get("tetherInteractorNames",[])
         if len(tetherInteractorNames)>0:
-            paramters["tetherInteractorNames"] = tetherInteractorNames
+            parameters["tetherInteractorNames"] = tetherInteractorNames
         
         simulationStep = {
             name:{
