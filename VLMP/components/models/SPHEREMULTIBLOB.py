@@ -291,21 +291,22 @@ class SPHEREMULTIBLOB(modelBase):
         forceField["BondTether"]["data"]   = []
         ############################################################
 
-        bondsTethers = []
-        for i in range(numberOfSpheres):
-            for n in range(self.sphN):
-                pn = sph2pos[i][n]
-                height = pn[2]-heightReference
-                if height > heightTethersThreshold:
-                    tetherLength = height/np.sin(thetaTethers)
-                    for j in range(tethersPerBlob):
-                        phi     = 2*np.pi*j/tethersPerBlob
-                        xtether = pn[0] + tetherLength * np.cos(phi) * np.sin(thetaTethers)
-                        ytether = pn[1] + tetherLength * np.sin(phi) * np.sin(thetaTethers)                        
-                        posTether = [xtether, ytether, -Z]
-                        bondsTethers.append([sph2ids[i][n], Ktethers, tetherLength, posTether])
-                        
-        for i,k,r0,p in bondsTethers:
+        if Ktether > 0:
+            bondsTethers = []
+            for i in range(numberOfSpheres):
+                for n in range(self.sphN):
+                    pn = sph2pos[i][n]
+                    height = pn[2]-heightReference
+                    if height > heightTethersThreshold:
+                        tetherLength = height/np.sin(thetaTethers)
+                        for j in range(tethersPerBlob):
+                            phi     = 2*np.pi*j/tethersPerBlob
+                            xtether = pn[0] + tetherLength * np.cos(phi) * np.sin(thetaTethers)
+                            ytether = pn[1] + tetherLength * np.sin(phi) * np.sin(thetaTethers)                        
+                            posTether = [xtether, ytether, -Z]
+                            bondsTethers.append([sph2ids[i][n], Ktethers, tetherLength, posTether])
+                            
+            for i,k,r0,p in bondsTethers:
             forceField["BondTether"]["data"].append([i,k,r0, p])
             
         self.setState(state)
