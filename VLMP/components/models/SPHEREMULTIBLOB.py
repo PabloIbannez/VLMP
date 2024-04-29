@@ -290,8 +290,8 @@ class SPHEREMULTIBLOB(modelBase):
         forceField["BondTether"]["labels"] = ["id_i", "K", "r0", "position"]
         forceField["BondTether"]["data"]   = []
         ############################################################
-
-        if Ktether > 0:
+        print(Ktethers)
+        if Ktethers > 0:
             bondsTethers = []
             for i in range(numberOfSpheres):
                 for n in range(self.sphN):
@@ -307,7 +307,7 @@ class SPHEREMULTIBLOB(modelBase):
                             bondsTethers.append([sph2ids[i][n], Ktethers, tetherLength, posTether])
                             
             for i,k,r0,p in bondsTethers:
-            forceField["BondTether"]["data"].append([i,k,r0, p])
+                forceField["BondTether"]["data"].append([i,k,r0, p])
             
         self.setState(state)
         self.setStructure(structure)
