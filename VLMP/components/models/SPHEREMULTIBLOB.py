@@ -123,7 +123,11 @@ class SPHEREMULTIBLOB(modelBase):
                                                 "radiusOfSphere",
                                                 "K",
                                                 "heightMean","heightStd",
-                                                "heightReference"},
+                                                "heightReference",
+                                                "Ktethers",
+                                                "heightTethersThreshold",
+                                                "tethersPerBlob",
+                                                "thetaTethers"},
                          requiredParameters  = {"K"},
                          definedSelections   = {"particleId"},
                          **params)
@@ -147,6 +151,12 @@ class SPHEREMULTIBLOB(modelBase):
         heightStd  = params.get("heightStd",0.0)
 
         heightReference = params.get("heightReference",0.0)
+
+        Ktethers = params.get("Ktethers", 0.0)
+        if Ktethers>0.0:
+            heightTethersThreshold = params["heightTethersThreshold"]
+            tethersPerBlob         = params["tethersPerBlob"]
+            thetaTethers           = params["thetaTethers"]
 
         box = self.getEnsemble().getEnsembleComponent("box")
 
@@ -253,11 +263,11 @@ class SPHEREMULTIBLOB(modelBase):
                 structure["data"].append([j,particleName,i])
 
         forceField = {}
-        forceField["Bond"] = {}
-        forceField["Bond"]["parameters"] = {}
-        forceField["Bond"]["type"] = ["Bond2", "Harmonic"]
-        forceField["Bond"]["labels"] = ["id_i", "id_j", "K", "r0"]
-        forceField["Bond"]["data"] = []
+        forceField["BondPair"] = {}
+        forceField["BondPair"]["parameters"] = {}
+        forceField["BondPair"]["type"] = ["Bond2", "Harmonic"]
+        forceField["BondPair"]["labels"] = ["id_i", "id_j", "K", "r0"]
+        forceField["BondPair"]["data"] = []
 
         bonds = []
         for i in range(numberOfSpheres):
@@ -272,10 +282,32 @@ class SPHEREMULTIBLOB(modelBase):
                         bonds.append([sph2ids[i][n], sph2ids[i][m], K, dst])
 
         for i,j,k,r0 in bonds:
-            forceField["Bond"]["data"].append([i,j,k,r0])
+            forceField["BondPair"]["data"].append([i,j,k,r0])
 
+        forceField["BondTether"] = {}
+        forceField["BondTether"]["parameters"] = {}
+        forceField["BondTether"]["type"]   = ["Bond1", "FixedHarmonic"]
+        forceField["BondTether"]["labels"] = ["id_i", "K", "r0", "position"]
+        forceField["BondTether"]["data"]   = []
         ############################################################
 
+        bondsTethers = []
+        for i in range(numberOfSpheres):
+            for n in range(self.sphN):
+                pn = sph2pos[i][n]
+                height = pn[2]-heightReference
+                if height > heightTethersThreshold:
+                    tetherLength = height/np.sin(thetaTethers)
+                    for j in range(tethersPerBlob):
+                        phi     = 2*np.pi*j/tethersPerBlob
+                        xtether = pn[0] + tetherLength * np.cos(phi) * np.sin(thetaTethers)
+                        ytether = pn[1] + tetherLength * np.sin(phi) * np.sin(thetaTethers)                        
+                        posTether = [xtether, ytether, -Z]
+                        bondsTethers.append([sph2ids[i][n], Ktethers, tetherLength, posTether])
+                        
+        for i,k,r0,p in bondsTethers:
+            forceField["BondTether"]["data"].append([i,k,r0, p])
+            
         self.setState(state)
         self.setStructure(structure)
         self.setForceField(forceField)
