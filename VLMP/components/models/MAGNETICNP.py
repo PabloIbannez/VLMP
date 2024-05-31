@@ -17,8 +17,7 @@ class MAGNETICNP(modelBase):
     """
 
     def __generateLogNormalDistribution(self, mean, std, N):
-        distribution = np.full(N, mean)
-
+        distribution = np.full(N, float(mean))
         if (std>0.0):
             mean2 = mean*mean;
             std2  = std*std;
