@@ -1,7 +1,7 @@
 from VLMP.components.models import modelBase
 
 import numpy as np
-#from scipy.spatial import cKDTree
+from scipy.spatial import cKDTree
 
 from icosphere import icosphere
 
@@ -132,7 +132,7 @@ class SPHEREMULTIBLOB(modelBase):
             
         return np.vstack(replicated_positions)
 
-    def __computeNewPosition(sphPositions,X,Y,Z, radius,
+    def __computeNewPosition(self, sphPositions,X,Y,Z, radius,
                              heightMean, heightStd, heightReference,
                              ntries):
     
@@ -163,7 +163,7 @@ class SPHEREMULTIBLOB(modelBase):
                 break
             count+=1
             
-    return newPosition
+        return newPosition
 
 
     def __init__(self,name,**params):
@@ -239,7 +239,7 @@ class SPHEREMULTIBLOB(modelBase):
         while i < numberOfSpheres:
             newPosition = self.__computeNewPosition(sphPositions,X,Y,Z, radiusOfSphere,
                                                     heightMean, heightStd, heightReference,
-                                                    maxTries*10*(i+1))
+                                                    self.maxTries*100*(i+1))
             
             if len(newPosition)>0:
                 sphPositions.append(newPosition)
@@ -249,8 +249,8 @@ class SPHEREMULTIBLOB(modelBase):
                 i            = 0
                 tries       += 1
     
-        if tries >= maxTries:
-            print("Unable to find a correct configuration")
+        if tries >= self.maxTries:
+            print("Unable to find a correct configuration adshfdsoafjidosajfidoajfidosj")
             raise ValueError("The number of spheres is too high for the box size")
 
         # Generate spheres
