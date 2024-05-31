@@ -127,7 +127,8 @@ class SPHEREMULTIBLOB(modelBase):
                                                 "Ktethers",
                                                 "heightTethersThreshold",
                                                 "tethersPerBlob",
-                                                "thetaTethers"},
+                                                "thetaTethers",
+                                                "maxTries"},
                          requiredParameters  = {"K"},
                          definedSelections   = {"particleId"},
                          **params)
