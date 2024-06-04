@@ -48,7 +48,7 @@ class MagneticBrownian(integratorBase):
     """
 
     availableParameters = {"integrationSteps", "timeStep", "viscosity", "gyroRatio", "damping", "msat", "magneticIntegrationAlgorithm"}
-    requiredParameters  = {"integrationSteps", "timeStep", "viscosity", "gyroRatio", "damping", "msat", "magneticIntegrationAlgorithm"}
+    requiredParameters  = {"integrationSteps", "timeStep", "viscosity",  "msat", "magneticIntegrationAlgorithm"}
 
     def __init__(self, name, **params):
         super().__init__(_type=self.__class__.__name__, _name=name,
@@ -66,11 +66,13 @@ class MagneticBrownian(integratorBase):
 
         parameters["timeStep"]  = params.get("timeStep")
         parameters["viscosity"] = params.get("viscosity")
-        parameters["gyroRatio"] = params.get("gyroRatio")
-        parameters["damping"]   = params.get("damping")
         parameters["msat"]      = params.get("msat")
         parameters["magneticIntegrationAlgorithm"] = params.get("magneticIntegrationAlgorithm")
-
+        if "LLG" in parameters["magneticIntegrationAlgorithm"]:
+            parameters["gyroRatio"] = params.get("gyroRatio")
+            parameters["damping"]   = params.get("damping")
+        
+        
 
         integrator = {
             "type" : ["Magnetic", "Brownian"],
