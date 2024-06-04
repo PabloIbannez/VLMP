@@ -1,6 +1,6 @@
 [project]
 name="pyVLMP"
-        version="1.0.68"
+        version="1.0.69"
 authors = [
     {name = "Pablo Ibáñez-Freire", email = "p.ibanez.fre@gmail.com"},
 ]
