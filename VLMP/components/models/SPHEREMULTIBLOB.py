@@ -1,7 +1,7 @@
 from VLMP.components.models import modelBase
 
 import numpy as np
-#from scipy.spatial import cKDTree
+from scipy.spatial import cKDTree
 
 from icosphere import icosphere
 
@@ -112,6 +112,60 @@ class SPHEREMULTIBLOB(modelBase):
 
         return pos, edgeLength
 
+    def __applyPBC(self, positions, box_size):
+        """
+        Create periodic images of the system.
+        
+        Parameters:
+        positions (np.ndarray): Array of positions of shape (N, D) where N is the number of points and D is the dimensionality.
+        box_size (float): The size of the periodic box.
+        
+        Returns:
+        np.ndarray: Array of replicated positions considering periodic boundary conditions.
+        """
+        shifts = np.array([-1, 0, 1])
+        offsets = np.array(np.meshgrid(shifts, shifts, shifts)).T.reshape(-1, 3)
+        
+        replicated_positions = []
+        for offset in offsets:
+            replicated_positions.append(positions + offset * box_size)
+            
+        return np.vstack(replicated_positions)
+
+    def __computeNewPosition(self, sphPositions,X,Y,Z, radius,
+                             heightMean, heightStd, heightReference,
+                             ntries):
+    
+        newPosition = []
+        count = 0
+        while count<ntries:
+            if heightStd > 0.0:
+                height = np.random.normal(heightMean,heightStd)
+            else:
+                height = heightMean
+            height += heightReference
+            if height > Z - radius or height < -Z + radius:
+                continue
+
+            x = np.random.uniform(-X,X)
+            y = np.random.uniform(-Y,Y)
+            center = [x,y,height]
+        
+            if len(sphPositions)>0:
+                sphPositionsPBC = self.__applyPBC(sphPositions, 2*X)
+                tree = cKDTree(sphPositionsPBC)
+                minDst, minDstIndex = tree.query(center, k=1)
+            else:
+                minDst = np.inf
+
+            if minDst > 2.0*radius*1.05:            
+                newPosition = center
+                break
+            count+=1
+            
+        return newPosition
+
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
@@ -123,7 +177,12 @@ class SPHEREMULTIBLOB(modelBase):
                                                 "radiusOfSphere",
                                                 "K",
                                                 "heightMean","heightStd",
-                                                "heightReference"},
+                                                "heightReference",
+                                                "Ktethers",
+                                                "heightTethersThreshold",
+                                                "tethersPerBlob",
+                                                "thetaTethers",
+                                                "maxTries"},
                          requiredParameters  = {"K"},
                          definedSelections   = {"particleId"},
                          **params)
@@ -148,17 +207,18 @@ class SPHEREMULTIBLOB(modelBase):
 
         heightReference = params.get("heightReference",0.0)
 
+        Ktethers = params.get("Ktethers", 0.0)
+        if Ktethers>0.0:
+            heightTethersThreshold = params["heightTethersThreshold"]
+            tethersPerBlob         = params["tethersPerBlob"]
+            thetaTethers           = params["thetaTethers"]
+
         box = self.getEnsemble().getEnsembleComponent("box")
 
         self.maxTries    = params.get("maxTries",100)
 
-        #TODO: apply pbc, now box size is reduced by 2*radiusOfSphere
-
-        X = (box[0]-2*radiusOfSphere)/2
-        Y = (box[1]-2*radiusOfSphere)/2
-
-        #X = box[0]/2.0
-        #Y = box[1]/2.0
+        X = box[0]/2.0
+        Y = box[1]/2.0
 
         #Check box height and genration height
         Z = box[2]/2.0
@@ -173,42 +233,25 @@ class SPHEREMULTIBLOB(modelBase):
 
         ############################################################
 
-        sphPositions = []
-
-        i=0
-        tries=0
+        sphPositions = []        
+        i            = 0
+        tries        = 0
         while i < numberOfSpheres:
-            tries+=1
-            if tries >= self.maxTries*numberOfSpheres:
-                self.logger.error("Unable to find a correct configuration")
-                raise ValueError("The number of spheres is too high for the box size")
-            if heightStd > 0.0:
-                height = np.random.normal(heightMean,heightStd)
-            else:
-                height = heightMean
-            height += heightReference
-
-            x = np.random.uniform(-X,X)
-            y = np.random.uniform(-Y,Y)
-
-            center = [x,y,height]
-
-            if height > Z - radiusOfSphere or height < -Z + radiusOfSphere:
-                continue
-
-            if sphPositions:
-                #minDst,minDstIndex = cKDTree(sphPositions).query(center, 1)
-                minDst = np.inf
-                for p in sphPositions:
-                    dst = np.linalg.norm(p-np.asarray(center))
-                    minDst = min(dst,minDst)
-
-            else:
-                minDst = np.inf
-
-            if minDst > 2.0*radiusOfSphere*1.1:
-                sphPositions.append(center)
+            newPosition = self.__computeNewPosition(sphPositions,X,Y,Z, radiusOfSphere,
+                                                    heightMean, heightStd, heightReference,
+                                                    self.maxTries*100*(i+1))
+            
+            if len(newPosition)>0:
+                sphPositions.append(newPosition)
                 i+=1
+            else:
+                sphPositions = []
+                i            = 0
+                tries       += 1
+    
+        if tries >= self.maxTries:
+            print("Unable to find a correct configuration adshfdsoafjidosajfidoajfidosj")
+            raise ValueError("The number of spheres is too high for the box size")
 
         # Generate spheres
 
@@ -253,11 +296,11 @@ class SPHEREMULTIBLOB(modelBase):
                 structure["data"].append([j,particleName,i])
 
         forceField = {}
-        forceField["Bond"] = {}
-        forceField["Bond"]["parameters"] = {}
-        forceField["Bond"]["type"] = ["Bond2", "Harmonic"]
-        forceField["Bond"]["labels"] = ["id_i", "id_j", "K", "r0"]
-        forceField["Bond"]["data"] = []
+        forceField["BondPair"] = {}
+        forceField["BondPair"]["parameters"] = {}
+        forceField["BondPair"]["type"] = ["Bond2", "Harmonic"]
+        forceField["BondPair"]["labels"] = ["id_i", "id_j", "K", "r0"]
+        forceField["BondPair"]["data"] = []
 
         bonds = []
         for i in range(numberOfSpheres):
@@ -272,10 +315,33 @@ class SPHEREMULTIBLOB(modelBase):
                         bonds.append([sph2ids[i][n], sph2ids[i][m], K, dst])
 
         for i,j,k,r0 in bonds:
-            forceField["Bond"]["data"].append([i,j,k,r0])
+            forceField["BondPair"]["data"].append([i,j,k,r0])
 
+        forceField["BondTether"] = {}
+        forceField["BondTether"]["parameters"] = {}
+        forceField["BondTether"]["type"]   = ["Bond1", "FixedHarmonic"]
+        forceField["BondTether"]["labels"] = ["id_i", "K", "r0", "position"]
+        forceField["BondTether"]["data"]   = []
         ############################################################
-
+        print(Ktethers)
+        if Ktethers > 0:
+            bondsTethers = []
+            for i in range(numberOfSpheres):
+                for n in range(self.sphN):
+                    pn = sph2pos[i][n]
+                    height = pn[2]-heightReference
+                    if height > heightTethersThreshold:
+                        tetherLength = height/np.sin(thetaTethers)
+                        for j in range(tethersPerBlob):
+                            phi     = 2*np.pi*j/tethersPerBlob
+                            xtether = pn[0] + tetherLength * np.cos(phi) * np.sin(thetaTethers)
+                            ytether = pn[1] + tetherLength * np.sin(phi) * np.sin(thetaTethers)                        
+                            posTether = [xtether, ytether, -Z]
+                            bondsTethers.append([sph2ids[i][n], Ktethers, tetherLength, posTether])
+                            
+            for i,k,r0,p in bondsTethers:
+                forceField["BondTether"]["data"].append([i,k,r0, p])
+            
         self.setState(state)
         self.setStructure(structure)
         self.setForceField(forceField)

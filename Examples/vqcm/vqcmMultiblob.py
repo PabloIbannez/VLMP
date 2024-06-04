@@ -83,7 +83,7 @@ for n in nSpheres_list:
             for kappa_i in kappa_list:
                 for heightMean in z0_mean_list:
                     for epsilon in toleranceConvergence_list:
-                        K = kappa_i*(2*np.pi*f0)**2
+                        K = kappa_i*(2*math.pi*f0)**2
                         kappa_i = round(kappa_i,2)
                         blobRadius = (4.0*surfaceRatio*sphereRadius**2/bps)**0.5
                         blobMass                  = blobDensity*(2*blobRadius)**3
@@ -95,7 +95,7 @@ for n in nSpheres_list:
                                                "integrators":[{"type":"BBK","parameters":{"timeStep":0.0001,"frictionConstant":1.0,"integrationSteps":1}}],
                                                "models":[{"type":"SPHEREMULTIBLOB",
 					                  "parameters":{"sphereType":sphereType,
-							  	    "numberOfSpheres":n,
+							  	        "numberOfSpheres":n,
                                                                         "particlesPerSphere":bps,
                                                                         "radiusOfSphere":sphereRadius,
                                                                         "particleMass":blobMass,
@@ -103,7 +103,11 @@ for n in nSpheres_list:
                                                                         "K":K,
                                                                         "heightMean":heightMean,
                                                                         "heightStd":z0_std,
-                                                                        "heightReference":-Lz/2.0}}],
+                                                                        "heightReference":-Lz/2.0,
+                                                                        "Ktethers":100000,
+                                                                        "heightTethersThreshold":heightMean/2,
+                                                                        "tethersPerBlob":2,
+                                                                        "thetaTethers":math.pi/4}}],
                                                "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1,
                                                                                                     "outputFilePath":"test",
                                                                                                     "outputFormat":"sp"}},
@@ -122,7 +126,8 @@ for n in nSpheres_list:
                                                                                                           "printSteps":memory,
                                                                                                           "toleranceConvergence":toleranceConvergence,
                                                                                                           "notAcceleratedInterval":notAcceleratedInterval,
-                                                                                                          "damping":damping}},
+                                                                                                          "damping":damping,
+                                                                                                          "tetherInteractorNames":["BondTether"]}},
                                                                   {"type":"info","parameters":{"intervalStep":10000}}]
 
 

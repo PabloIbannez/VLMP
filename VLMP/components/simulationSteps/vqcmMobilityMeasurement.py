@@ -28,7 +28,8 @@ class vqcmMeasurementFromMobility(simulationStepBase):
                                                 "viscosity",
                                                 "vwall",
                                                 "fluidDensity",
-                                                "h"},
+                                                "h",
+                                                "tetherInteractorNames"},
                          requiredParameters  = {"outputFilePath",
                                                 "f0","overtone",
                                                 "hydrodynamicRadius",
@@ -65,7 +66,10 @@ class vqcmMeasurementFromMobility(simulationStepBase):
         parameters["fluidDensity"]       = params["fluidDensity"]
     
         parameters["h"]                      = params.get("h", 0.0) # 0.0 means it is computed by UAMMD
-        #parameters["resonatorImpedance"]     = params.get("resonatorImpedance", -1.0) #-1.0 means UAMMD ignores it
+        parameters["resonatorImpedance"]     = params.get("resonatorImpedance", -1.0) #-1.0 means UAMMD ignores it
+        tetherInteractorNames                = params.get("tetherInteractorNames",[])
+        if len(tetherInteractorNames)>0:
+            parameters["tetherInteractorNames"] = tetherInteractorNames
         
         simulationStep = {
             name:{
