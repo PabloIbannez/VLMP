@@ -20,7 +20,7 @@ class FILE(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"inputFilePath"},
+                         availableParameters = {"inputFilePath","removeInteractionsByType"},
                          requiredParameters  = {"inputFilePath"},
                          definedSelections   = {"particleId","forceField"},
                          **params)
@@ -52,6 +52,18 @@ class FILE(modelBase):
 
         #Generate forceField
         forceField = copy.deepcopy(inputJSON["topology"]["forceField"])
+
+        #Remove interactions by type
+        if "removeInteractionsByType" in params:
+            entriesToRemove = []
+            for interaction in forceField:
+                tpy = forceField[interaction]["type"][0]
+                if tpy in params["removeInteractionsByType"]:
+                    entriesToRemove.append(interaction)
+
+            for interaction in entriesToRemove:
+                _ = forceField.pop(interaction)
+                self.logger.debug(f"[FILE] Removing interaction {interaction} due to type: {tpy}")
 
         ########################################################
 
