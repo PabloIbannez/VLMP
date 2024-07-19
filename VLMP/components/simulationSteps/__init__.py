@@ -9,7 +9,7 @@ from pyUAMMD import simulation
 
 from .. import idsHandler
 
-from ...utils.selections import getSelections
+from ...utils.selections import processSelections
 
 class simulationStepBase(idsHandler):
 
@@ -86,9 +86,9 @@ class simulationStepBase(idsHandler):
 
         #Process selections
         selections = [sel for sel in params if sel in self.availableSelections]
-        self._selection = getSelections(self._models,
-                                        selections,
-                                        **params)
+        selections = {sel:params[sel] for sel in selections if sel in params.keys()}
+        self._selection = processSelections(self._models,
+                                            copy.deepcopy(selections))
 
         ########################################################
 

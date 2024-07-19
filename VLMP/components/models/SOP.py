@@ -70,14 +70,5 @@ class SOP(modelBase):
         self.setForceField(sop.getForceField())
 
 
-    def processSelection(self,**params):
-
-        sel = []
-
-        if "particleId" in params:
-            sel += params["particleId"]
-
-        if "forceField" in params:
-            sel += self.getForceFieldSelection(params["forceField"])
-
-        return sel
+    def processSelection(self,selectionType,selectionOptions):
+        return None

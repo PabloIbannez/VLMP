@@ -71,11 +71,5 @@ class SBCG(modelBase):
         self.setForceField(sbcg.getForceField())
 
 
-    def processSelection(self,**params):
-
-        sel = []
-
-        if "particleId" in params:
-            sel += params["particleId"]
-
-        return sel
+    def processSelection(self,selectionType,selectionOptions):
+        return None

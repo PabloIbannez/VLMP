@@ -157,14 +157,8 @@ class STERIC_LAMBDA_SOLVATION(modelBase):
         self.setStructure(structure)
         self.setForceField(forcefield)
 
-    def processSelection(self,**params):
-
-        sel = []
-
-        if "particleId" in params:
-            sel += [0]
-
-        return sel
+    def processSelection(self,selectionType,selectionOptions):
+        return None
 
 
 

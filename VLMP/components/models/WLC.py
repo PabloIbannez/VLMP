@@ -107,14 +107,10 @@ class WLC(modelBase):
         self.setForceField(forceField)
 
 
-    def processSelection(self,**params):
+    def processSelection(self,selectionType,selectionOptions):
 
-        sel = []
-
-        if "particleId" in params:
-            sel += params["particleId"]
-
-        if "polymerIndex" in params:
+        if selectionType == "polymerIndex":
+            sel = []
             for pIndex in params["polymerIndex"]:
                 if pIndex < -self.N or pIndex > self.N or pIndex == 0:
                     self.logger.error(f"[WLC] Invalid polymer index {pIndex}")
@@ -125,11 +121,6 @@ class WLC(modelBase):
                 if pIndex < 0:
                     sel.append(self.N+pIndex)
 
-        if "forceField" in params:
+            return sel
 
-            ffEntries = params["forceField"]
-            ffEntries = [entry + "_wlc" for entry in ffEntries]
-
-            sel += self.getForceFieldSelection(ffEntries)
-
-        return sel
+        return None

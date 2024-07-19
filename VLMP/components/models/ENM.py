@@ -100,15 +100,6 @@ class ENM(modelBase):
         self.setForceField(enm.getForceField())
 
 
-    def processSelection(self,**params):
-
-        sel = []
-
-        if "particleId" in params:
-            sel += params["particleId"]
-
-        if "forceField" in params:
-            sel += self.getForceFieldSelection(params["forceField"])
-
-        return sel
+    def processSelection(self,selectionType,selectionOptions):
+        return None
 

@@ -61,7 +61,7 @@ class CORONAVIRUS(modelBase):
                                                 "surfacePosition",
                                                 "inputModelData"},
                          requiredParameters  = set(),
-                         definedSelections   = {"particleId","type"},
+                         definedSelections   = {"component"},
                          **params)
 
         self.logger = logging.getLogger("VLMP")
@@ -139,31 +139,6 @@ class CORONAVIRUS(modelBase):
         ########################################################
 
         self.__generateCoordinatesAndTopology()
-
-    def processSelection(self,**params):
-
-        sel = set()
-
-        if "particleId" in params:
-            sel.add(params["particleId"])
-
-        if "type" in params:
-            structure = self.getStructure()
-            typeIndex = getLabelIndex("type"  ,structure["labels"])
-
-            if params["type"] == "lipids":
-                for d in structure["data"]:
-                    if d[typeIndex] in ["LV","LP"]:
-                        sel.add(d[0])
-            elif params["type"] == "proteins":
-                for d in structure["data"]:
-                    if d[typeIndex] not in ["LV","LP"]:
-                        sel.add(d[0])
-            else:
-                self.logger.error(f"[CORONAVIRUS] Unknown type {params['type']}")
-                raise Exception("Unknown type")
-
-        return list(sel)
 
     def __generateSphere(self,N,radius):
 
@@ -715,3 +690,32 @@ class CORONAVIRUS(modelBase):
         self.setState(state)
         self.setStructure(structure)
         self.setForceField(forceField)
+
+    def processSelection(self,selectionType,selectionOptions):
+
+        if selectionType == "component":
+
+            sel = set()
+
+            structure = self.getStructure()
+            typeIndex = getLabelIndex("type"  ,structure["labels"])
+
+            processedOptions = selectionOptions.split()
+            processedOptions = [x.strip() for x in processedOptions]
+
+            if "lipids" in processedOptions:
+                for d in structure["data"]:
+                    if d[typeIndex] in ["LV","LP"]:
+                        sel.add(d[0])
+            elif "proteins" in processedOptions:
+                for d in structure["data"]:
+                    if d[typeIndex] not in ["LV","LP"]:
+                        sel.add(d[0])
+            else:
+                self.logger.error(f"[CORONAVIRUS] Unknown component {params['type']}")
+                raise Exception("Selection error")
+
+            return sel
+
+        return None
+

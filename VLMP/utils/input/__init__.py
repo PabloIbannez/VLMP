@@ -1,6 +1,9 @@
 import logging
 
+from .stringUtils import *
+
 def getLabelIndex(l,labels):
+
     logger = logging.getLogger("VLMP")
 
     if l in labels:

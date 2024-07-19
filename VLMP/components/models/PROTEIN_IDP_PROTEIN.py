@@ -412,11 +412,5 @@ class PROTEIN_IDP_PROTEIN(modelBase):
         self.setStructure(copy.deepcopy(sim["topology"]["structure"]))
         self.setForceField(copy.deepcopy(forceField))
 
-    def processSelection(self,**params):
-
-        sel = []
-
-        if "particleId" in params:
-            sel += params["particleId"]
-
-        return sel
+    def processSelection(self,selectionType,selectionOptions):
+        return None

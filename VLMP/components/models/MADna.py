@@ -192,7 +192,7 @@ class MADna(modelBase):
 
         self.__generateCoordinatesAndTopology()
 
-    def processSelection(self,**selection):
+    def _processSelection(self,**selection):
 
         indices = []
         for selType,selInfo in selection.items():
@@ -348,16 +348,16 @@ class MADna(modelBase):
         for bp in basePairsList:
             t = self.seq[bp-1]
             ##SB
-            i,j = self.processSelection(**{"basePairIndex":bp,"type":["S",t],"strand":1})
+            i,j = self._processSelection(**{"basePairIndex":bp,"type":["S",t],"strand":1})
             bType = "SB/{}".format(t)
             self.bonds.append({"i":i,"j":j,"type":bType})
 
-            i,j = self.processSelection(**{"basePairIndex":bp,"type":["S",self.model["PAIRS"][t]],"strand":2})
+            i,j = self._processSelection(**{"basePairIndex":bp,"type":["S",self.model["PAIRS"][t]],"strand":2})
             bType = "SB/{}".format(self.model["PAIRS"][t])
             self.bonds.append({"i":j,"j":i,"type":bType})#Note index inverted!!
 
             ##BB-inter strand
-            i,j = self.processSelection(**{"basePairIndex":bp,"type":[t,self.model["PAIRS"][t]]})
+            i,j = self._processSelection(**{"basePairIndex":bp,"type":[t,self.model["PAIRS"][t]]})
             bType = "BB-inter/{}{}".format(t,self.model["PAIRS"][t])
             self.bonds.append({"i":i,"j":j,"type":bType})
 
@@ -365,8 +365,8 @@ class MADna(modelBase):
             bp5,bp3 = bpp
             t5,t3 = self.seq[bp5-1],self.seq[bp3-1]
 
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
             if len(i)==1 and len(j)==1:
                 i=i[0]
                 j=j[0]
@@ -376,8 +376,8 @@ class MADna(modelBase):
                 bType = "SP/{}{}".format(t5,t3)
                 self.bonds.append({"i":i,"j":j,"type":bType})
 
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
             if len(i)==1 and len(j)==1:
                 i=i[0]
                 j=j[0]
@@ -389,8 +389,8 @@ class MADna(modelBase):
 
             #########################################################################
 
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
             if len(i)==1 and len(j)==1:
                 i=i[0]
                 j=j[0]
@@ -400,8 +400,8 @@ class MADna(modelBase):
                 bType = "PS/{}{}".format(t5,t3)
                 self.bonds.append({"i":i,"j":j,"type":bType})
 
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
             if len(i)==1 and len(j)==1:
                 i=i[0]
                 j=j[0]
@@ -414,8 +414,8 @@ class MADna(modelBase):
             ########################################################################
 
             #5BB3-intra strand
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
             if len(i)==1 and len(j)==1:
                 i=i[0]
                 j=j[0]
@@ -424,8 +424,8 @@ class MADna(modelBase):
                 self.bonds.append({"i":i,"j":j,"type":bType})
 
             #5BB3-intra strand
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
             if len(i)==1 and len(j)==1:
                 i=i[0]
                 j=j[0]
@@ -439,16 +439,16 @@ class MADna(modelBase):
         for bp in basePairsList:
             t = self.seq[bp-1]
             ##SBB
-            i, = self.processSelection(**{"basePairIndex":bp,"type":"S","strand":1})
-            j, = self.processSelection(**{"basePairIndex":bp,"type":"B","strand":1})
-            k, = self.processSelection(**{"basePairIndex":bp,"type":"B","strand":2})
+            i, = self._processSelection(**{"basePairIndex":bp,"type":"S","strand":1})
+            j, = self._processSelection(**{"basePairIndex":bp,"type":"B","strand":1})
+            k, = self._processSelection(**{"basePairIndex":bp,"type":"B","strand":2})
 
             aType = "SBB/{}{}".format(t,self.model["PAIRS"][t])
             self.angles.append({"i":i,"j":j,"k":k,"type":aType})
 
-            i, = self.processSelection(**{"basePairIndex":bp,"type":"B","strand":1})
-            j, = self.processSelection(**{"basePairIndex":bp,"type":"B","strand":2})
-            k, = self.processSelection(**{"basePairIndex":bp,"type":"S","strand":2})
+            i, = self._processSelection(**{"basePairIndex":bp,"type":"B","strand":1})
+            j, = self._processSelection(**{"basePairIndex":bp,"type":"B","strand":2})
+            k, = self._processSelection(**{"basePairIndex":bp,"type":"S","strand":2})
 
             aType = "SBB/{}{}".format(self.model["PAIRS"][t],t)
             self.angles.append({"i":k,"j":j,"k":i,"type":aType})#Note index inverted!!
@@ -462,9 +462,9 @@ class MADna(modelBase):
 
             ########################################################################
 
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1:
                 i = i[0]
@@ -473,9 +473,9 @@ class MADna(modelBase):
                 aType = "SPS/{}{}".format(t5,t3)
                 self.angles.append({"i":i,"j":j,"k":k,"type":aType})
 
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1:
                 i = i[0]
@@ -487,9 +487,9 @@ class MADna(modelBase):
 
             ########################################################################
 
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1:
                 i = i[0]
@@ -498,9 +498,9 @@ class MADna(modelBase):
                 aType = "3PSB5/{}{}".format(t5,t3)
                 self.angles.append({"i":i,"j":j,"k":k,"type":aType})
 
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1:
                 i = i[0]
@@ -511,9 +511,9 @@ class MADna(modelBase):
 
             ########################################################################
 
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1:
                 i = i[0]
@@ -522,9 +522,9 @@ class MADna(modelBase):
                 aType = "5PSB3/{}{}".format(t5,t3)
                 self.angles.append({"i":i,"j":j,"k":k,"type":aType})
 
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1:
                 i = i[0]
@@ -540,10 +540,10 @@ class MADna(modelBase):
             t5,t3 = self.seq[bp5-1],self.seq[bp3-1]
 
             #PSBB53
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
-            l = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
+            l = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -555,10 +555,10 @@ class MADna(modelBase):
                 self.dihedrals.append({"i":i,"j":j,"k":k,"l":l,"type":dType})
 
             ##PSBB53
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
-            l = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
+            l = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -572,10 +572,10 @@ class MADna(modelBase):
             ########################################################################
 
             ###PSBB35
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
-            l = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
+            l = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -587,10 +587,10 @@ class MADna(modelBase):
                 self.dihedrals.append({"i":i,"j":j,"k":k,"l":l,"type":dType})
 
             ###PSBB35
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
-            l = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
+            l = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -605,10 +605,10 @@ class MADna(modelBase):
 
             ##SPSP
             if bp3+1 <= self.seqLen:
-                i = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-                j = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-                k = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
-                l = self.processSelection(**{"basePairIndex":bp3+1,"type":"P","strand":1})
+                i = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+                j = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+                k = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+                l = self._processSelection(**{"basePairIndex":bp3+1,"type":"P","strand":1})
 
                 if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                     i = i[0]
@@ -621,10 +621,10 @@ class MADna(modelBase):
 
             ##SPSP
             if bp5-1 >= 1:
-                i = self.processSelection(**{"basePairIndex":bp3  ,"type":"S","strand":2})
-                j = self.processSelection(**{"basePairIndex":bp5  ,"type":"P","strand":2})
-                k = self.processSelection(**{"basePairIndex":bp5  ,"type":"S","strand":2})
-                l = self.processSelection(**{"basePairIndex":bp5-1,"type":"P","strand":2})
+                i = self._processSelection(**{"basePairIndex":bp3  ,"type":"S","strand":2})
+                j = self._processSelection(**{"basePairIndex":bp5  ,"type":"P","strand":2})
+                k = self._processSelection(**{"basePairIndex":bp5  ,"type":"S","strand":2})
+                l = self._processSelection(**{"basePairIndex":bp5-1,"type":"P","strand":2})
 
                 if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                     i = i[0]
@@ -638,10 +638,10 @@ class MADna(modelBase):
             ########################################################################
 
             ##PSPS
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            l = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            l = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -653,10 +653,10 @@ class MADna(modelBase):
                 self.dihedrals.append({"i":i,"j":j,"k":k,"l":l,"type":dType})
 
             ##PSPS
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            l = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            l = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -670,10 +670,10 @@ class MADna(modelBase):
             ########################################################################
 
             ##SPSB53
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
-            l = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+            l = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -685,10 +685,10 @@ class MADna(modelBase):
                 self.dihedrals.append({"i":i,"j":j,"k":k,"l":l,"type":dType})
 
             ##SPSB53
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
-            l = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
+            l = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -702,10 +702,10 @@ class MADna(modelBase):
             ########################################################################
 
             ##SPSB35
-            i = self.processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
-            j = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
-            k = self.processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
-            l = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
+            i = self._processSelection(**{"basePairIndex":bp5,"type":"B","strand":1})
+            j = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":1})
+            k = self._processSelection(**{"basePairIndex":bp3,"type":"P","strand":1})
+            l = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":1})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -717,10 +717,10 @@ class MADna(modelBase):
                 self.dihedrals.append({"i":i,"j":j,"k":k,"l":l,"type":dType})
 
             ##SPSB35
-            i = self.processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
-            j = self.processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
-            k = self.processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
-            l = self.processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
+            i = self._processSelection(**{"basePairIndex":bp3,"type":"B","strand":2})
+            j = self._processSelection(**{"basePairIndex":bp3,"type":"S","strand":2})
+            k = self._processSelection(**{"basePairIndex":bp5,"type":"P","strand":2})
+            l = self._processSelection(**{"basePairIndex":bp5,"type":"S","strand":2})
 
             if len(i)==1 and len(j)==1 and len(k)==1 and len(l)==1:
                 i = i[0]
@@ -871,7 +871,7 @@ class MADna(modelBase):
 
             phosphateIndex_basePair = []
             for bp in range(self.seqLen):
-                index = self.processSelection(**{"basePairIndex":bp+1,"type":"P"})
+                index = self._processSelection(**{"basePairIndex":bp+1,"type":"P"})
                 phosphateIndex_basePair+=[[i,bp+1] for i in index]
 
             forceField["BONDS_DH"] = {}
@@ -892,4 +892,40 @@ class MADna(modelBase):
         self.setState(state)
         self.setStructure(struct)
         self.setForceField(forceField)
+
+    def processSelection(self,selectionType,selectionOptions):
+        #Options is always a string
+
+        if selectionType == "type":
+            #Options has to be a list of strings
+            #Example: ["S","P"]
+            options = [str(x) for x in selectionOptions.split()]
+            for opt in options:
+                if opt not in ["S","P","B"]:
+                    self.logger.error(f"[MADna] Type has to be one of the following: S, P, B. But is:{opt}")
+                    raise Exception("Type not recognized")
+            return self._processSelection(**{"type":options})
+
+        if selectionType == "strand":
+            #Options has to be a list of integers
+            #Example: [1,2]
+            options = [int(x) for x in selectionOptions.split()]
+            for opt in options:
+                if opt not in [1,2]:
+                    self.logger.error(f"[MADna] Strand has to be 1 or 2. But is:{opt}")
+                    raise Exception("Strand not recognized")
+            return self._processSelection(**{"strand":options})
+
+        if selectionType == "basePairIndex":
+            #Options to be a list of integers
+            options = [int(x) for x in selectionOptions.split()]
+            return self._processSelection(**{"basePairIndex":options})
+
+        if selectionType == "particleId":
+            #Options to be a list of integers
+            options = [int(x) for x in selectionOptions.split()]
+            return self._processSelection(**{"particleId":options})
+
+        return None
+
 
