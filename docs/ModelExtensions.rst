@@ -1,6 +1,8 @@
 ModelExtensions
 ===============
 
+.. include:: ModelExtensionsIntro.rst
+
 ACMagneticField
 ---------------
 
@@ -344,6 +346,39 @@ harmonicBondBetweenCentersOfMass
     :type r0: float
 
     ...
+    
+
+helixBoundaries
+---------------
+
+
+    Component name: helixBoundaries
+    Component type: modelExtension
+
+    Author: Pablo Ibáñez-Freire
+    Date: 03/06/2024
+
+    :param helixPitch: pitch of the helix
+    :type helixPitch: float
+    :param helixRadius: radius of the helix
+    :type helixRadius: float
+    :param eps: helix sign, 1 for right-handed, -1 for left-handed
+    :type eps: float
+    :param nTurns: number of turns of the helix
+    :type nTurns: int
+    :param nPointsHelix: number of points to discretize the helix
+    :type nPointsHelix: int
+    :param helixInnerRadius: inner radius of the helix
+    :type helixInnerRadius: float
+    :param nx: number of points in the x direction
+    :type nx: int
+    :param ny: number of points in the y direction
+    :type ny: int
+    :param nz: number of points in the z direction
+    :type nz: int
+    :param K: spring constant for boundary conditions
+    :type K: float
+
     
 
 plates

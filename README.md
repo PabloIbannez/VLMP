@@ -32,7 +32,8 @@ VLMP is a Python library designed for running parallelized simulations, specific
 
 ### Prerequisites
 
-Install UAMMD-structured before proceeding. [UAMMD-structured Documentation](https://uammd-structured.readthedocs.io/en/latest/)
+VLMP can be used without any additional program ( but required Python libraries) for generating simulations input files.
+For execute these simulations UAMMD-structured must be available in the system. [UAMMD-structured Documentation](https://uammd-structured.readthedocs.io/en/latest/)
 
 ### Installing VLMP
 

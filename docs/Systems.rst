@@ -1,6 +1,8 @@
 Systems
 =======
 
+.. include:: SystemsIntro.rst
+
 backup
 ------
 
@@ -30,6 +32,10 @@ backup
 	  - Description
 	  - Type
 	  - Default
+	* - backupFilePath
+	  - Path to the backup file
+	  - str
+	  - backup
 	* - backupStartStep
 	  - Step at which the backup starts
 	  - ullint
@@ -38,10 +44,6 @@ backup
 	  - Step at which the backup ends
 	  - ullint
 	  - MAX_ULLINT
-	* - backupFilePath
-	  - Path to the backup file
-	  - str
-	  - backup
 
 Example:
 
@@ -51,6 +53,38 @@ Example:
 		"type": "backup",
 		"backupIntervalStep": 1000,
 		"backupFilePath": "backup"
+	}
+
+
+
+seed
+----
+
+	:author: Pablo Ibáñez-Freire
+
+This component sets the seed for the random number generator
+
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - seed
+	  - Seed for the random number generator
+	  - int
+	  - 
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "seed",
+		"seed": 123456
 	}
 
 

@@ -1,6 +1,8 @@
 Models
 ======
 
+.. include:: ModelsIntro.rst
+
 CORONAVIRUS
 -----------
 
@@ -139,6 +141,20 @@ MAGNETICNP
     Date: 16/10/2023
 
     Model of magnetic nanoparticles
+    
+
+MEMBRANE
+--------
+
+
+    Component name: MEMBRANE
+    Component type: model
+
+    Author: Pablo Ibáñez-Freire
+    Date: 22/05/2024
+
+    Alpha carbon resolution membrane model.
+
     
 
 PARTICLE

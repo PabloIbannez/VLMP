@@ -1,6 +1,8 @@
 Units
 =====
 
+.. include:: UnitsIntro.rst
+
 KcalMol_A
 ---------
 

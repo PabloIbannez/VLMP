@@ -1,6 +1,8 @@
 Integrators
 ===========
 
+.. include:: IntegratorsIntro.rst
+
 BBK
 ---
 
@@ -17,16 +19,16 @@ BBK integrator for the NVT ensemble. This Langevin integrator is designed for si
 	  - Description
 	  - Type
 	  - Default
+	* - timeStep
+	  - Time step of the integrator
+	  - float
+	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
 	* - frictionConstant
 	  - Friction constant of the integrator
-	  - float
-	  - 
-	* - timeStep
-	  - Time step of the integrator
 	  - float
 	  - 
 
@@ -59,17 +61,17 @@ Simple Euler-Maruyama integrator for Brownian dynamics. This integrator is suita
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
+	* - viscosity
+	  - Viscosity of the fluid
+	  - float
 	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
 	  - 
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 
 Example:
@@ -101,17 +103,17 @@ Euler-Maruyama integrator for rigid bodies, based on the approach detailed in DO
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
+	* - viscosity
+	  - Viscosity of the fluid
+	  - float
 	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
 	  - 
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 
 Example:
@@ -143,17 +145,17 @@ Euler-Maruyama integrator designed for rigid bodies with patches state. This int
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
+	* - viscosity
+	  - Viscosity of the fluid
+	  - float
 	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
 	  - 
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 
 Example:
@@ -185,16 +187,16 @@ GJF integrator, a Langevin integrator for the NVT ensemble, as described in DOI:
 	  - Description
 	  - Type
 	  - Default
+	* - timeStep
+	  - Time step of the integrator
+	  - float
+	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
 	* - frictionConstant
 	  - Friction constant of the integrator
-	  - float
-	  - 
-	* - timeStep
-	  - Time step of the integrator
 	  - float
 	  - 
 
@@ -227,32 +229,41 @@ Simple Euler-Maruyama integrator adapted for Brownian dynamics with magnetic pro
 	  - Description
 	  - Type
 	  - Default
-	* - magneticIntegrationAlgorithm
-	  - Algorithm for magnetic integration
-	  - string
-	  - 
-	* - damping
-	  - Damping factor
+	* - msat
+	  - Saturation magnetization
 	  - float
 	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
 	  - 
-	* - msat
-	  - Saturation magnetization
+	* - viscosity
+	  - Viscosity of the fluid
 	  - float
+	  - 
+	* - magneticIntegrationAlgorithm
+	  - Algorithm for magnetic integration
+	  - string
 	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
-	* - gyroRatio
-	  - Gyromagnetic ratio
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - damping
+	  - Damping factor
 	  - float
 	  - 
-	* - viscosity
-	  - Viscosity of the fluid
+	* - gyroRatio
+	  - Gyromagnetic ratio
 	  - float
 	  - 
 
@@ -289,13 +300,13 @@ NVE integrator for simulations maintaining a constant number of particles, volum
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
-	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
+	  - 
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 
 Example:

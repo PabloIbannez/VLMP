@@ -209,6 +209,8 @@ for component_type in available_components:
         f.write(f"{component_name}\n")
         f.write("=" * len(component_name) + "\n\n")
 
+        f.write(f".. include:: {component_name}Intro.rst\n\n")
+
         for name, docstring in doc.items():
             f.write(f"{name}\n")
             f.write("-" * len(name) + "\n\n")

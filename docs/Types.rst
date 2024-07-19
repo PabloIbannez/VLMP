@@ -1,6 +1,8 @@
 Types
 =====
 
+.. include:: TypesIntro.rst
+
 basic
 -----
 
@@ -17,6 +19,10 @@ Component for defining basic types in a simulation. It includes components for m
 	  - Description
 	  - Type
 	  - Default
+	* - charge
+	  - Default charge for a new type
+	  - float
+	  - 0.0
 	* - mass
 	  - Default mass for a new type
 	  - float
@@ -25,10 +31,6 @@ Component for defining basic types in a simulation. It includes components for m
 	  - Default radius for a new type
 	  - float
 	  - 1.0
-	* - charge
-	  - Default charge for a new type
-	  - float
-	  - 0.0
 
 Example:
 

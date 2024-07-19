@@ -1,6 +1,8 @@
 Ensembles
 =========
 
+.. include:: EnsemblesIntro.rst
+
 NVT
 ---
 

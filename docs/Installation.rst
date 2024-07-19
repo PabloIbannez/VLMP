@@ -3,7 +3,8 @@ Installation
 
 **Prerequisites**
 
-Before you can use VLMP, you must first install UAMMD-structured, which will handle the execution
+VLMP can generate the simulations input without the need for any external dependencies. However,
+if you want to run the simulations, you will need to install UAMMD-structured, which will handle the execution
 of simulations. You can find the installation instructions for UAMMD-structured in its official
 documentation:
 
@@ -11,7 +12,7 @@ documentation:
 
 **Installing VLMP**
 
-Once UAMMD-structured is installed, there are multiple ways to install VLMP. The easiest method is
+There are multiple ways to install VLMP. The easiest method is
 through Python's package manager, pip:
 
 .. code-block:: bash

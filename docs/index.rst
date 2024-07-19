@@ -11,13 +11,12 @@ Welcome to VLMP's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Workflow
+   :caption: Design and Usage
 
-   Workflow
+   Components
    Simulation
-   Simulations pool
-   Simulations distribution
-   Simulations execution
+   Simulation Pool
+   Workflow
 
 .. toctree::
    :maxdepth: 4

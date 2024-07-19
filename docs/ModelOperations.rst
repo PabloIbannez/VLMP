@@ -1,6 +1,8 @@
 ModelOperations
 ===============
 
+.. include:: ModelOperationsIntro.rst
+
 alignInertiaMomentAlongVector
 -----------------------------
 
@@ -119,6 +121,25 @@ setParticlePositions
 
     :param positions: Position to set the particles to.
     :type position: list of floats
+
+    
+
+setParticleXYPosition
+---------------------
+
+
+    Component name: setParticleXYPosition
+    Component type: modelOperation
+
+    Author: Pablo Ibáñez-Freire
+    Date: 26/02/2024
+
+    Set the XY particle position to value.
+
+    :param position: Position to set the XY particle to.
+    :type position: float list
+    :param considerRadius: Consider particle radius when setting the XY position.
+    :type considerRadius: bool, optional
 
     
 

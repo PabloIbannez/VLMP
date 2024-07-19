@@ -1,12 +1,34 @@
 What is VLMP?
 =============
 
-One of the primary problems of scientific simulations is the very fact that specialized software is by its nature rather complicated, often having substantial barriers for a non-expert user. This complexity manifests itself in various forms as the nitty-gritties of script-based inputs where a user has awareness of detailed command syntax or as complexities of setting up simulation parameters requiring an urbane understanding of the phenomena behind. Moreover, user code to enhance the functionality of software might need all sorts of complicated things such as merging in new algorithms or dependency management, which is particularly frightening for an end-user with no programming experience at all.
+An essential aspect of any simulation is the construction of the input. 
+For instance, when simulating a protein, we need to incorporate information such as the protein structure 
+(which could be contained into a PDB file we have to analyze), or in the case of DNA, the specific sequence of interest. 
+From this initial information, a series of processes are applied to finally obtain a representation 
+of the structure to be simulated along with the interactions that occur within it. 
+This process can often be complex. Consider, for example, coarse grained protein models, 
+where build the simplified representation requires an in-depth analysis of the structure of the protein [Karanicolas2002]_, 
+or DNA models, where parameters for different bonds (pairwise, angular, or dihedral) 
+vary based on the sequence [Assenza2022]_.
 
-To ease these challenges and make accessible scientific simulations we have developed the Virtual Lab Modeling Platform (VLMP). VLMP eases the process of performing complex simulations especially within High-Performance Computing (HPC) environments. It makes use of the friendlier language, Python, as opposed to the more complex C/C++ CUDA combination used in UAMMD-structured software. This approach follows recent trends in computational physics where developed Python interfaces have been provided with programs like LAMMPS , GROMACS , and OpenMM. VLMP, on the other hand, does not merely wrap existing tools to check for the presence of formal verification properties in given models, but offers a framework within which various forms of simulation can be developed and run over various computational environments.
+To simulate these systems, we need to implement algorithms for generating the input or use tools usually developed 
+by authors for this purpose. However, imagine wanting to combine these models to study interactions between proteins and DNA. 
+This task is not straightforward, it involves merging inputs (which may be in different formats) and adding interactions between them. 
+This final step might even require modifying the code. In some cases, this would likely require programming in C/C++, CUDA, Fortran, or other languages, 
+adding considerable complexity to the process and requiring increasingly specialized skills from the user.
 
-The modular design of VLMP is one of its primary features. It built to ease the simple integration of new components, narrowing the process of extending functionality to some platform. This design supports collaborative development allowing the users to implement new modules developed by community, thus enhancing flexibility of the platform for different research purposes.
+To deal with such situations, we have developed the Virtual Lab Modeling Platform (VLMP), 
+a tool that simplifies carrying out complex simulations and is specially designed for High-Performance Computing (HPC) environments. 
+VLMP is implemented in Python which simplifies its use. 
 
-Additionally, VLMP's multi-level parallelization capability makes it suitable for use in HPC environments. It can efficiently run simulations concurrently on single or multiple GPUs, optimizing computational resource usage.  VLMP effectively manages these tasks, distributing simulations appropriately and organizing results separately for each run.
+VLMP understands a simulation as a collection of blocks, as if it were a building game. 
+These different blocks can be used to build various simulations. 
+Adding a new feature is akin to introducing a new block to the existing stack of available blocks.
 
-The next sections describe the design and operational framework of VLMP, in which we discuss its implementation emphasizing the way this platform does accommodate additions of new components as well as their proper integration with the existing one.
+In this documentation we will go deeper into VLMP, how it is designed and how to use its capabilities. This documentation is divided
+in two main sections. The first section is the User Guide, which is intended for users who want to use VLMP to perform simulations.
+The second section is the Developer Guide, which is intended for users who want to contribute to the development of VLMP.
+
+.. [Karanicolas2002] Karanicolas, J., & Brooks III, C. L. (2002). The origins of asymmetry in the folding transition states of protein L and protein G. Protein Science, 11(10), 2351-2361.
+
+.. [Assenza2022] Assenza, S., & Pérez, R. (2022). Accurate Sequence-Dependent Coarse-Grained Model for Conformational and Elastic Properties of Double-Stranded DNA. Journal of Chemical Theory and Computation, 18(5), 3239-3256.
