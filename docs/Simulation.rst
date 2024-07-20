@@ -11,6 +11,7 @@ The available categories and the types of information they add to the simulation
   'System' is the only category that contains a mandatory component for the simulation, known as 'simulationName', 
   which provides a unique alias for each simulation.
 
+|
 
 - **Units** (Mandatory): In the 'Units' category, we select the unit system to be used. 
   Choosing a unit system sets the value of certain physical constants like the Coulomb and Boltzmann constants. 
@@ -19,35 +20,42 @@ The available categories and the types of information they add to the simulation
   'Units' is unique in that it accepts only one component, as working with more than one unit system has no sense. 
   An example of a 'Units' type component is 'none', where all relevant physical constants take a unit value.
 
+|
 
 - **Types** (Mandatory): The 'Types' category indicates what information will be available for the particles. 
   For example, using the 'basic' component implies that particles have defined properties like mass, radius, and charge. 
   This category also accepts only one component and is accessible to other components.
 
+|
 
 - **Ensembles** (Mandatory): The 'Ensembles' category accepts a single component that sets the ensemble for the simulation, 
   such as 'NVT', indicating a constant number of particles, volume, and temperature. 
   The chosen ensemble component is available to other components, informing them of the simulation box size, for example.
 
+|
 
 - **Models** (Mandatory): The 'Models' category is central to VLMP. It specifies the different physical systems to be simulated, 
   such as coarse-grained models of proteins, DNA, viruses, patchy particles, etc. 
   Models are responsible for adding particles and interactions to the simulation. 
   There is no maximum number of components in this category, the different models added will be combined together by VLMP.
 
+|
 
 - **Model Operations** (Optional): The 'Model Operations' category, where components modify the positions of particles in the models, 
   is optional. For instance, if a protein and a DNA strand are added, 
   components in this category can adjust their positions to avoid overlap at the start of the simulation.
 
+|
 
 - **Model Extensions** (Optional): This category includes components that modify models without adding new particles. 
   Examples include adding potentials for protein-DNA interactions or fixing the center of mass of a group of particles.
 
+|
 
 - **Integrators** (Mandatory): Integrators are responsible for the temporal evolution of the simulation. 
   VLMP offers various integrators, from Verlet for NVE to NVT integrators like Langevin or Brownian.
 
+|
 
 - **Simulation Steps** (Optional): Using the above components, we specify the simulation we wish to conduct. 
   However, none of the mentioned components perform any function to extract information from the simulation. 
