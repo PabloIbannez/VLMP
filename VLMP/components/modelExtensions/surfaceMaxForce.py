@@ -16,19 +16,24 @@ class surfaceMaxForce(modelExtensionBase):
 
     """
 
+    availableParameters = {"epsilon",
+                           "maxForce",
+                           "surfacePosition"}
+    requiredParameters  = {"surfacePosition",
+                           "maxForce"}
+    availableSelections = {"selection"}
+    requiredSelections  = set()
+
     def __LJtype2_maxForce_fit(self, sigma, radius, epsilon, maxForce):
         return (12.0*epsilon*((sigma/radius)**12 - (sigma/radius)**6)*(1.0/radius) - maxForce)**2
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"epsilon",
-                                                "maxForce",
-                                                "surfacePosition"},
-                         requiredParameters  = {"surfacePosition",
-                                                "maxForce"},
-                         availableSelections = {"selection"},
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

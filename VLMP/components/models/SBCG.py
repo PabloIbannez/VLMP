@@ -21,17 +21,21 @@ class SBCG(modelBase):
 
     """
 
+    availableParameters = {"PDB",
+                           "resolution","steps",
+                           "bondsModel","nativeContactsModel",
+                           "centerInput",
+                           "SASA",
+                           "aggregateChains"}
+    requiredParameters  = {"PDB","resolution","steps","bondsModel","nativeContactsModel"}
+    definedSelections   = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"PDB",
-                                                "resolution","steps",
-                                                "bondsModel","nativeContactsModel",
-                                                "centerInput",
-                                                "SASA",
-                                                "aggregateChains"},
-                         requiredParameters  = {"PDB","resolution","steps","bondsModel","nativeContactsModel"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

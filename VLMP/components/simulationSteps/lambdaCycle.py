@@ -25,6 +25,11 @@ class lambdaCycle(simulationStepBase):
 
     """
 
+    availableParameters = {"activationStep","measureStep","pauseStep","lambdaValues"}
+    requiredParameters  = {"activationStep","measureStep","pauseStep","lambdaValues"}
+    availableSelections = set()
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         # Chech if interval step is defined
         if 'intervalStep' in params:
@@ -37,10 +42,10 @@ class lambdaCycle(simulationStepBase):
             params['intervalStep'] = 1
         super().__init__(_type= self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"activationStep","measureStep","pauseStep","lambdaValues"},
-                         requiredParameters  = {"activationStep","measureStep","pauseStep","lambdaValues"},
-                         availableSelections = set(),
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

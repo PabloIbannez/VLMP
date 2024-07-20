@@ -14,30 +14,35 @@ class vqcmMeasurementFromMobility(simulationStepBase):
 
     """
 
+    availableParameters = {"outputFilePath",
+                           "resonatorImpedance",
+                           "kernel",
+                           "tolerance",
+                           "f0",
+                           "overtone",
+                           "hydrodynamicRadius",
+                           "viscosity",
+                           "vwall",
+                           "fluidDensity",
+                           "h",
+                           "tetherInteractorNames"}
+    requiredParameters  = {"outputFilePath",
+                           "f0","overtone",
+                           "hydrodynamicRadius",
+                           "viscosity",
+                           "vwall",
+                           "fluidDensity"}
+    availableSelections = set()
+    requiredSelections  = set()
+
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath",
-                                                "resonatorImpedance",
-                                                "kernel",
-                                                "tolerance",
-                                                "f0",
-                                                "overtone",
-                                                "hydrodynamicRadius",
-                                                "viscosity",
-                                                "vwall",
-                                                "fluidDensity",
-                                                "h",
-                                                "tetherInteractorNames"},
-                         requiredParameters  = {"outputFilePath",
-                                                "f0","overtone",
-                                                "hydrodynamicRadius",
-                                                "viscosity",
-                                                "vwall",
-                                                "fluidDensity"},
-                         availableSelections = set(),
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################
@@ -54,23 +59,23 @@ class vqcmMeasurementFromMobility(simulationStepBase):
 
         if "tolerance" in params and parameters["kernel"] == "Peskin3p":
             self.logger.error("[vqcmMobilityMeasurement] tolerance parameter is not available for Peskin3p kernel")
-            
+
         if parameters["kernel"] == "Gaussian":
             parameters["tolerance"] = params.get("tolerance", 1e-5)
-            
+
         parameters["f0"]                 = params["f0"]
         parameters["overtone"]           = params["overtone"]
         parameters["hydrodynamicRadius"] = params["hydrodynamicRadius"]
         parameters["viscosity"]          = params["viscosity"]
         parameters["vwall"]              = params["vwall"]
         parameters["fluidDensity"]       = params["fluidDensity"]
-    
+
         parameters["h"]                      = params.get("h", 0.0) # 0.0 means it is computed by UAMMD
         parameters["resonatorImpedance"]     = params.get("resonatorImpedance", -1.0) #-1.0 means UAMMD ignores it
         tetherInteractorNames                = params.get("tetherInteractorNames",[])
         if len(tetherInteractorNames)>0:
             parameters["tetherInteractorNames"] = tetherInteractorNames
-        
+
         simulationStep = {
             name:{
                 "type":["OscillatingFluidMeasure","VQCMMeasureFromMobility"],

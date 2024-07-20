@@ -27,13 +27,18 @@ class constantForceBetweenCentersOfMass(modelExtensionBase):
     ...
     """
 
+    availableParameters  = {"force"}
+    requiredParameters   = {"force"}
+    availableSelections  = {"selection1","selection2"}
+    requiredSelections   = {"selection1","selection2"}
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters  = {"force"},
-                         requiredParameters   = {"force"},
-                         availableSelections  = {"selection1","selection2"},
-                         requiredSelections   = {"selection1","selection2"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

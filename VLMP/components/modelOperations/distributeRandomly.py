@@ -37,6 +37,11 @@ class distributeRandomly(modelOperationBase):
 
     """
 
+    availableParameters = {"mode","avoidClashes","randomRotation"}
+    requiredParameters  = set()
+    availableSelections = {"selection"}
+    requiredSelections  = {"selection"}
+
     def __randomBoxPoint(self):
         mp = np.random.uniform(low  = [-self.boxX,-self.boxY,-self.boxZ],
                                high = [ self.boxX, self.boxY, self.boxZ])
@@ -99,10 +104,10 @@ class distributeRandomly(modelOperationBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"mode","avoidClashes","randomRotation"},
-                         requiredParameters  = set(),
-                         availableSelections = {"selection"},
-                         requiredSelections  = {"selection"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

@@ -22,13 +22,18 @@ class setContactDistance(modelOperationBase):
     :type distance: float
     """
 
+    availableParameters = {"distance","resolution","inverse"}
+    requiredParameters  = {"distance","resolution"}
+    availableSelections = {"reference","mobile"}
+    requiredSelections  = {"reference","mobile"}
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"distance","resolution","inverse"},
-                         requiredParameters  = {"distance","resolution"},
-                         availableSelections = {"reference","mobile"},
-                         requiredSelections  = {"reference","mobile"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

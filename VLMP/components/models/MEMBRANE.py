@@ -19,12 +19,16 @@ class MEMBRANE(modelBase):
 
     """
 
+    availableParameters = {"position"}
+    requiredParameters  = set()
+    definedSelections   = {"particleId"}
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"position"},
-                         requiredParameters  = set(),
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

@@ -35,20 +35,25 @@ class sphericalShell(modelExtensionBase):
     ...
     """
 
+    availableParameters = {"shellCenter",
+                           "shellRadius",
+                           "shellEpsilon",
+                           "shellSigma",
+                           "minShellRadius",
+                           "maxShellRadius",
+                           "radiusVelocity"}
+    requiredParameters  = {"shellCenter",
+                           "shellRadius"}
+    availableSelections = {"selection"}
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"shellCenter",
-                                                "shellRadius",
-                                                "shellEpsilon",
-                                                "shellSigma",
-                                                "minShellRadius",
-                                                "maxShellRadius",
-                                                "radiusVelocity"},
-                         requiredParameters  = {"shellCenter",
-                                                "shellRadius"},
-                         availableSelections = {"selection"},
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

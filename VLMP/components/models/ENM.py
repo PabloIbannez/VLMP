@@ -13,15 +13,70 @@ import pyGrained.models.AlphaCarbon as proteinModel
 
 class ENM(modelBase):
     """
-    Component name: ENM
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 24/03/2023
-
-    Elastic Network Model (ENM) model for proteins.
-
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "Elastic Network Model (ENM) for protein simulations. This model implements a coarse-grained
+      representation of proteins, typically using one bead per residue (usually the alpha-carbon).
+      ENM is based on the assumption that protein dynamics can be described by harmonic potentials
+      between nearby residues.
+      <p>
+      The model constructs a network of springs between residues within a certain cutoff distance.
+      This approach allows for efficient simulation of large-scale protein motions and normal modes,
+      making it particularly useful for studying protein flexibility and conformational changes.
+      <p>
+      The model can be customized through various parameters, including the spring constant (K) and
+      the cutoff distance for interactions (enmCut). These parameters control the strength of the
+      harmonic interactions and the connectivity of the network, respectively.
+      <p>
+      The protein structure is input via a PDB file, which can be either a local file or downloaded
+      from the RCSB PDB database if a valid PDB ID is provided.
+      <p>
+      This implementation also includes options for centering the input structure and handling
+      multiple chains, making it versatile for various protein simulation scenarios.
+      <p>
+      This model uses the [pyGrained]_ library to create the ENM representation.
+      ",
+     "parameters":{
+        "PDB":{"description":"Path to a local PDB file or a valid PDB ID for download.",
+               "type":"str"},
+        "centerInput":{"description":"If True, centers the input structure.",
+                       "type":"bool",
+                       "default":true},
+        "SASA":{"description":"If True, calculates the Solvent Accessible Surface Area.",
+                "type":"bool",
+                "default":false},
+        "aggregateChains":{"description":"If True, treats multiple chains as a single entity.",
+                           "type":"bool",
+                           "default":true},
+        "K":{"description":"Spring constant for the harmonic interactions.",
+             "type":"float",
+             "default":null},
+        "enmCut":{"description":"Cutoff distance for including spring connections between residues.",
+                  "type":"float",
+                  "default":null}
+     },
+     "example":"
+         {
+            \"type\":\"ENM\",
+            \"parameters\":{
+                \"PDB\":\"1ABC\",
+                \"centerInput\":true,
+                \"K\":1.0,
+                \"enmCut\":10.0
+            }
+         }
+        ",
+     "references":[
+         ".. [Tirion1996] Tirion, M. M. (1996). Large Amplitude Elastic Motions in Proteins from a Single-Parameter, Atomic Analysis. Physical Review Letters, 77(9), 1905–1908.",
+         ".. [Atilgan2001] Atilgan, A. R., Durell, S. R., Jernigan, R. L., Demirel, M. C., Keskin, O., & Bahar, I. (2001). Anisotropy of Fluctuation Dynamics of Proteins with an Elastic Network Model. Biophysical Journal, 80(1), 505–515.",
+         ".. [pyGrained] https://github.com/PabloIbannez/pyGrained"
+     ]
+    }
     """
+
+    availableParameters = {"PDB","centerInput","SASA","aggregateChains","K","enmCut"}
+    requiredParameters  = {"PDB"}
+    definedSelections   = {"particleId","forceField"}
 
     def __isValidPDB(self, id_pdb):
         """Checks if the PDB ID is valid."""
@@ -43,14 +98,9 @@ class ENM(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"PDB",
-                                                "centerInput",
-                                                "SASA",
-                                                "aggregateChains",
-                                                "K",
-                                                "enmCut"},
-                         requiredParameters  = {"PDB"},
-                         definedSelections   = {"particleId","forceField"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

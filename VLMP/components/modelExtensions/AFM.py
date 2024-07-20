@@ -25,21 +25,26 @@ class AFM(modelExtensionBase):
     :type startChipPosition: list of float [x,y,z]
     """
 
+    availableParameters = {"epsilon",
+                           "sigma",
+                           "K","Kxy",
+                           "tipVelocity",
+                           "indentationStartStep",
+                           "indentationBackwardStep"}
+    requiredParameters  = {"epsilon",
+                           "sigma",
+                           "K","Kxy",
+                           "tipVelocity"}
+    availableSelections = {"tip","sample"}
+    requiredSelections  = {"tip","sample"}
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"epsilon",
-                                                "sigma",
-                                                "K","Kxy",
-                                                "tipVelocity",
-                                                "indentationStartStep",
-                                                "indentationBackwardStep"},
-                         requiredParameters  = {"epsilon",
-                                                "sigma",
-                                                "K","Kxy",
-                                                "tipVelocity"},
-                         availableSelections = {"tip","sample"},
-                         requiredSelections  = {"tip","sample"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         epsilon = params["epsilon"]

@@ -32,19 +32,24 @@ class helixBoundaries(modelExtensionBase):
 
     """
 
+    availableParameters = {"helixPitch","helixRadius",
+                           "eps","nTurns",
+                           "nPointsHelix","helixInnerRadius","K",
+                           "nx","ny","nz"}
+    requiredParameters  = {"helixPitch","helixRadius",
+                           "eps","nTurns",
+                           "nPointsHelix","helixInnerRadius","K",
+                           "nx","ny","nz"}
+    availableSelections = {"selection"}
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"helixPitch","helixRadius",
-                                                "eps","nTurns",
-                                                "nPointsHelix","helixInnerRadius","K",
-                                                "nx","ny","nz"},
-                         requiredParameters  = {"helixPitch","helixRadius",
-                                                "eps","nTurns",
-                                                "nPointsHelix","helixInnerRadius","K",
-                                                "nx","ny","nz"},
-                         availableSelections = {"selection"},
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

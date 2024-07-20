@@ -29,13 +29,18 @@ class harmonicBondBetweenCentersOfMass(modelExtensionBase):
     ...
     """
 
+    availableParameters = {"K","r0"}
+    requiredParameters  = {"K","r0"}
+    availableSelections = {"selection1","selection2"}
+    requiredSelections  = {"selection1","selection2"}
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"K","r0"},
-                         requiredParameters  = {"K","r0"},
-                         availableSelections = {"selection1","selection2"},
-                         requiredSelections  = {"selection1","selection2"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

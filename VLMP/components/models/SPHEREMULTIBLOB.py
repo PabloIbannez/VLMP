@@ -16,6 +16,23 @@ class SPHEREMULTIBLOB(modelBase):
     Extension of Icosidodecahedron + icosphere
     """
 
+    availableParameters = {"sphereType",
+                           "particleName",
+                           "particleMass","particleRadius","particleCharge",
+                           "numberOfSpheres",
+                           "particlesPerSphere",
+                           "radiusOfSphere",
+                           "K",
+                           "heightMean","heightStd",
+                           "heightReference",
+                           "Ktethers",
+                           "heightTethersThreshold",
+                           "tethersPerBlob",
+                           "thetaTethers",
+                           "maxTries"}
+    requiredParameters  = {"K"}
+    definedSelections   = set()
+
     def __even_permutation(self, a, b, c, pos, i1):
         pos[i1, :] = [a, b, c]
         pos[i1 + 1, :] = [c, a, b]
@@ -169,22 +186,9 @@ class SPHEREMULTIBLOB(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"sphereType",
-                                                "particleName",
-                                                "particleMass","particleRadius","particleCharge",
-                                                "numberOfSpheres",
-                                                "particlesPerSphere",
-                                                "radiusOfSphere",
-                                                "K",
-                                                "heightMean","heightStd",
-                                                "heightReference",
-                                                "Ktethers",
-                                                "heightTethersThreshold",
-                                                "tethersPerBlob",
-                                                "thetaTethers",
-                                                "maxTries"},
-                         requiredParameters  = {"K"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

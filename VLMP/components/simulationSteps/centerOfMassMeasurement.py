@@ -19,13 +19,18 @@ class centerOfMassMeasurement(simulationStepBase):
 
     """
 
+    availableParameters = {"outputFilePath"}
+    requiredParameters  = {"outputFilePath"}
+    availableSelections = {"selection"}
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath"},
-                         requiredParameters  = {"outputFilePath"},
-                         availableSelections = {"selection"},
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

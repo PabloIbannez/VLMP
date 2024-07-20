@@ -14,15 +14,20 @@ class thermodynamicIntegration(simulationStepBase):
 
     """
 
+    availableParameters = {"outputFilePath",
+                           "stepLambda","lambdaValues"}
+    requiredParameters  = {"outputFilePath",
+                           "stepLambda","lambdaValues"}
+    availableSelections = set()
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath",
-                                                "stepLambda","lambdaValues"},
-                         requiredParameters  = {"outputFilePath",
-                                                "stepLambda","lambdaValues"},
-                         availableSelections = set(),
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

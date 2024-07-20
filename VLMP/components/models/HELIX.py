@@ -36,6 +36,19 @@ class HELIX(modelBase):
 
     """
 
+    availableParameters = {"mode","init",
+                           "nMonomers",
+                           "monomerRadius",
+                           "epsilon_mm",
+                           "helixRadius","helixPitch",
+                           "helicity",
+                           "variant"}
+    requiredParameters  = {"nMonomers",
+                           "epsilon_mm",
+                           "helixRadius","helixPitch",
+                           "variant"}
+    definedSelections   = set()
+
     def __checkVariantParameters(self,variantRequiredParameters,variantAvailableParameters):
         #Check parameters
         for vPar in variantRequiredParameters:
@@ -143,18 +156,9 @@ class HELIX(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"mode","init",
-                                                "nMonomers",
-                                                "monomerRadius",
-                                                "epsilon_mm",
-                                                "helixRadius","helixPitch",
-                                                "helicity",
-                                                "variant"},
-                         requiredParameters  = {"nMonomers",
-                                                "epsilon_mm",
-                                                "helixRadius","helixPitch",
-                                                "variant"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         self.logger = logging.getLogger("VLMP")

@@ -16,6 +16,20 @@ class MAGNETICNP(modelBase):
     Model of magnetic nanoparticles
     """
 
+    availableParameters = {"particleName",
+                           "nParticles",
+                           "msat",
+                           "anisotropy",
+                           "anisotropyStd",
+                           "coreRadius",
+                           "coreRadiusStd",
+                           "coatingWidth",
+                           "coatingWidthStd",
+                           "initOrientation",
+                           "initAxis"}
+    requiredParameters  = {"nParticles", "msat", "coreRadius"}
+    definedSelections   = set()
+
     def __generateLogNormalDistribution(self, mean, std, N):
         distribution = np.full(N, float(mean))
         if (std>0.0):
@@ -83,19 +97,9 @@ class MAGNETICNP(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"particleName",
-                                                "nParticles",
-                                                "msat",
-                                                "anisotropy",
-                                                "anisotropyStd",
-                                                "coreRadius",
-                                                "coreRadiusStd",
-                                                "coatingWidth",
-                                                "coatingWidthStd",
-                                                "initOrientation",
-                                                "initAxis"},
-                         requiredParameters  = {"nParticles", "msat", "coreRadius"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

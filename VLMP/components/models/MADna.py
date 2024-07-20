@@ -16,27 +16,75 @@ from scipy.spatial.transform import Rotation
 
 class MADna(modelBase):
     """
-    Component name: MADna
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/03/2023
-
-    MADna model for DNA. See https://pubs.acs.org/doi/pdf/10.1021/acs.jctc.2c00138
-
-    :param sequence: DNA sequence
-    :type sequence: str
-    :param inputModelData: Path to the model data file
-    :type inputModelData: str, optional. Default: "./data/MADna.json"
-    :param debyeLength: Debye length
-    :type debyeLength: float, optional. Default: 10.8
-    :param dielectricConstant: Dielectric constant
-    :type dielectricConstant: float, optional. Default: 78.3
-    :param debyeFactor: Debye factor
-    :type debyeFactor: float, optional. Default: 4.0
-    :param variant: variant of the model. Options: "fast"
-    :type variant: str, optional. Default: None
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "MADna model for DNA simulation. This model implements a coarse-grained representation
+      of DNA based on the MADna force field, which provides accurate sequence-dependent
+      conformational and elastic properties of double-stranded DNA. The model offers a
+      balance between computational efficiency and accuracy in representing DNA structure
+      and dynamics.
+      <p>
+      The model allows for customization of electrostatic interactions through the Debye length
+      and dielectric constant parameters. The debyeFactor can be used to adjust the cutoff
+      distance for these interactions.
+      <p>
+      A 'fast' variant of the model is available, which can be used to speed up simulations
+      at the cost of some accuracy. This variant modifies how non-bonded interactions are
+      computed. Non bonded interactions (WCA and Debye-Hückel) are using bonds. This means
+      that the neighbor list is not used and the interactions pairs are precomputed. Thus, this approach
+      is valid when beads far away in the sequence are kept separated during the simulation.
+      For example, when pulling a DNA strand.
+      <p>
+      The model reads its core parameters from a JSON file, which can be specified using
+      the inputModelData parameter. This allows for easy modification and extension of the
+      model's base parameters.
+      <p>
+      For more details on the underlying force field, see [Assenza2022]_.",
+     "parameters":{
+        "sequence":{"description":"DNA sequence to be modeled. Must be a string of valid DNA bases (A, T, C, G).",
+                    "type":"str"},
+        "inputModelData":{"description":"Path to the JSON file containing model parameters. Allows for customization of base model parameters.",
+                          "type":"str",
+                          "default":"./data/MADna.json"},
+        "debyeLength":{"description":"Debye length for electrostatic interactions. Controls the range of electrostatic forces.",
+                       "type":"float",
+                       "default":10.8},
+        "dielectricConstant":{"description":"Dielectric constant of the medium. Affects the strength of electrostatic interactions.",
+                              "type":"float",
+                              "default":78.3},
+        "debyeFactor":{"description":"Factor to scale the Debye length. Used to set the cutoff distance for electrostatic interactions.",
+                       "type":"float",
+                       "default":4.0},
+        "variant":{"description":"Variant of the model to use. 'fast' option available for improved computational speed.",
+                   "type":"str",
+                   "options":["fast"],
+                   "default":null}
+     },
+     "example":"
+         {
+            "type":"MADna",
+            "parameters":{
+                "sequence":"ATCGGATCCGAT",
+                "debyeLength":10.8,
+                "dielectricConstant":78.3,
+                "debyeFactor":4.0,
+                "variant":"fast"
+            }
+         }
+        ",
+     "references":[
+         ".. [Assenza2022] Assenza, S., & Pérez, R. (2022). Accurate Sequence-Dependent Coarse-Grained Model for Conformational and Elastic Properties of Double-Stranded DNA. Journal of Chemical Theory and Computation, 18(5), 3239-3256."
+     ]
+    }
     """
+
+    availableParameters = {"sequence",
+                           "inputModelData",
+                           "debyeLength","dielectricConstant",
+                           "debyeFactor",
+                           "variant"}
+    requiredParameters  = {"sequence"}
+    definedSelections   = {"type","strand","basePairIndex","basePairType","particleId"}
 
     def __alignBasePairs(self,ref,mobile):
 
@@ -130,13 +178,9 @@ class MADna(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"sequence",
-                                                "inputModelData",
-                                                "debyeLength","dielectricConstant",
-                                                "debyeFactor",
-                                                "variant"},
-                         requiredParameters  = {"sequence"},
-                         definedSelections   = {"type","strand","basePairIndex","basePairType","particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

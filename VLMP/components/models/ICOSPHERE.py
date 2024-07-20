@@ -18,6 +18,17 @@ class ICOSPHERE(modelBase):
     Icosphere model
     """
 
+    availableParameters = {"particleName",
+                           "particleMass","particleRadius","particleCharge",
+                           "position",
+                           "resolution",
+                           "radius",
+                           "Kb",
+                           "Kd",
+                           "steric"}
+    requiredParameters  = {"particleName"}
+    definedSelections   = set()
+
     def __loadData(self,name):
 
         try:
@@ -146,16 +157,9 @@ class ICOSPHERE(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"particleName",
-                                                "particleMass","particleRadius","particleCharge",
-                                                "position",
-                                                "resolution",
-                                                "radius",
-                                                "Kb",
-                                                "Kd",
-                                                "steric"},
-                         requiredParameters  = {"particleName"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

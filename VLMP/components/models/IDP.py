@@ -23,13 +23,16 @@ class IDP(modelBase):
     Reference: https://journals.aps.org/pre/pdf/10.1103/PhysRevE.90.042709
 
     """
+    availableParameters = {"sequence"}
+    requiredParameters  = {"sequence"}
+    definedSelections   = set()
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"sequence"},
-                         requiredParameters  = {"sequence"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         EXCLUSION_DST = 3

@@ -3,6 +3,7 @@ import importlib
 import inspect
 import json
 import copy
+import re
 
 base = "VLMP.components"
 available_components = ["systems",
@@ -11,21 +12,46 @@ available_components = ["systems",
                         "models", "modelOperations", "modelExtensions",
                         "integrators", "simulationSteps"]
 
+def fix_multiline_json(json_string):
+    # Fix multiline strings
+    json_string = re.sub(r'"\s*(\S[^"]*?\S)\s*"', lambda m: '"{}"'.format(m.group(1).replace('\n', ' ')), json_string, flags=re.DOTALL)
+
+    # Remove trailing commas
+    json_string = re.sub(r',\s*}', '}', json_string)
+    json_string = re.sub(r',\s*]', ']', json_string)
+
+    return json_string
+
 def json_to_rst(js,availableParameters,requiredParameters):
 
     rst = ""
 
     if "author" in js:
         rst += f"\t:author: {js['author']}\n\n"
+    if "image" in js:
+        path2image = "_images/" + js["image"]
+        rst += f"\t.. figure:: {path2image}\n"
+        rst += f"\t\t:align: center\n"
+        rst += "\t\t:width: 80%\n"
+        # Add empty caption
+        rst += "\n"
+
+
     if "description" in js:
         description = js["description"]
-        rst += f"{description}\n\n"
+        # Substitute tag <p> with a newline
+        description = description.replace("<p>", "\n\n")
+        rst += f" {description}\n\n"
 
     # Parameters info: name description type default
 
     for param in js["parameters"]:
         if "default" not in js["parameters"][param]:
             js["parameters"][param]["default"] = ""
+        else:
+            defaultParam = js["parameters"][param]["default"]
+            if defaultParam == None or defaultParam == "null":
+                js["parameters"][param]["default"] = ""
 
     if len(requiredParameters) > 0:
 
@@ -82,6 +108,24 @@ def json_to_rst(js,availableParameters,requiredParameters):
             else:
                 rst += f"\n\t\t\"{param}\": {js['example'][param]},"
         rst = rst[:-1] + "\n\t}\n\n"
+
+    if "references" in js:
+        rst += f"References:\n\n"
+        for ref in js["references"]:
+            rst += f"\t{ref}\n\n"
+
+    # Special boxes
+    if "notes" in js:
+        rst += f".. note::\n\n"
+        rst += f"\t{js['notes']}\n\n"
+
+    if "warnings" in js:
+        rst += f".. warning::\n\n"
+        rst += f"\t{js['warnings']}\n\n"
+
+    if "tips" in js:
+        rst += f".. tip::\n\n"
+        rst += f"\t{js['tips']}\n\n"
 
     return rst
 
@@ -140,7 +184,7 @@ def process_string_value(key,value):
 
 def format_docstring(name,obj):
 
-    print(f"Processing {name}")
+    print(f"Processing {name} ...")
 
     docstring = obj.__doc__
 
@@ -148,8 +192,10 @@ def format_docstring(name,obj):
         availableParameters = obj.availableParameters
         requiredParameters  = obj.requiredParameters
 
-        # Try to parse the docstring as JSON
-        # If the description key exists, extract before parsing and replace it with an empty string
+        docstring = fix_multiline_json(docstring)
+
+        ## Try to parse the docstring as JSON
+        ## If the description key exists, extract before parsing and replace it with an empty string
         if "description" in docstring:
             docstring,description = process_string_value("description",docstring)
             docstring,example     = process_string_value("example",docstring)
@@ -161,11 +207,13 @@ def format_docstring(name,obj):
 
         # Convert the JSON to rst
         rst = json_to_rst(doc,availableParameters,requiredParameters)
+        #Print Success using green color
+        print(f"\033[92mSuccess\033[0m")
     except json.JSONDecodeError as e:
-        print(f"Error parsing docstring for {name}, parsing as plain text.\nError message:\n    {e}")
+        print(f"\033[91mError\033[0m parsing docstring for {name}, parsing as plain text.\nError message:\n    {e}")
         rst = docstring
     except:
-        print(f"Error parsing docstring for {name}, parsing as plain text.")
+        print(f"\033[91mError\033[0m parsing docstring for {name}, parsing as plain text.")
         rst = docstring
 
     return name, rst

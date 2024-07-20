@@ -33,6 +33,14 @@ class PROTEIN_IDP_PROTEIN(modelBase):
     Reference: https://journals.aps.org/pre/pdf/10.1103/PhysRevE.90.042709
 
     """
+
+    availableParameters = {"sequence",
+                           "PDB1","PDB2",
+                           "PDB1_conn","PDB2_conn",
+                           "cutOffVerletFactor"}
+    requiredParameters  = {"sequence"}
+    definedSelections   = set()
+
     def __loadProtein(self,name,PDB,types,PRTN_types):
 
         typesPDB = basic(name="PDB_types",units= self.getUnits())
@@ -235,12 +243,9 @@ class PROTEIN_IDP_PROTEIN(modelBase):
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"sequence",
-                                                "PDB1","PDB2",
-                                                "PDB1_conn","PDB2_conn",
-                                                "cutOffVerletFactor"},
-                         requiredParameters  = {"sequence"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         maxTries = 1000

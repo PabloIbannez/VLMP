@@ -22,13 +22,18 @@ class setParticlePositions(modelOperationBase):
 
     """
 
+    availableParameters = {"positions","ids"}
+    requiredParameters  = {"positions","ids"}
+    availableSelections = set()
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"positions","ids"},
-                         requiredParameters  = {"positions","ids"},
-                         availableSelections = set(),
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

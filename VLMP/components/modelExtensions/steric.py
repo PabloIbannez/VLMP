@@ -30,13 +30,18 @@ class intraSteric(modelExtensionBase):
     ...
     """
 
+    availableParameters = {"epsilon","cutOffFactor","excludedBonds","addVerletList","condition"}
+    requiredParameters  = {"epsilon","cutOffFactor"}
+    availableSelections = set()
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"epsilon","cutOffFactor","excludedBonds","addVerletList","condition"},
-                         requiredParameters  = {"epsilon","cutOffFactor"},
-                         availableSelections = set(),
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

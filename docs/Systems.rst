@@ -32,18 +32,18 @@ backup
 	  - Description
 	  - Type
 	  - Default
-	* - backupFilePath
-	  - Path to the backup file
-	  - str
-	  - backup
-	* - backupStartStep
-	  - Step at which the backup starts
-	  - ullint
-	  - 0
 	* - backupEndStep
 	  - Step at which the backup ends
 	  - ullint
 	  - MAX_ULLINT
+	* - backupStartStep
+	  - Step at which the backup starts
+	  - ullint
+	  - 0
+	* - backupFilePath
+	  - Path to the backup file
+	  - str
+	  - backup
 
 Example:
 
@@ -62,7 +62,7 @@ seed
 
 	:author: Pablo Ibáñez-Freire
 
-This component sets the seed for the random number generator
+ This component sets the seed for the random number generator
 
 .. list-table:: Required Parameters
 	:header-rows: 1
@@ -94,7 +94,7 @@ simulationName
 
 	:author: Pablo Ibáñez-Freire
 
-Essential component for naming a simulation. This component is compulsory in every simulation configuration as each simulation requires a unique name. The 'simulationName' component assigns a descriptive and identifiable name to a simulation, facilitating its management and reference within the system. This name is used as the primary identifier for the simulation across various components and modules.
+ Essential component for naming a simulation. This component is compulsory in every simulation configuration as each simulation requires a unique name. The 'simulationName' component assigns a descriptive and identifiable name to a simulation, facilitating its management and reference within the system. This name is used as the primary identifier for the simulation across various components and modules.
 
 .. list-table:: Required Parameters
 	:header-rows: 1

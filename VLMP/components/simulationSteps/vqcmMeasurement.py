@@ -14,37 +14,42 @@ class vqcmMeasurement(simulationStepBase):
 
     """
 
+    availableParameters = {"outputFilePath",
+                           "resonatorImpedance",
+                           "kernel",
+                           "tolerance",
+                           "f0",
+                           "overtone",
+                           "hydrodynamicRadius",
+                           "viscosity",
+                           "vwall",
+                           "fluidDensity",
+                           "maxNIterations",
+                           "toleranceConvergence",
+                           "maxNIterations",
+                           "memory",
+                           "damping",
+                           "notAcceleratedInterval",
+                           "h",
+                           "printSteps",
+                           "tetherInteractorNames"}
+    requiredParameters  = {"outputFilePath",
+                           "f0","overtone",
+                           "hydrodynamicRadius",
+                           "viscosity",
+                           "vwall",
+                           "fluidDensity"}
+    availableSelections = set()
+    requiredSelections  = set()
+
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"outputFilePath",
-                                                "resonatorImpedance",
-                                                "kernel",
-                                                "tolerance",
-                                                "f0",
-                                                "overtone",
-                                                "hydrodynamicRadius",
-                                                "viscosity",
-                                                "vwall",
-                                                "fluidDensity",
-                                                "maxNIterations",
-                                                "toleranceConvergence",
-                                                "maxNIterations",
-                                                "memory",
-                                                "damping",
-                                                "notAcceleratedInterval",
-                                                "h",
-                                                "printSteps",
-                                                "tetherInteractorNames"},
-                         requiredParameters  = {"outputFilePath",
-                                                "f0","overtone",
-                                                "hydrodynamicRadius",
-                                                "viscosity",
-                                                "vwall",
-                                                "fluidDensity"},
-                         availableSelections = set(),
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################
@@ -61,17 +66,17 @@ class vqcmMeasurement(simulationStepBase):
 
         if "tolerance" in params and parameters["kernel"] == "Peskin3p":
             self.logger.error("[vqcmMeasurement] tolerance parameter is not available for Peskin3p kernel")
-            
+
         if parameters["kernel"] == "Gaussian":
             parameters["tolerance"] = params.get("tolerance", 1e-5)
-            
+
         parameters["f0"]                 = params["f0"]
         parameters["overtone"]           = params["overtone"]
         parameters["hydrodynamicRadius"] = params["hydrodynamicRadius"]
         parameters["viscosity"]          = params["viscosity"]
         parameters["vwall"]              = params["vwall"]
         parameters["fluidDensity"]       = params["fluidDensity"]
-    
+
         parameters["maxNIterations"]         = params.get("maxNIterations", 10000)
         parameters["toleranceConvergence"]   = params.get("toleranceConvergence", 1e-4)
         parameters["memory"]                 = params.get("memory", 5)
@@ -83,7 +88,7 @@ class vqcmMeasurement(simulationStepBase):
         tetherInteractorNames                = params.get("tetherInteractorNames",[])
         if len(tetherInteractorNames)>0:
             parameters["tetherInteractorNames"] = tetherInteractorNames
-        
+
         simulationStep = {
             name:{
               "type":["OscillatingFluidMeasure","VQCMMeasure"],

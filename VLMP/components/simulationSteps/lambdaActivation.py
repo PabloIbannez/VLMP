@@ -25,6 +25,11 @@ class lambdaActivation(simulationStepBase):
 
     """
 
+    availableParameters = {"lambdaValueStep","lambdaValues"}
+    requiredParameters  = {"lambdaValueStep","lambdaValues"}
+    availableSelections = set()
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         # Chech if interval step is defined
         if 'intervalStep' in params:
@@ -37,10 +42,10 @@ class lambdaActivation(simulationStepBase):
             params['intervalStep'] = 1
         super().__init__(_type= self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"lambdaValueStep","lambdaValues"},
-                         requiredParameters  = {"lambdaValueStep","lambdaValues"},
-                         availableSelections = set(),
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

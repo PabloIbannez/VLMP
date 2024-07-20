@@ -43,18 +43,22 @@ class STERIC_LAMBDA_SOLVATION(modelBase):
     ...
     """
 
+    availableParameters = {"concentration",
+                           "epsilon","cutOffFactor",
+                           "alpha",
+                           "addVerletList","condition",
+                           "particleName",
+                           "particleMass","particleRadius","particleCharge",
+                           "padding"}
+    requiredParameters  = {"concentration"}
+    definedSelections   = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"concentration",
-                                                "epsilon","cutOffFactor",
-                                                "alpha",
-                                                "addVerletList","condition",
-                                                "particleName",
-                                                "particleMass","particleRadius","particleCharge",
-                                                "padding"},
-                         requiredParameters  = {"concentration",},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

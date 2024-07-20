@@ -28,12 +28,16 @@ class WLC(modelBase):
     :type Ka: float, optional. Default: 1.0
     """
 
+    availableParameters = {"N","mass","b","Kb","Ka","typeName"}
+    requiredParameters  = {"N"}
+    definedSelections   = {"polymerIndex"}
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"N","mass","b","Kb","Ka","typeName"},
-                         requiredParameters  = {"N"},
-                         definedSelections   = {"particleId","polymerIndex","forceField"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

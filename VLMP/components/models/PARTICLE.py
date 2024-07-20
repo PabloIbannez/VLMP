@@ -12,14 +12,18 @@ class PARTICLE(modelBase):
 
     """
 
+    availableParameters = {"particleName",
+                           "particleMass","particleRadius","particleCharge",
+                           "position"}
+    requiredParameters  = {"particleName"}
+    definedSelections   = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"particleName",
-                                                "particleMass","particleRadius","particleCharge",
-                                                "position"},
-                         requiredParameters  = {"particleName"},
-                         definedSelections   = {"particleId"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

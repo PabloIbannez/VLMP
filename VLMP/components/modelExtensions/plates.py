@@ -22,17 +22,22 @@ class plates(modelExtensionBase):
 
     """
 
+    availableParameters = {'platesSeparation',
+                           'epsilon','sigma',
+                           'compressionVelocity',
+                           'minPlatesSeparation','maxPlatesSeparation'}
+    requiredParameters  = {"platesSeparation",
+                           "epsilon","sigma"}
+    availableSelections = {"selection"}
+    requiredSelections  = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {'platesSeparation',
-                                                'epsilon','sigma',
-                                                'compressionVelocity',
-                                                'minPlatesSeparation','maxPlatesSeparation'},
-                         requiredParameters  = {"platesSeparation",
-                                                "epsilon","sigma"},
-                         availableSelections = {"selection"},
-                         requiredSelections  = set(),
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################

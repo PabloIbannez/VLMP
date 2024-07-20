@@ -16,12 +16,16 @@ class SIMULATION(modelBase):
     :type inputSimulation: dict
     """
 
+    availableParameters = {"inputSimulation"}
+    requiredParameters  = {"inputSimulation"}
+    definedSelections   = set()
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"inputSimulation"},
-                         requiredParameters  = {"inputSimulation"},
-                         definedSelections   = {"particleId","forceField"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         ############################################################

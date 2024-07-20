@@ -24,44 +24,127 @@ from scipy.spatial.transform import Rotation as R
 
 class CORONAVIRUS(modelBase):
     """
-    Component name: CORONAVIRUS
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 4/04/2023
-
-    Coronoavirus model
-
+    {"author": "Pablo Ibáñez-Freire",
+     "image":"virus_bottom.png",
+     "description":
+     "CORONAVIRUS model for simulating virus-like particles. This model combines two coarse-grained
+      approaches to represent the complex structure of coronaviruses:
+      <p>
+      1. Shape-Based Coarse-Grained (SBCG) model for proteins:
+         Used to represent the viral proteins, particularly the spike proteins. This approach
+         maintains the overall shape and essential features of proteins while reducing computational
+         complexity [Arkhipov2006]_.
+      <p>
+      2. One-particle-thick, solvent-free, coarse-grained model for lipid membranes:
+         Employed to simulate the viral envelope. This model represents lipids as single particles,
+         allowing for efficient simulation of membrane dynamics without explicit solvent
+         [Yuan2010]_.
+      <p>
+      The combination of these models enables the simulation of large-scale viral structures and their
+      interactions with the environment, balancing computational efficiency with biological accuracy.
+      <p>
+      The model allows customization of various parameters including the number of lipids, vesicle
+      radius, and number of spike proteins. It also incorporates different interaction potentials
+      for lipid-lipid, protein-protein, and lipid-protein interactions, as well as the option to
+      include a simulated surface for studying virus-surface interactions.
+      <p>
+      This model is particularly useful for studying the structural dynamics of coronaviruses
+      and interactions with cellular membranes or other surfaces.",
+     "parameters":{
+        "nLipids":{"description":"Number of lipid particles in the vesicle.",
+                   "type":"int",
+                   "default":1501},
+        "lipidRadius":{"description":"Radius of each lipid particle.",
+                       "type":"float",
+                       "default":18.0},
+        "vesicleRadius":{"description":"Radius of the vesicle.",
+                         "type":"float",
+                         "default":400.0},
+        "center":{"description":"Center coordinates of the vesicle.",
+                  "type":"list of float",
+                  "default":[0.0, 0.0, 0.0]},
+        "nSpikes":{"description":"Number of spike proteins to add to the vesicle surface.",
+                   "type":"int",
+                   "default":0},
+        "epsilonLipids":{"description":"Energy parameter for lipid-lipid interactions in kT units.",
+                         "type":"float",
+                         "default":5.0},
+        "muLipids":{"description":"Shape parameter for lipid-lipid interactions.",
+                    "type":"float",
+                    "default":3.0},
+        "chiLipids":{"description":"Another shape parameter for lipid-lipid interactions.",
+                     "type":"float",
+                     "default":7.0},
+        "thetaLipids":{"description":"Angle parameter for lipid-lipid interactions.",
+                       "type":"float",
+                       "default":0.0},
+        "proteinProteinEpsilon":{"description":"Energy parameter for protein-protein interactions in kT units.",
+                                 "type":"float",
+                                 "default":1.0},
+        "proteinLipidEpsilon":{"description":"Energy parameter for protein-lipid interactions in kT units.",
+                               "type":"float",
+                               "default":1.0},
+        "surface":{"description":"Whether to include a simulated surface.",
+                   "type":"bool",
+                   "default":false},
+        "surfacePosition":{"description":"Z-coordinate of the simulated surface.",
+                           "type":"float",
+                           "default":0.0},
+        "inputModelData":{"description":"Path to the JSON file containing model parameters.",
+                          "type":"str",
+                          "default":"./data/CORONAVIRUS.json"}
+     },
+     "example":"
+         {
+            \"type\":\"CORONAVIRUS\",
+            \"parameters\":{
+                \"nLipids\":2000,
+                \"vesicleRadius\":500.0,
+                \"nSpikes\":50,
+                \"epsilonLipids\":5.5,
+                \"surface\":true,
+                \"surfacePosition\":-400.0
+            }
+         }
+        ",
+     "references":[
+         ".. [Yuan2010] Yuan, H., Huang, C., Li, J., Lykotrafitis, G., & Zhang, S. (2010). One-particle-thick, solvent-free, coarse-grained model for biological and biomimetic fluid membranes. Physical Review E, 82(1), 011905.",
+         ".. [Arkhipov2006] Arkhipov, A., Freddolino, P. L., & Schulten, K. (2006). Stability and dynamics of virus capsids described by coarse-grained modeling. Structure, 14(12), 1767-1777."
+     ]
+    }
     """
+    availableParameters = {"nLipids",
+                           "lipidRadius",
+                           "vesicleRadius",
+                           "center",
+                           "nSpikes",
+                           "epsilonLipids_kT",
+                           "muLipids","chiLipids",
+                           "thetaLipids",
+                           "epsilonLipidLipidWithProtein_kT",
+                           "muLipidLipidWithProtein","chiLipidLipidWithProtein",
+                           "thetaLipidLipidWithProtein",
+                           "epsilonLipidWithProtein_kT",
+                           "muLipidWithProtein","chiLipidWithProtein",
+                           "thetaLipidWithProtein",
+                           "proteinProteinEpsilon_kT",
+                           "proteinLipidEpsilon_kT",
+                           "proteinSurfaceEpsilon_kT",
+                           "proteinPeakSurfaceEpsilon_kT",
+                           "peakProteins",
+                           "lipidSurfaceEpsilon_kT",
+                           "surface",
+                           "surfacePosition",
+                           "inputModelData"}
+    requiredParameters  = set()
+    definedSelections   = {"component"}
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name= name,
-                         availableParameters = {"nLipids",
-                                                "lipidRadius",
-                                                "vesicleRadius",
-                                                "center",
-                                                "nSpikes",
-                                                "epsilonLipids_kT",
-                                                "muLipids","chiLipids",
-                                                "thetaLipids",
-                                                "epsilonLipidLipidWithProtein_kT",
-                                                "muLipidLipidWithProtein","chiLipidLipidWithProtein",
-                                                "thetaLipidLipidWithProtein",
-                                                "epsilonLipidWithProtein_kT",
-                                                "muLipidWithProtein","chiLipidWithProtein",
-                                                "thetaLipidWithProtein",
-                                                "proteinProteinEpsilon_kT",
-                                                "proteinLipidEpsilon_kT",
-                                                "proteinSurfaceEpsilon_kT",
-                                                "proteinPeakSurfaceEpsilon_kT",
-                                                "peakProteins",
-                                                "lipidSurfaceEpsilon_kT",
-                                                "surface",
-                                                "surfacePosition",
-                                                "inputModelData"},
-                         requiredParameters  = set(),
-                         definedSelections   = {"component"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         definedSelections   = self.definedSelections,
                          **params)
 
         self.logger = logging.getLogger("VLMP")

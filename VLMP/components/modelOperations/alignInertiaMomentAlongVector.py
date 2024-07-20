@@ -20,13 +20,18 @@ class alignInertiaMomentAlongVector(modelOperationBase):
 
     """
 
+    availableParameters = {"vector"}
+    requiredParameters  = {"vector"}
+    availableSelections = {"selection"}
+    requiredSelections  = {"selection"}
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,
-                         availableParameters = {"vector"},
-                         requiredParameters  = {"vector"},
-                         availableSelections = {"selection"},
-                         requiredSelections  = {"selection"},
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         availableSelections = self.availableSelections,
+                         requiredSelections  = self.requiredSelections,
                          **params)
 
         ############################################################
