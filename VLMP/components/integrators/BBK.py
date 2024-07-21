@@ -27,9 +27,11 @@ class BBK(integratorBase):
      "example":"
          {
             \"type\":\"BBK\",
+            \"parameters\":{
             \"integrationSteps\":10000,
             \"timeStep\":0.001,
             \"frictionConstant\":0.1
+            }
          }
         "
     }

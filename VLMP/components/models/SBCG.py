@@ -11,14 +11,72 @@ import pyGrained.models.SBCG as proteinModel
 
 class SBCG(modelBase):
     """
-    Component name: SBCG
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 23/03/2023
-
-    Shape Based Coarse Grained.
-
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "SBCG (Shape-Based Coarse-Grained) model for protein simulations. This model implements a
+      coarse-grained representation of proteins that maintains the overall shape and essential
+      features while reducing computational complexity.
+      <p>
+      The SBCG approach represents proteins using a reduced number of beads, typically one bead
+      for hundreds of atoms, capturing the protein.
+      This reduction in degrees of freedom allows for simulations of larger systems and longer
+      timescales compared to all-atom models.
+      <p>
+      Key features of the SBCG model include:
+      <p>
+      - Shape-preserving coarse-graining based on the input protein structure
+      <p>
+      - Flexible parameterization of the coarse-graining process
+      <p>
+      - Automatic generation of bonded and non-bonded interactions
+      <p>
+      - Support for multi-chain proteins and protein complexes
+      <p>
+      The model takes a PDB file as input and generates the coarse-grained representation based
+      on the specified parameters. It can handle various levels of coarse-graining and allows
+      for customization of the interaction potentials.
+      <p>
+      This model uses the [pyGrained]_ library to create the SBCG representation.
+      ",
+     "parameters":{
+        "PDB":{"description":"Path to the input PDB file or a valid PDB ID for download.",
+               "type":"str"},
+        "resolution":{"description":"Resolution of the coarse-graining, number of atoms per bead.",
+                      "type":"float"},
+        "steps":{"description":"Number of steps in the coarse-graining refinement process.",
+                 "type":"int"},
+        "bondsModel":{"description":"Model used for bonded interactions.(ENM or count)",
+                      "type":"str"},
+        "nativeContactsModel":{"description":"Model used for native contact interactions (CA).",
+                               "type":"str"},
+        "centerInput":{"description":"If true, centers the input structure.",
+                       "type":"bool",
+                       "default":true},
+        "SASA":{"description":"If true, calculates the Solvent Accessible Surface Area.",
+                "type":"bool",
+                "default":false},
+        "aggregateChains":{"description":"If true, treats multiple chains as a single entity.",
+                           "type":"bool",
+                           "default":true}
+     },
+     "example":"
+         {
+            \"type\":\"SBCG\",
+            \"parameters\":{
+                \"PDB\":\"1ABC\",
+                \"resolution\":200,
+                \"steps\":1000,
+                \"bondsModel\":\"ENM\",
+                \"nativeContactsModel\":\"CA\",
+                \"SASA\":true
+            }
+         }
+        ",
+     "references":[
+         ".. [Arkhipov2006] Arkhipov, A., Freddolino, P. L., & Schulten, K. (2006). Stability and dynamics of virus capsids described by coarse-grained modeling. Structure, 14(12), 1767-1777.",
+         ".. [pyGrained] https://github.com/PabloIbannez/pyGrained"
+     ]
+    }
     """
 
     availableParameters = {"PDB",

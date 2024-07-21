@@ -7,19 +7,31 @@ from . import modelOperationBase
 import numpy as np
 
 class setCenterOfMassPosition(modelOperationBase):
-
     """
-    Component name: setCenterOfMassPosition
-    Component type: modelOperation
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    Set the center of mass of a selection of particles to a given position.
-
-    :param position: Position to set the center of mass to.
-    :type position: list of floats
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Sets the center of mass of a selection of particles to a specified position.",
+        "parameters": {
+            "position": {
+                "description": "Target position for the center of mass.",
+                "type": "list of float",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles to move.",
+                "type": "list of ids"
+            }
+        },
+        "example": "{
+            \"type\": \"setCenterOfMassPosition\",
+            \"parameters\": {
+                \"position\": [0.0, 0.0, 0.0],
+                \"selection\": \"model1 type A B C\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"position"}

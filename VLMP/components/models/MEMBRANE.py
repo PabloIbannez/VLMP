@@ -9,14 +9,9 @@ from ...utils.input import getLabelIndex
 
 class MEMBRANE(modelBase):
     """
-    Component name: MEMBRANE
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 22/05/2024
-
-    Alpha carbon resolution membrane model.
-
+    {
+    "warning": "This model is currently under development. Please, use it with caution.",
+    }
     """
 
     availableParameters = {"position"}

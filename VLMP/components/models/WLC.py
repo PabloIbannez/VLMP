@@ -8,24 +8,59 @@ import numpy as np
 
 class WLC(modelBase):
     """
-    Component name: WLC
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
-
-    Worm-like chain model. See https://en.wikipedia.org/wiki/Worm-like_chain
-
-    :param N: Number of particles
-    :type N: int
-    :param mass: Mass of the particles
-    :type mass: float, optional. Default: 1.0
-    :param b: Distance between two consecutive particles
-    :type b: float, optional. Default: 1.0
-    :param Kb: Spring constant for bonds
-    :type Kb: float, optional. Default: 1.0
-    :param Ka: Spring constant for angles
-    :type Ka: float, optional. Default: 1.0
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "WLC (Worm-Like Chain, [WLC]_) model for simulating polymer chains, particularly suitable for
+      modeling DNA or other semi-flexible biopolymers. This model implements a discretized
+      version of the continuous worm-like chain, representing the polymer as a series of
+      connected beads with bending rigidity.
+      <p>
+      The WLC model captures the essential physics of semi-flexible polymers, including
+      their entropic elasticity and persistence length.
+      <p>
+      Key features of the model include:
+      <p>
+      - Customizable number of beads to represent the polymer chain
+      <p>
+      - Adjustable bond length and bending rigidity
+      <p>
+      - Option to add excluded volume interactions (not included by default)
+      <p>",
+     "parameters":{
+        "N":{"description":"Number of particles (beads) in the chain.",
+             "type":"int"},
+        "mass":{"description":"Mass of each particle.",
+                "type":"float",
+                "default":1.0},
+        "b":{"description":"Equilibrium distance between consecutive particles.",
+             "type":"float",
+             "default":1.0},
+        "Kb":{"description":"Spring constant for bonds.",
+              "type":"float",
+              "default":1.0},
+        "Ka":{"description":"Spring constant for angles (bending rigidity).",
+              "type":"float",
+              "default":1.0},
+        "typeName":{"description":"Name identifier for the particle type.",
+                    "type":"str",
+                    "default":"A"}
+     },
+     "example":"
+         {
+            \"type\":\"WLC\",
+            \"parameters\":{
+                \"N\":100,
+                \"b\":0.34,
+                \"Kb\":100.0,
+                \"Ka\":2.0,
+                \"typeName\":\"DNA\"
+            }
+         }
+        ",
+     "references":[
+         ".. [WLC] https://en.wikipedia.org/wiki/Worm-like_chain",
+     ]
+    }
     """
 
     availableParameters = {"N","mass","b","Kb","Ka","typeName"}

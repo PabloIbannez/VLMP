@@ -26,14 +26,80 @@ from scipy.optimize import root
 
 class HELIX(modelBase):
     """
-    Component name: HELIX
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 25/04/2023
-
-    Polimerization model for a helix.
-
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "HELIX model for simulating helical polymer structures. This model is designed to create
+      and simulate helical polymers, with a particular focus on representing the structures which
+      emerge from the self-assembly of helical monomers. The model uses a patchy-particle approach
+      to represent the monomers, with each monomer having two patches which represent the interaction
+      sites on the monomer surface. An additional patch is used to represent the surface interaction,
+      this additional patch interacts only with the surface and not with other monomers.
+      <p>
+      The helical shape is achived fixing the relative orientation of the monomers, when patches
+      are close enough.
+      <p>
+      The model generates a helical structure based on specified parameters such as the number
+      of monomers, helix radius, pitch, and helicity. It can be used to study various properties
+      and behaviors of helical polymers, including their dynamics, and the effectos of several
+      polymer interactions.
+      <p>
+      Key features of the HELIX model include:
+      <p>
+      - Flexible control over helical geometry (radius, pitch, helicity)
+      <p>
+      - Various initialization options (random, line, or pre-formed helix)
+      <p>
+      - Customizable monomer properties and interactions
+      <p>
+      - Support for different variants of the model, including fixed and dynamic versions
+      <p>
+      - Options for simulating interactions with surfaces or other environmental factors",
+     "parameters":{
+        "mode":{"description":"Simulation mode ('bulk' or 'surface').",
+                "type":"str",
+                "default":"bulk"},
+        "init":{"description":"Initialization method ('random', 'line', or 'helix').",
+                "type":"str",
+                "default":"random"},
+        "nMonomers":{"description":"Number of monomers in the helix.",
+                     "type":"int"},
+        "monomerRadius":{"description":"Radius of each monomer.",
+                         "type":"float",
+                         "default":0.5},
+        "epsilon_mm":{"description":"Energy parameter for monomer-monomer interactions.",
+                      "type":"float"},
+        "helixRadius":{"description":"Radius of the helix.",
+                       "type":"float"},
+        "helixPitch":{"description":"Pitch of the helix.",
+                      "type":"float"},
+        "helicity":{"description":"Helicity of the structure (1.0 for right-handed, -1.0 for left-handed).",
+                    "type":"float",
+                    "default":1.0},
+        "variant":{"description":"Variant of the model to use ('fixedCosine', 'fixedExponential', 'dynamicCosine', 'dynamicExponential', 'twoStatesCosine', 'twoStatesExponential').",
+                   "type":"str"},
+        "surface":{"description":"Whether to include a surface interaction.",
+                   "type":"bool",
+                   "default":false},
+        "surfacePosition":{"description":"Z-coordinate of the surface, if included.",
+                           "type":"float",
+                           "default":0.0}
+     },
+     "example":"
+         {
+            \"type\":\"HELIX\",
+            \"parameters\":{
+                \"mode\":\"bulk\",
+                \"init\":\"helix\",
+                \"nMonomers\":100,
+                \"helixRadius\":10.0,
+                \"helixPitch\":34.0,
+                \"epsilon_mm\":1.0,
+                \"variant\":\"dynamicCosine\"
+            }
+         }
+        ",
+     "warning":"This model is under development and may not be fully functional or optimized."
+    }
     """
 
     availableParameters = {"mode","init",

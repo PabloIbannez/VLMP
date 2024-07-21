@@ -35,6 +35,7 @@ class MagneticBrownian(integratorBase):
      "example":"
          {
             \"type\":\"MagneticBrownian\",
+            \"parameters\":{
             \"integrationSteps\":10000,
             \"timeStep\":0.001,
             \"viscosity\":0.01,
@@ -42,6 +43,7 @@ class MagneticBrownian(integratorBase):
             \"damping\":0.1,
             \"msat\":1.0,
             \"magneticIntegrationAlgorithm\":\"algorithmName\"
+            }
          }
         "
     }

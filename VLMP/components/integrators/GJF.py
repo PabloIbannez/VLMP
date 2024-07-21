@@ -27,9 +27,11 @@ class GFJ(integratorBase):
      "example":"
          {
             \"type\":\"GFJ\",
+            \"parameters\":{
             \"integrationSteps\":10000,
             \"timeStep\":0.001,
             \"frictionConstant\":0.1
+            }
          }
         "
     }

@@ -22,16 +22,9 @@ import pyUAMMD
 
 class PROTEIN_IDP_PROTEIN(modelBase):
     """
-    Component name: PROTEIN_IDP_PROTEIN
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 02/01/2024
-
-    Intrinsic disorder protein model merged with protein model (ENM)
-
-    Reference: https://journals.aps.org/pre/pdf/10.1103/PhysRevE.90.042709
-
+    {
+    "warning": "This model is currently under development. Please, use it with caution.",
+    }
     """
 
     availableParameters = {"sequence",

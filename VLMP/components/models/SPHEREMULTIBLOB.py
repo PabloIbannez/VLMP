@@ -7,13 +7,88 @@ from icosphere import icosphere
 
 class SPHEREMULTIBLOB(modelBase):
     """
-    Component name: SPHEREMULTIBLOB
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire and Pablo Palacios-Alonso
-    Date: 18/07/2023
-
-    Extension of Icosidodecahedron + icosphere
+    {"author": "Pablo Ibáñez-Freire and Pablo Palacios-Alonso",
+     "description":
+     "SPHEREMULTIBLOB model for creating spherical multiblob structures. This model generates
+      a spherical particle represented by multiple smaller particles (blobs) arranged on its
+      surface. The spherical particle can be created using either icosphere (a sphere placing
+      blobs on the vertices of an icosahedron, or icosahedron iteratively subdivided) or icododecahedral
+      (a sphere placing blobs on the vertices of an icosidodecahedron) geometry.
+      <p>
+      The model allows for the creation of spherical structures with varying levels of detail,
+      making it useful for representing large spherical objects in coarse-grained simulations,
+      such as colloidal particles, nanoparticles, or simplified representations of complex
+      biological structures like virus capsids.
+      <p>
+      Key features of the SPHEREMULTIBLOB model include:
+      <p>
+      - Flexible control over the number of particles representing the sphere
+      <p>
+      - Option to use either icododecahedral or icosphere geometry
+      <p>
+      - Customizable particle properties (mass, radius, charge)
+      <p>
+      - Automatic generation of bonds between particles to maintain the spherical structure
+      <p>
+      - Optional steric interactions between particles
+      <p>
+      This model is particularly useful for studying the behavior of large spherical objects
+      in various environments, their interactions with other particles or surfaces, and for
+      simulations where the internal structure of the sphere needs to be represented explicitly.",
+     "parameters":{
+        "sphereType":{"description":"Type of sphere geometry to use ('icosidodecahedron' or 'icosphere').",
+                      "type":"str",
+                      "default":"icosidodecahedron"},
+        "particleName":{"description":"Name or type of the particles making up the sphere.",
+                        "type":"str"},
+        "particleMass":{"description":"Mass of each particle.",
+                        "type":"float",
+                        "default":1.0},
+        "particleRadius":{"description":"Radius of each particle.",
+                          "type":"float"},
+        "particleCharge":{"description":"Charge of each particle.",
+                          "type":"float",
+                          "default":0.0},
+        "numberOfSpheres":{"description":"Number of spheres to create.",
+                           "type":"int",
+                           "default":1},
+        "particlesPerSphere":{"description":"Number of particles per sphere.",
+                              "type":"int",
+                              "default":31},
+        "radiusOfSphere":{"description":"Radius of the overall spherical structure.",
+                          "type":"float",
+                          "default":1.0},
+        "K":{"description":"Spring constant for bonds between particles.",
+             "type":"float"},
+        "steric":{"description":"Whether to include steric interactions between particles.",
+                  "type":"bool",
+                  "default":false},
+        "heightMean":{"description":"Mean height for sphere placement.",
+                      "type":"float",
+                      "default":0.0},
+        "heightStd":{"description":"Standard deviation of height for sphere placement.",
+                     "type":"float",
+                     "default":0.0},
+        "heightReference":{"description":"Reference height for sphere placement.",
+                           "type":"float",
+                           "default":0.0}
+     },
+     "example":"
+         {
+            \"type\":\"SPHEREMULTIBLOB\",
+            \"parameters\":{
+                \"sphereType\":\"icosphere\",
+                \"particleName\":\"blob\",
+                \"particleRadius\":0.1,
+                \"numberOfSpheres\":5,
+                \"particlesPerSphere\":42,
+                \"radiusOfSphere\":2.0,
+                \"K\":100.0,
+                \"steric\":true
+            }
+         }
+        "
+    }
     """
 
     availableParameters = {"sphereType",

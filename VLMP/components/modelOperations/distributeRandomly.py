@@ -16,25 +16,43 @@ from scipy.spatial.transform import Rotation
 import numpy as np
 
 class distributeRandomly(modelOperationBase):
-
     """
-    Component name: distributeRandomly
-    Component type: modelOperation
-
-    Author: Pablo Ibáñez-Freire
-    Date: 26/08/2023
-
-    Distribution of the selected particles in different bounds
-
-    :param mode: Mode of distribution, the bound where the particles will be distributed, can be "box" or "sphere"
-    :type mode: dict, optional, default='box'
-    :param avoidClashes: If is larger than 0, the particles will be distributed avoiding clashes with other particles.
-                         The value of this parameter is the number of tries to avoid the clash.
-                         If the number of tries is reached, an error will be raised.
-    :type avoidClashes: int, optional, default=0
-    :param randomRotation: If True, the particles will be randomly rotated before being distributed
-    :type randomRotation: bool, optional, default=True
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Distributes selected particles randomly within specified bounds.",
+        "parameters": {
+            "mode": {
+                "description": "Distribution mode, either 'box' or 'sphere'.",
+                "type": "str",
+                "default": "box"
+            },
+            "avoidClashes": {
+                "description": "Number of attempts to avoid particle clashes. If 0, clashes are not avoided.",
+                "type": "int",
+                "default": 0
+            },
+            "randomRotation": {
+                "description": "Whether to apply random rotations to the particles.",
+                "type": "bool",
+                "default": true
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles to distribute.",
+                "type": "list of ids"
+            }
+        },
+        "example": "{
+            \"type\": \"distributeRandomly\",
+            \"parameters\": {
+                \"mode\": \"sphere\",
+                \"avoidClashes\": 100,
+                \"randomRotation\": true,
+                \"selection\": \"model1 all\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"mode","avoidClashes","randomRotation"}

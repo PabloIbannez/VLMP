@@ -115,6 +115,11 @@ class ensembleBase:
 
         return self._ensembleComp[componentName]
 
+    def isEnsembleComponent(self,componentName):
+        if self._ensembleComp is None:
+            return False
+        return componentName in self._ensembleComp
+
     ########################################################
 
     def getSimulation(self,DEBUG_MODE = False):

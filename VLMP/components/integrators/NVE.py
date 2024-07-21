@@ -24,8 +24,10 @@ class NVE(integratorBase):
      "example":"
          {
             \"type\":\"NVE\",
+            \"parameters\":{
             \"integrationSteps\":10000,
             \"timeStep\":0.001
+            }
          }
         "
     }

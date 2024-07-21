@@ -7,19 +7,30 @@ from . import modelOperationBase
 import numpy as np
 
 class setParticlePositions(modelOperationBase):
-
     """
-    Component name: setParticlePositions
-    Component type: modelOperation
-
-    Author: Pablo Ibáñez-Freire
-    Date: 31/10/2023
-
-    Set the position of a set of particles to a given a list of ids and a position.
-
-    :param positions: Position to set the particles to.
-    :type position: list of floats
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Sets the positions of a group of particles to specified coordinates.",
+        "parameters": {
+            "positions": {
+                "description": "List of new positions for the selected particles.",
+                "type": "list of list of float",
+                "default": null
+            },
+            "ids": {
+                "description": "List of particle IDs to move.",
+                "type": "list of int",
+                "default": null
+            }
+        },
+        "example": "{
+            \"type\": \"setParticlePositions\",
+            \"parameters\": {
+                \"positions\": [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]],
+                \"ids\": [0, 1]
+            }
+        }"
+    }
     """
 
     availableParameters = {"positions","ids"}

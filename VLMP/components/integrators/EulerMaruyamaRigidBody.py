@@ -26,9 +26,11 @@ class EulerMaruyamaRigidBody(integratorBase):
      "example":"
          {
             \"type\":\"EulerMaruyamaRigidBody\",
+            \"parameters\":{
             \"integrationSteps\":10000,
             \"timeStep\":0.001,
             \"viscosity\":0.01
+            }
          }
         "
     }

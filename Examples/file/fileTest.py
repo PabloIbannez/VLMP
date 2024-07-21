@@ -1,6 +1,6 @@
 import VLMP
 
-from VLMP.utils.utils import picosecond2KcalMol_A_time
+from VLMP.utils.units import picosecond2KcalMol_A_time
 
 ps2AKMA = picosecond2KcalMol_A_time()
 
@@ -26,11 +26,10 @@ for i in range(copies):
                                      #               "position":[0.0,0.0,500.0]}}
                                      ],
                            "modelOperations":[{"type":"alignInertiaMomentAlongVector","parameters":{"vector":[1.0,0.0,0.0],
-                                                                                                    "selection":{"models":"sample"}}
-                                                                                                    },
+                                                                                                    "selection":"sample"}},
                                               {"type":"setParticleLowestPosition","parameters":{"position":0.0,
                                                                                                 "considerRadius":True,
-                                                                                                "selection":{"models":"sample"}}}
+                                                                                                "selection":"sample"}}
                                               ],
                            #"modelExtensions":[{"type":"surface","parameters":{"epsilon":-2.0,"surfacePosition":0.0}},
                            #                   {"type":"AFM",

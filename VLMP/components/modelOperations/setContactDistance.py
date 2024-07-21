@@ -8,18 +8,48 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 class setContactDistance(modelOperationBase):
-
     """
-    Component name: setDistance
-    Component type: modelOperation
-
-    Author: Pablo Ibáñez-Freire
-    Date: 28/08/2023
-
-    Set the contact distance between two selections of particles.
-
-    :param distance: distance to set
-    :type distance: float
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Sets the contact distance between two selections of particles.",
+        "parameters": {
+            "distance": {
+                "description": "Target contact distance between the selections.",
+                "type": "float",
+                "default": null
+            },
+            "resolution": {
+                "description": "Resolution for the contact distance adjustment.",
+                "type": "float",
+                "default": 0.1
+            },
+            "inverse": {
+                "description": "Whether to invert the direction of the contact.",
+                "type": "bool",
+                "default": false
+            }
+        },
+        "selections": {
+            "reference": {
+                "description": "Reference selection of particles.",
+                "type": "list of ids"
+            },
+            "mobile": {
+                "description": "Mobile selection of particles to be moved.",
+                "type": "list of ids"
+            }
+        },
+        "example": "{
+            \"type\": \"setContactDistance\",
+            \"parameters\": {
+                \"distance\": 5.0,
+                \"resolution\": 0.01,
+                \"inverse\": false,
+                \"reference\": \"model1 type A\",
+                \"mobile\": \"model2 type B\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"distance","resolution","inverse"}

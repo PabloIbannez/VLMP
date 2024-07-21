@@ -3,21 +3,43 @@ from VLMP.components.modelOperations import modelOperationBase
 import numpy as np
 
 class setParticleLowestPosition(modelOperationBase):
-
     """
-    Component name: setParticleLowestPosition
-    Component type: modelOperation
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    Set the lowest particle position to value.
-
-    :param position: Position to set the lowest particle to.
-    :type position: z coordinate, float
-    :param considerRadius: Consider particle radius when setting the lowest position.
-    :type considerRadius: bool, optional
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Sets the lowest particle in the selection to a specified Z position.",
+        "parameters": {
+            "position": {
+                "description": "Z coordinate to set for the lowest particle.",
+                "type": "float",
+                "default": null
+            },
+            "considerRadius": {
+                "description": "Whether to consider particle radius when setting the position.",
+                "type": "bool",
+                "default": false
+            },
+            "radiusFactor": {
+                "description": "Factor to multiply the radius by when considering it.",
+                "type": "float",
+                "default": 1.0
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles to consider.",
+                "type": "list of ids"
+            }
+        },
+        "example": "{
+            \"type\": \"setParticleLowestPosition\",
+            \"parameters\": {
+                \"position\": 0.0,
+                \"considerRadius\": true,
+                \"radiusFactor\": 1.1,
+                \"selection\": \"model1 all\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"position","considerRadius","radiusFactor"}

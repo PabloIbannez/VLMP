@@ -9,13 +9,73 @@ import icosphere
 
 class ICOSPHERE(modelBase):
     """
-    Component name: ICOSPHERE
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 18/06/2023
-
-    Icosphere model
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "ICOSPHERE model for creating spherical structures based on icosahedron subdivision.
+      This model generates a highly uniform spherical distribution of particles, which is
+      particularly useful for simulating spherical objects or creating starting configurations
+      for various spherical systems.
+      <p>
+      The model uses the icosphere algorithm, which starts with a regular icosahedron and
+      repeatedly subdivides its faces to create a more refined spherical approximation.
+      This approach ensures a nearly uniform distribution of vertices on the sphere's surface.
+      <p>
+      Key features of the model include:
+      <p>
+      - Adjustable resolution through subdivision levels
+      <p>
+      - Customizable particle properties (name, mass, radius, charge)
+      <p>
+      - Ability to add bonds between neighboring vertices
+      <p>
+      - Optional steric interactions between particles
+      <p>",
+     "parameters":{
+        "particleName":{"description":"Name identifier for the particles.",
+                        "type":"str",
+                        "default":"A"},
+        "particleMass":{"description":"Mass of each particle.",
+                        "type":"float",
+                        "default":1.0},
+        "particleRadius":{"description":"Radius of each particle.",
+                          "type":"float",
+                          "default":1.0},
+        "particleCharge":{"description":"Charge of each particle.",
+                          "type":"float",
+                          "default":0.0},
+        "position":{"description":"Center position of the icosphere.",
+                    "type":"list of float",
+                    "default":[0.0, 0.0, 0.0]},
+        "resolution":{"description":"Subdivision level for icosphere.",
+                      "type":"int",
+                      "default":1},
+        "radius":{"description":"Radius of the icosphere.",
+                  "type":"float",
+                  "default":1.0},
+        "Kb":{"description":"Spring constant for bonds between neighboring vertices.",
+             "type":"float",
+             "default":null},
+        "Kd":{"description":"Spring constant for dihedral angles (if applicable).",
+              "type":"float",
+              "default":0.0},
+        "steric":{"description":"Whether to include steric interactions between particles.",
+                  "type":"bool",
+                  "default":false}
+     },
+     "example":"
+         {
+            \"type\":\"ICOSPHERE\",
+            \"parameters\":{
+                \"resolution\":3,
+                \"radius\":10.0,
+                \"particleName\":\"S\",
+                \"particleRadius\":0.5,
+                \"K\":100.0,
+                \"steric\":true
+            }
+         }
+        "
+    }
     """
 
     availableParameters = {"particleName",

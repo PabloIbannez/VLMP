@@ -12,16 +12,9 @@ from pyGrained.utils.data import getData
 
 class IDP(modelBase):
     """
-    Component name: IDP
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 25/03/2023
-
-    Intrinsic disorder protein model.
-
-    Reference: https://journals.aps.org/pre/pdf/10.1103/PhysRevE.90.042709
-
+    {
+    "warning": "This model is currently under development. Please, use it with caution.",
+    }
     """
     availableParameters = {"sequence"}
     requiredParameters  = {"sequence"}

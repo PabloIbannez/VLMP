@@ -29,9 +29,11 @@ class EulerMaruyamaRigidBodyPatchesState(integratorBase):
      "example":"
          {
             \"type\":\"EulerMaruyamaRigidBodyPatchesState\",
+            \"parameters\":{
             \"integrationSteps\":10000,
             \"timeStep\":0.001,
             \"viscosity\":0.01
+            }
          }
         "
     }

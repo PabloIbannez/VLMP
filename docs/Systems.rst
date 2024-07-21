@@ -36,14 +36,14 @@ backup
 	  - Step at which the backup ends
 	  - ullint
 	  - MAX_ULLINT
-	* - backupStartStep
-	  - Step at which the backup starts
-	  - ullint
-	  - 0
 	* - backupFilePath
 	  - Path to the backup file
 	  - str
 	  - backup
+	* - backupStartStep
+	  - Step at which the backup starts
+	  - ullint
+	  - 0
 
 Example:
 

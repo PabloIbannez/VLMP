@@ -26,9 +26,11 @@ class EulerMaruyama(integratorBase):
      "example":"
          {
             \"type\":\"EulerMaruyama\",
+            \"parameters\":{
             \"integrationSteps\":10000,
             \"timeStep\":0.001,
             \"viscosity\":0.01
+            }
          }
         "
     }

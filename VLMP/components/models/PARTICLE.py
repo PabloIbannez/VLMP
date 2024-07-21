@@ -2,14 +2,58 @@ from VLMP.components.models import modelBase
 
 class PARTICLE(modelBase):
     """
-    Component name: PARTILCE
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 18/06/2023
-
-    Single particle model.
-
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "PARTICLE model for creating a single particle in a simulation. This simple model allows
+      users to add a single particle with specified properties to the simulation environment.
+      It's particularly useful for creating reference points, probes, or simple objects within
+      a larger simulation context.
+      <p>
+      The model allows customization of various particle properties including:
+      <p>
+      - Name (type) of the particle
+      <p>
+      - Mass
+      <p>
+      - Radius
+      <p>
+      - Charge
+      <p>
+      - Initial position
+      <p>
+      This model can be used in conjunction with other models to create more complex systems.
+      It's especially useful for testing
+      and debugging purposes, or for creating simple scenarios to study specific interactions
+      or behaviors.",
+     "parameters":{
+        "particleName":{"description":"Name or type of the particle.",
+                        "type":"str"},
+        "particleMass":{"description":"Mass of the particle.",
+                        "type":"float",
+                        "default":1.0},
+        "particleRadius":{"description":"Radius of the particle.",
+                          "type":"float",
+                          "default":1.0},
+        "particleCharge":{"description":"Charge of the particle.",
+                          "type":"float",
+                          "default":0.0},
+        "position":{"description":"Initial position of the particle in 3D space.",
+                    "type":"list of float",
+                    "default":[0.0, 0.0, 0.0]}
+     },
+     "example":"
+         {
+            \"type\":\"PARTICLE\",
+            \"parameters\":{
+                \"particleName\":\"probe\",
+                \"particleMass\":2.5,
+                \"particleRadius\":0.5,
+                \"particleCharge\":-1.0,
+                \"position\":[10.0, 0.0, 5.0]
+            }
+         }
+        "
+    }
     """
 
     availableParameters = {"particleName",

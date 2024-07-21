@@ -7,13 +7,72 @@ from icosphere import icosphere
 
 class MAGNETICNP(modelBase):
     """
-    Component name: MAGNETICNP
-    Component type: model
-
-    Author: P. Palacios-Alonso
-    Date: 16/10/2023
-
-    Model of magnetic nanoparticles
+    {"author": "P. Palacios-Alonso",
+     "description":
+     "MAGNETICNP model for simulating magnetic nanoparticles. This model implements a coarse-grained
+      representation of magnetic nanoparticles, allowing for the simulation of their behavior under
+      various conditions, including the application of external magnetic fields.
+      <p>
+      The model represents each nanoparticle as a single entity with properties such as size
+      (hydrodynamic radius), magnetic moment, and anisotropy. This coarse-grained approach enables
+      efficient simulations of large systems of magnetic nanoparticles, making it suitable for
+      studying collective behaviors and responses to external stimuli.
+      <p>
+      Key features of the model include:
+      - Customizable particle properties (size distribution, magnetic moment, anisotropy)
+      <p>
+      - Options for initial particle orientations (random or aligned)
+      <p>
+      - Flexibility in defining the number of particles and simulation box size
+      <p>
+      The model allows for easy integration with external field models and can be extended to
+      include various inter-particle interactions.",
+     "parameters":{
+        "particleName":{"description":"Name identifier for the particle type.",
+                        "type":"str",
+                        "default":"A"},
+        "nParticles":{"description":"Number of magnetic nanoparticles in the simulation.",
+                      "type":"int"},
+        "msat":{"description":"Saturation magnetization of the nanoparticles.",
+                "type":"float"},
+        "anisotropy":{"description":"Magnetic anisotropy constant of the nanoparticles.",
+                      "type":"float",
+                      "default":null},
+        "anisotropyStd":{"description":"Standard deviation of the anisotropy constant for particle-to-particle variation.",
+                         "type":"float",
+                         "default":0.0},
+        "coreRadius":{"description":"Radius of the magnetic core of the nanoparticles.",
+                      "type":"float"},
+        "coreRadiusStd":{"description":"Standard deviation of the core radius for size distribution.",
+                         "type":"float",
+                         "default":0.0},
+        "coatingWidth":{"description":"Width of the coating layer on the nanoparticles.",
+                        "type":"float",
+                        "default":0.0},
+        "coatingWidthStd":{"description":"Standard deviation of the coating width.",
+                           "type":"float",
+                           "default":0.0},
+        "initOrientation":{"description":"Initial orientation of magnetic moments. Options: 'aligned' or 'random'.",
+                           "type":"str",
+                           "default":"aligned"},
+        "initAxis":{"description":"Axis for initial alignment if 'aligned' orientation is chosen.",
+                    "type":"list of float",
+                    "default":[0,0,1]}
+     },
+     "example":"
+         {
+            \"type\":\"MAGNETICNP\",
+            \"parameters\":{
+                \"nParticles\":1000,
+                \"msat\":4.8e5,
+                \"coreRadius\":5e-9,
+                \"coreRadiusStd\":0.1e-9,
+                \"anisotropy\":2.3e4,
+                \"initOrientation\":\"random\"
+            }
+         }
+        "
+    }
     """
 
     availableParameters = {"particleName",

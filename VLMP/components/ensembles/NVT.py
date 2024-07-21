@@ -25,8 +25,10 @@ class NVT(ensembleBase):
      "example":"
          {
             \"type\":\"NVT\",
+            \"parameters\":{
             \"box\":10.0,
             \"temperature\":300.0
+            }
          }
         "
     }

@@ -19,12 +19,12 @@ NVT
 	  - Description
 	  - Type
 	  - Default
-	* - temperature
-	  - Temperature of the simulation environment
-	  - float
-	  - 
 	* - box
 	  - Size of the simulation box
+	  - float
+	  - 
+	* - temperature
+	  - Temperature of the simulation environment
 	  - float
 	  - 
 
@@ -34,8 +34,10 @@ Example:
 
 	{
 		"type": "NVT",
-		"box": 10.0,
-		"temperature": 300.0
+		"parameters":{
+			"box": 10.0,
+			"temperature": 300.0
+		}
 	}
 
 
@@ -56,16 +58,16 @@ NVTlambda
 	  - Description
 	  - Type
 	  - Default
-	* - temperature
-	  - Temperature of the simulation environment
+	* - lambda
+	  - Lambda parameter for thermodynamic integration
 	  - float
 	  - 
 	* - box
 	  - Size of the simulation box
 	  - float
 	  - 
-	* - lambda
-	  - Lambda parameter for thermodynamic integration
+	* - temperature
+	  - Temperature of the simulation environment
 	  - float
 	  - 
 
@@ -75,9 +77,11 @@ Example:
 
 	{
 		"type": "NVTlambda",
-		"box": 10.0,
-		"temperature": 300.0,
-		"lambda": 0.5
+		"parameters":{
+			"box": 10.0,
+			"temperature": 300.0,
+			"lambda": 0.5
+		}
 	}
 
 

@@ -19,16 +19,16 @@ BBK
 	  - Description
 	  - Type
 	  - Default
+	* - frictionConstant
+	  - Friction constant of the integrator
+	  - float
+	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
 	* - timeStep
 	  - Time step of the integrator
-	  - float
-	  - 
-	* - frictionConstant
-	  - Friction constant of the integrator
 	  - float
 	  - 
 
@@ -38,9 +38,11 @@ Example:
 
 	{
 		"type": "BBK",
-		"integrationSteps": 10000,
-		"timeStep": 0.001,
-		"frictionConstant": 0.1
+		"parameters":{
+			"integrationSteps": 10000,
+			"timeStep": 0.001,
+			"frictionConstant": 0.1
+		}
 	}
 
 
@@ -61,16 +63,16 @@ EulerMaruyama
 	  - Description
 	  - Type
 	  - Default
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
-	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
 	* - timeStep
 	  - Time step of the integrator
+	  - float
+	  - 
+	* - viscosity
+	  - Viscosity of the fluid
 	  - float
 	  - 
 
@@ -80,9 +82,11 @@ Example:
 
 	{
 		"type": "EulerMaruyama",
-		"integrationSteps": 10000,
-		"timeStep": 0.001,
-		"viscosity": 0.01
+		"parameters":{
+			"integrationSteps": 10000,
+			"timeStep": 0.001,
+			"viscosity": 0.01
+		}
 	}
 
 
@@ -103,16 +107,16 @@ EulerMaruyamaRigidBody
 	  - Description
 	  - Type
 	  - Default
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
-	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
 	* - timeStep
 	  - Time step of the integrator
+	  - float
+	  - 
+	* - viscosity
+	  - Viscosity of the fluid
 	  - float
 	  - 
 
@@ -122,9 +126,11 @@ Example:
 
 	{
 		"type": "EulerMaruyamaRigidBody",
-		"integrationSteps": 10000,
-		"timeStep": 0.001,
-		"viscosity": 0.01
+		"parameters":{
+			"integrationSteps": 10000,
+			"timeStep": 0.001,
+			"viscosity": 0.01
+		}
 	}
 
 
@@ -145,16 +151,16 @@ EulerMaruyamaRigidBodyPatchesState
 	  - Description
 	  - Type
 	  - Default
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
-	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
 	* - timeStep
 	  - Time step of the integrator
+	  - float
+	  - 
+	* - viscosity
+	  - Viscosity of the fluid
 	  - float
 	  - 
 
@@ -164,9 +170,11 @@ Example:
 
 	{
 		"type": "EulerMaruyamaRigidBodyPatchesState",
-		"integrationSteps": 10000,
-		"timeStep": 0.001,
-		"viscosity": 0.01
+		"parameters":{
+			"integrationSteps": 10000,
+			"timeStep": 0.001,
+			"viscosity": 0.01
+		}
 	}
 
 
@@ -187,16 +195,16 @@ GFJ
 	  - Description
 	  - Type
 	  - Default
+	* - frictionConstant
+	  - Friction constant of the integrator
+	  - float
+	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
 	* - timeStep
 	  - Time step of the integrator
-	  - float
-	  - 
-	* - frictionConstant
-	  - Friction constant of the integrator
 	  - float
 	  - 
 
@@ -206,9 +214,11 @@ Example:
 
 	{
 		"type": "GFJ",
-		"integrationSteps": 10000,
-		"timeStep": 0.001,
-		"frictionConstant": 0.1
+		"parameters":{
+			"integrationSteps": 10000,
+			"timeStep": 0.001,
+			"frictionConstant": 0.1
+		}
 	}
 
 
@@ -229,10 +239,6 @@ MagneticBrownian
 	  - Description
 	  - Type
 	  - Default
-	* - magneticIntegrationAlgorithm
-	  - Algorithm for magnetic integration
-	  - string
-	  - 
 	* - msat
 	  - Saturation magnetization
 	  - float
@@ -248,6 +254,10 @@ MagneticBrownian
 	* - timeStep
 	  - Time step of the integrator
 	  - float
+	  - 
+	* - magneticIntegrationAlgorithm
+	  - Algorithm for magnetic integration
+	  - string
 	  - 
 .. list-table:: Optional Parameters
 	:header-rows: 1
@@ -273,13 +283,15 @@ Example:
 
 	{
 		"type": "MagneticBrownian",
-		"integrationSteps": 10000,
-		"timeStep": 0.001,
-		"viscosity": 0.01,
-		"gyroRatio": 2.8,
-		"damping": 0.1,
-		"msat": 1.0,
-		"magneticIntegrationAlgorithm": "algorithmName"
+		"parameters":{
+			"integrationSteps": 10000,
+			"timeStep": 0.001,
+			"viscosity": 0.01,
+			"gyroRatio": 2.8,
+			"damping": 0.1,
+			"msat": 1.0,
+			"magneticIntegrationAlgorithm": "algorithmName"
+		}
 	}
 
 
@@ -315,8 +327,10 @@ Example:
 
 	{
 		"type": "NVE",
-		"integrationSteps": 10000,
-		"timeStep": 0.001
+		"parameters":{
+			"integrationSteps": 10000,
+			"timeStep": 0.001
+		}
 	}
 
 

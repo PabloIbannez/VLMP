@@ -28,9 +28,11 @@ class NVTlambda(ensembleBase):
      "example":"
          {
             \"type\":\"NVTlambda\",
+            \"parameters\":{
             \"box\":10.0,
             \"temperature\":300.0,
             \"lambda\":0.5
+            }
          }
         "
     }

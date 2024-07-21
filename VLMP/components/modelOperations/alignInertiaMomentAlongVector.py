@@ -5,19 +5,31 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 class alignInertiaMomentAlongVector(modelOperationBase):
-
     """
-    Component name: alignInertiaMomentAlongVector
-    Component type: modelOperation
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    Aling the largest inertia moment of the selected elements along a given vector.
-
-    :param vector: Vector along which the inertia moment will be aligned.
-    :type vector: list of floats
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Aligns the largest inertia moment of selected particles along a specified vector.",
+        "parameters": {
+            "vector": {
+                "description": "Vector along which to align the largest inertia moment.",
+                "type": "list of float",
+                "default": null
+            },
+        },
+        "selections":{
+            "selection": {
+                "description": "Selection of particles to align.",
+                "type": "list of ids",
+            }
+        },
+        "example": "{
+            "type": "alignInertiaMomentAlongVector",
+            "parameters": {
+                "vector": [0.0, 0.0, 1.0],
+                "selection": \"model1 chain A\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"vector"}

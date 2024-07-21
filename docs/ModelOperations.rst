@@ -6,140 +6,418 @@ ModelOperations
 alignInertiaMomentAlongVector
 -----------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: alignInertiaMomentAlongVector
-    Component type: modelOperation
+ Aligns the largest inertia moment of selected particles along a specified vector.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Aling the largest inertia moment of the selected elements along a given vector.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - vector
+	  - Vector along which to align the largest inertia moment.
+	  - list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param vector: Vector along which the inertia moment will be aligned.
-    :type vector: list of floats
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to align.
+	  - list of ids
 
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "alignInertiaMomentAlongVector",
+		"parameters":{
+			"vector": [0.0, 0.0, 1.0],
+			"selection": "model1 chain A"
+		}
+	}
+
+
 
 distributeRandomly
 ------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: distributeRandomly
-    Component type: modelOperation
+ Distributes selected particles randomly within specified bounds.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 26/08/2023
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Distribution of the selected particles in different bounds
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - randomRotation
+	  - Whether to apply random rotations to the particles.
+	  - bool
+	  - True
+	* - mode
+	  - Distribution mode, either 'box' or 'sphere'.
+	  - str
+	  - box
+	* - avoidClashes
+	  - Number of attempts to avoid particle clashes. If 0, clashes are not avoided.
+	  - int
+	  - 0
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param mode: Mode of distribution, the bound where the particles will be distributed, can be "box" or "sphere"
-    :type mode: dict, optional, default='box'
-    :param avoidClashes: If is larger than 0, the particles will be distributed avoiding clashes with other particles.
-                         The value of this parameter is the number of tries to avoid the clash.
-                         If the number of tries is reached, an error will be raised.
-    :type avoidClashes: int, optional, default=0
-    :param randomRotation: If True, the particles will be randomly rotated before being distributed
-    :type randomRotation: bool, optional, default=True
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to distribute.
+	  - list of ids
 
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "distributeRandomly",
+		"parameters":{
+			"mode": "sphere",
+			"avoidClashes": 100,
+			"randomRotation": True,
+			"selection": "model1 all"
+		}
+	}
+
+
 
 rotation
 --------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: rotation
-    Component type: modelOperation
+ Applies a rotation to selected particles around a specified axis.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 01/09/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - axis
+	  - Axis of rotation.
+	  - list of float
+	  - 
+	* - angle
+	  - Angle of rotation in radians.
+	  - float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to rotate.
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "rotation",
+		"parameters":{
+			"axis": [0.0, 0.0, 1.0],
+			"angle": 3.14159,
+			"selection": "model1 resid 1 to 10"
+		}
+	}
+
+
 
 setCenterOfMassPosition
 -----------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: setCenterOfMassPosition
-    Component type: modelOperation
+ Sets the center of mass of a selection of particles to a specified position.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Set the center of mass of a selection of particles to a given position.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - position
+	  - Target position for the center of mass.
+	  - list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param position: Position to set the center of mass to.
-    :type position: list of floats
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to move.
+	  - list of ids
 
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "setCenterOfMassPosition",
+		"parameters":{
+			"position": [0.0, 0.0, 0.0],
+			"selection": "model1 type A B C"
+		}
+	}
+
+
 
 setContactDistance
 ------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: setDistance
-    Component type: modelOperation
+ Sets the contact distance between two selections of particles.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 28/08/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Set the contact distance between two selections of particles.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - resolution
+	  - Resolution for the contact distance adjustment.
+	  - float
+	  - 0.1
+	* - distance
+	  - Target contact distance between the selections.
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param distance: distance to set
-    :type distance: float
-    
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - inverse
+	  - Whether to invert the direction of the contact.
+	  - bool
+	  - False
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	* - reference
+	  - Reference selection of particles.
+	  - list of ids
+	* - mobile
+	  - Mobile selection of particles to be moved.
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "setContactDistance",
+		"parameters":{
+			"distance": 5.0,
+			"resolution": 0.01,
+			"inverse": False,
+			"reference": "model1 type A",
+			"mobile": "model2 type B"
+		}
+	}
+
+
 
 setParticleLowestPosition
 -------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: setParticleLowestPosition
-    Component type: modelOperation
+ Sets the lowest particle in the selection to a specified Z position.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Set the lowest particle position to value.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - position
+	  - Z coordinate to set for the lowest particle.
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param position: Position to set the lowest particle to.
-    :type position: z coordinate, float
-    :param considerRadius: Consider particle radius when setting the lowest position.
-    :type considerRadius: bool, optional
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - radiusFactor
+	  - Factor to multiply the radius by when considering it.
+	  - float
+	  - 1.0
+	* - considerRadius
+	  - Whether to consider particle radius when setting the position.
+	  - bool
+	  - False
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to consider.
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "setParticleLowestPosition",
+		"parameters":{
+			"position": 0.0,
+			"considerRadius": True,
+			"radiusFactor": 1.1,
+			"selection": "model1 all"
+		}
+	}
+
+
 
 setParticlePositions
 --------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: setParticlePositions
-    Component type: modelOperation
+ Sets the positions of a group of particles to specified coordinates.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 31/10/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Set the position of a set of particles to a given a list of ids and a position.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - positions
+	  - List of new positions for the selected particles.
+	  - list of list of float
+	  - 
+	* - ids
+	  - List of particle IDs to move.
+	  - list of int
+	  - 
 
-    :param positions: Position to set the particles to.
-    :type position: list of floats
+Example:
 
-    
+.. code-block:: python
+
+	{
+		"type": "setParticlePositions",
+		"parameters":{
+			"positions": [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]],
+			"ids": [0, 1]
+		}
+	}
+
+
 
 setParticleXYPosition
 ---------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: setParticleXYPosition
-    Component type: modelOperation
+ Sets the XY position of selected particles to a specified value.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 26/02/2024
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Set the XY particle position to value.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - position
+	  - New XY position for the particles.
+	  - list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param position: Position to set the XY particle to.
-    :type position: float list
-    :param considerRadius: Consider particle radius when setting the XY position.
-    :type considerRadius: bool, optional
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to move.
+	  - list of ids
 
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "setParticleXYPosition",
+		"parameters":{
+			"position": [1.0, 2.0],
+			"selection": "model1 type A"
+		}
+	}
+
+
 

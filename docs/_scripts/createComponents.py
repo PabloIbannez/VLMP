@@ -22,7 +22,8 @@ def fix_multiline_json(json_string):
 
     return json_string
 
-def json_to_rst(js,availableParameters,requiredParameters):
+def json_to_rst(js,availableParameters,requiredParameters,
+                   availableSelections,requiredSelections):
 
     rst = ""
 
@@ -45,57 +46,95 @@ def json_to_rst(js,availableParameters,requiredParameters):
 
     # Parameters info: name description type default
 
-    for param in js["parameters"]:
-        if "default" not in js["parameters"][param]:
-            js["parameters"][param]["default"] = ""
-        else:
-            defaultParam = js["parameters"][param]["default"]
-            if defaultParam == None or defaultParam == "null":
+    if "parameters" in js:
+        for param in js["parameters"]:
+            if "default" not in js["parameters"][param]:
                 js["parameters"][param]["default"] = ""
+            else:
+                defaultParam = js["parameters"][param]["default"]
+                if defaultParam == None or defaultParam == "null":
+                    js["parameters"][param]["default"] = ""
 
-    if len(requiredParameters) > 0:
+        if len(requiredParameters) > 0:
 
-        rst += f".. list-table:: Required Parameters\n"
-        rst += f"\t:header-rows: 1\n"
-        rst += f"\t:widths: 20 20 20 20\n"
-        rst += f"\t:stub-columns: 1\n\n"
-        rst += f"\t* - Name\n"
-        rst += f"\t  - Description\n"
-        rst += f"\t  - Type\n"
-        rst += f"\t  - Default\n"
+            rst += f".. list-table:: Required Parameters\n"
+            rst += f"\t:header-rows: 1\n"
+            rst += f"\t:widths: 20 20 20 20\n"
+            rst += f"\t:stub-columns: 1\n\n"
+            rst += f"\t* - Name\n"
+            rst += f"\t  - Description\n"
+            rst += f"\t  - Type\n"
+            rst += f"\t  - Default\n"
 
-    for param in requiredParameters:
+        for param in requiredParameters:
 
-        if param in js["parameters"]:
-            paramInfo = js["parameters"][param]
-            rst += f"\t* - {param}\n"
-            rst += f"\t  - {paramInfo['description']}\n"
-            rst += f"\t  - {paramInfo['type']}\n"
-            rst += f"\t  - {paramInfo['default']}\n"
-        else:
-            print(f"Warning: {param} not found in docstring")
+            if param in js["parameters"]:
+                paramInfo = js["parameters"][param]
+                rst += f"\t* - {param}\n"
+                rst += f"\t  - {paramInfo['description']}\n"
+                rst += f"\t  - {paramInfo['type']}\n"
+                rst += f"\t  - {paramInfo['default']}\n"
+            else:
+                print(f"Warning: {param} not found in docstring")
 
-    if len(availableParameters) - len(requiredParameters) > 0:
-        rst += f".. list-table:: Optional Parameters\n"
-        rst += f"\t:header-rows: 1\n"
-        rst += f"\t:widths: 20 20 20 20\n"
-        rst += f"\t:stub-columns: 1\n\n"
-        rst += f"\t* - Name\n"
-        rst += f"\t  - Description\n"
-        rst += f"\t  - Type\n"
-        rst += f"\t  - Default\n"
+        if len(availableParameters) - len(requiredParameters) > 0:
+            rst += f".. list-table:: Optional Parameters\n"
+            rst += f"\t:header-rows: 1\n"
+            rst += f"\t:widths: 20 20 20 20\n"
+            rst += f"\t:stub-columns: 1\n\n"
+            rst += f"\t* - Name\n"
+            rst += f"\t  - Description\n"
+            rst += f"\t  - Type\n"
+            rst += f"\t  - Default\n"
 
-    for param in availableParameters:
-        if param in requiredParameters:
-            continue
-        if param in js["parameters"]:
-            paramInfo = js["parameters"][param]
-            rst += f"\t* - {param}\n"
-            rst += f"\t  - {paramInfo['description']}\n"
-            rst += f"\t  - {paramInfo['type']}\n"
-            rst += f"\t  - {paramInfo['default']}\n"
-        else:
-            print(f"Warning: {param} not found in docstring")
+        for param in availableParameters:
+            if param in requiredParameters:
+                continue
+            if param in js["parameters"]:
+                paramInfo = js["parameters"][param]
+                rst += f"\t* - {param}\n"
+                rst += f"\t  - {paramInfo['description']}\n"
+                rst += f"\t  - {paramInfo['type']}\n"
+                rst += f"\t  - {paramInfo['default']}\n"
+            else:
+                print(f"Warning: {param} not found in docstring")
+
+    if "selections" in js:
+
+        if len(requiredSelections) > 0:
+            rst += f".. list-table:: Required Selections\n"
+            rst += f"\t:header-rows: 1\n"
+            rst += f"\t:widths: 20 20 20\n"
+            rst += f"\t:stub-columns: 1\n\n"
+            rst += f"\t* - Name\n"
+            rst += f"\t  - Description\n"
+            rst += f"\t  - Type\n"
+
+        for selection in requiredSelections:
+            if selection in js["selections"]:
+                selectionInfo = js["selections"][selection]
+                rst += f"\t* - {selection}\n"
+                rst += f"\t  - {selectionInfo['description']}\n"
+                rst += f"\t  - {selectionInfo['type']}\n"
+            else:
+                print(f"Warning: {selection} not found in docstring")
+
+        if len(availableSelections) - len(requiredSelections) > 0:
+            rst += f".. list-table:: Optional Selections\n"
+            rst += f"\t:header-rows: 1\n"
+            rst += f"\t:widths: 20 20 20\n"
+            rst += f"\t:stub-columns: 1\n\n"
+            rst += f"\t* - Name\n"
+            rst += f"\t  - Description\n"
+            rst += f"\t  - Type\n"
+
+        for selection in availableSelections:
+            if selection in requiredSelections:
+                continue
+            if selection in js["selections"]:
+                selectionInfo = js["selections"][selection]
+                rst += f"\t* - {selection}\n"
+                rst += f"\t  - {selectionInfo['description']}\n"
 
     if "example" in js:
         # Add an example inside a code block
@@ -106,7 +145,16 @@ def json_to_rst(js,availableParameters,requiredParameters):
             if type(js["example"][param]) == str:
                 rst += f"\n\t\t\"{param}\": \"{js['example'][param]}\","
             else:
-                rst += f"\n\t\t\"{param}\": {js['example'][param]},"
+                if param == "parameters":
+                    rst += f"\n\t\t\"parameters\":{{"
+                    for p in js["example"][param]:
+                        if type(js["example"][param][p]) == str:
+                            rst += f"\n\t\t\t\"{p}\": \"{js['example'][param][p]}\","
+                        else:
+                            rst += f"\n\t\t\t\"{p}\": {js['example'][param][p]},"
+                    rst = rst[:-1] + "\n\t\t},"
+                else:
+                    rst += f"\n\t\t\"{param}\": {js['example'][param]},"
         rst = rst[:-1] + "\n\t}\n\n"
 
     if "references" in js:
@@ -115,17 +163,17 @@ def json_to_rst(js,availableParameters,requiredParameters):
             rst += f"\t{ref}\n\n"
 
     # Special boxes
-    if "notes" in js:
+    if "note" in js:
         rst += f".. note::\n\n"
-        rst += f"\t{js['notes']}\n\n"
+        rst += f"\t{js['note']}\n\n"
 
-    if "warnings" in js:
+    if "warning" in js:
         rst += f".. warning::\n\n"
-        rst += f"\t{js['warnings']}\n\n"
+        rst += f"\t{js['warning']}\n\n"
 
-    if "tips" in js:
+    if "tip" in js:
         rst += f".. tip::\n\n"
-        rst += f"\t{js['tips']}\n\n"
+        rst += f"\t{js['tip']}\n\n"
 
     return rst
 
@@ -164,6 +212,7 @@ def process_string_value(key,value):
     string_end = pos
 
     string = value_tmp[string_start:string_end]
+    #print("start",string)
     value_tmp = value_tmp.replace(string, "\"\"")
 
     # Clean up the string
@@ -180,6 +229,8 @@ def process_string_value(key,value):
     # Remove " from the beginning and end of the string
     string = string[1:-1]
 
+    #print("final",string)
+
     return value_tmp, string
 
 def format_docstring(name,obj):
@@ -191,6 +242,13 @@ def format_docstring(name,obj):
     try:
         availableParameters = obj.availableParameters
         requiredParameters  = obj.requiredParameters
+
+        try:
+            availableSelections = obj.availableSelections
+            requiredSelections  = obj.requiredSelections
+        except:
+            availableSelections = None
+            requiredSelections  = None
 
         docstring = fix_multiline_json(docstring)
 
@@ -206,14 +264,12 @@ def format_docstring(name,obj):
             doc = json.loads(docstring)
 
         # Convert the JSON to rst
-        rst = json_to_rst(doc,availableParameters,requiredParameters)
+        rst = json_to_rst(doc,availableParameters,requiredParameters,
+                              availableSelections,requiredSelections)
         #Print Success using green color
         print(f"\033[92mSuccess\033[0m")
-    except json.JSONDecodeError as e:
+    except Exception as e:
         print(f"\033[91mError\033[0m parsing docstring for {name}, parsing as plain text.\nError message:\n    {e}")
-        rst = docstring
-    except:
-        print(f"\033[91mError\033[0m parsing docstring for {name}, parsing as plain text.")
         rst = docstring
 
     return name, rst

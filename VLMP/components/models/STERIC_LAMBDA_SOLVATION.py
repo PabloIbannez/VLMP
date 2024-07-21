@@ -7,40 +7,83 @@ import numpy as np
 from VLMP.components.models import modelBase
 
 class STERIC_LAMBDA_SOLVATION(modelBase):
-
     """
-    Component name: STERIC_LAMBDA_SOLVATION
-    Component type: model
-
-    Author: Pablo Ibáñez-Freire
-    Date: 02/01/2024
-
-    steric lambda solvation model.
-
-    :param concentration: Concentration of the solute in the solvent (in N/V units)
-    :type concentration: float
-    :param condition: Condition for the interaction. Options: "inter", "intra" ...
-    :type condition: str, default="inter"
-    :param epsilon: epsilon parameter of the steric potential
-    :type epsilon: float
-    :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
-    :type cutOffFactor: float
-    :alpha: alpha parameter of the steric potential
-    :type alpha: float, default=0.5
-    :param addVerletList: If True, a Verlet list will be created for the interactions.
-    :type addVerletList: bool, optional, default=True
-    :param particleName: Name of the particle to be added to the system.
-    :type particleName: str, optional, default="W"
-    :param particleMass: Mass of the particle to be added to the system.
-    :type particleMass: float, optional, default=1.0
-    :param particleRadius: Radius of the particle to be added to the system.
-    :type particleRadius: float, optional, default=1.0
-    :param particleCharge: Charge of the particle to be added to the system.
-    :type particleCharge: float, optional, default=0.0
-    :param padding: Padding to be added to the box to place the particle.
-    :type padding: two lists of three floats, optional, default=[[0.0,0.0,0.0],[0.0,0.0,0.0]]
-
-    ...
+    {"author": "Pablo Ibáñez-Freire",
+     "description":
+     "STERIC_LAMBDA_SOLVATION model for simulating solvation effects with steric interactions
+      and lambda coupling. This model implements a coarse-grained representation of solvent
+      particles interacting with solute molecules, incorporating both steric repulsion and
+      a lambda parameter for coupling strength.
+      <p>
+      The model uses a soft-core potential to represent steric interactions, which allows
+      for smooth transitions in free energy calculations. The lambda parameter can be used
+      to gradually turn on or off the interactions, making this model particularly useful
+      for free energy perturbation and thermodynamic integration studies.
+      <p>
+      Key features of the model include:
+      <p>
+      - Customizable concentration of solvent particles
+      <p>
+      - Adjustable steric interaction parameters (epsilon, cutoff)
+      <p>
+      - Lambda coupling for smooth free energy calculations
+      <p>
+      - Option to add a Verlet list for efficient neighbor searching
+      <p>
+      - Flexible boundary conditions with customizable box padding
+      <p>
+      The lambda coupling can be also used to create the inital conditions,
+      starting from lambda=0 and gradually increasing the value to 1.
+     ",
+     "parameters":{
+        "concentration":{"description":"Concentration of the solute in the solvent (in N/V units).",
+                         "type":"float"},
+        "condition":{"description":"Condition for the interaction. Options: 'inter', 'intra', etc.",
+                     "type":"str",
+                     "default":"inter"},
+        "epsilon":{"description":"Epsilon parameter of the steric potential.",
+                   "type":"float",
+                   "default":1.0},
+        "cutOffFactor":{"description":"Factor to multiply the sigma parameter to obtain the cut-off distance.",
+                        "type":"float",
+                        "default":1.5},
+        "alpha":{"description":"Alpha parameter of the steric potential for soft-core behavior.",
+                 "type":"float",
+                 "default":0.5},
+        "addVerletList":{"description":"If True, a Verlet list will be created for the interactions.",
+                         "type":"bool",
+                         "default":true},
+        "particleName":{"description":"Name of the particle to be added to the system.",
+                        "type":"str",
+                        "default":"W"},
+        "particleMass":{"description":"Mass of the particle to be added to the system.",
+                        "type":"float",
+                        "default":1.0},
+        "particleRadius":{"description":"Radius of the particle to be added to the system.",
+                          "type":"float",
+                          "default":1.0},
+        "particleCharge":{"description":"Charge of the particle to be added to the system.",
+                          "type":"float",
+                          "default":0.0},
+        "padding":{"description":"Padding to be added to the box to place the particle.",
+                   "type":"list of two lists of three floats",
+                   "default":[[0.0,0.0,0.0],[0.0,0.0,0.0]]}
+     },
+     "example":"
+         {
+            \"type\":\"STERIC_LAMBDA_SOLVATION\",
+            \"parameters\":{
+                \"concentration\":0.1,
+                \"epsilon\":1.0,
+                \"cutOffFactor\":2.0,
+                \"alpha\":0.5,
+                \"particleRadius\":0.5,
+                \"padding\":[[1.0,1.0,1.0],[1.0,1.0,1.0]]
+            }
+         }
+        ",
+     "note": "The model requires a ensemble with a lambda parameter. Otherwise, the simulation will fail."
+    }
     """
 
     availableParameters = {"concentration",
@@ -81,6 +124,13 @@ class STERIC_LAMBDA_SOLVATION(modelBase):
         particleCharge = params.get("particleCharge",0.0)
 
         padding = params.get("padding",[[0.0,0.0,0.0],[0.0,0.0,0.0]])
+
+        if(not self.getEnsemble().isEnsembleComponent("box")):
+            self.logger.error("[STERIC_LAMBDA_SOLVATION] The ensemble does not have a box component.")
+            return
+        if(not self.getEnsemble().isEnsembleComponent("lambda")):
+            self.logger.error("[STERIC_LAMBDA_SOLVATION] The ensemble does not have a lambda component.")
+            return
 
         ############################################################
         # Adding particles
