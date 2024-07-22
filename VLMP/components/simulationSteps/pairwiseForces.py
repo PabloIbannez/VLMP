@@ -6,12 +6,26 @@ from . import simulationStepBase
 
 class pairwiseForces(simulationStepBase):
     """
-    Component name: pairwiseForces
-    Component type: simulationStep
-
-    Author: Pablo Palacios-Alonso
-    Date: 11/03/2024
-
+    {
+        "author": "Pablo Palacios-Alonso",
+        "description": "Measures pairwise forces between particles in the simulation.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file where pairwise forces will be written.",
+                "type": "str",
+                "default": null
+            }
+        },
+        "selections": {},
+        "example": "
+        {
+            \"type\": \"pairwiseForces\",
+            \"parameters\": {
+                \"outputFilePath\": \"pairwise_forces.dat\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

@@ -6,18 +6,32 @@ from . import simulationStepBase
 
 class meanSquareDisplacement(simulationStepBase):
     """
-    Component name: meanSquareDisplacement
-    Component type: simulationStep
-
-    Author: Pablo Diez-Silva
-    Date: 04/06/2024
-
-    This component measures the mean square displacement of the particles in the simulation.
-    The mean square displacement is calculated as the average of the square of the distance between the particles and their initial position.
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-
+    {
+        "author": "Pablo Diez-Silva",
+        "description": "Calculates the mean square displacement (MSD) of selected particles over time.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for MSD measurements.",
+                "type": "str",
+                "default": "msd.dat"
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for MSD calculation.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"meanSquareDisplacement\",
+            \"parameters\": {
+                \"outputFilePath\": \"msd_data.dat\",
+                \"selection\": \"model1 type diffusive\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

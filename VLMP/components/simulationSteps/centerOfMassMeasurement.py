@@ -6,17 +6,32 @@ from . import simulationStepBase
 
 class centerOfMassMeasurement(simulationStepBase):
     """
-    Component name: centerOfMassMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 09/04/2023
-
-    This component measures the center of mass of the particles in the simulation.
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures the center of mass of a selected group of particles throughout the simulation.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for center of mass measurements.",
+                "type": "str",
+                "default": "com.dat"
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for center of mass calculation.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"centerOfMassMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"com_data.dat\",
+                \"selection\": \"model1 type A B C\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

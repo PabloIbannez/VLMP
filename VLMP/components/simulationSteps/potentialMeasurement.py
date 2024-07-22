@@ -6,12 +6,32 @@ from . import simulationStepBase
 
 class potentialMeasurement(simulationStepBase):
     """
-    Component name: potentialMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 09/04/2023
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures the potential of individual particles in the simulation.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for potential measurements.",
+                "type": "str",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for potential measurement.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"potentialMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"particle_potentials.dat\",
+                \"selection\": \"model1 type B\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

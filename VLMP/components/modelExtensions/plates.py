@@ -3,23 +3,60 @@ import numpy as np
 from VLMP.components.modelExtensions import modelExtensionBase
 
 class plates(modelExtensionBase):
-
     """
-    Component name: plates
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    Common epsilon, sigma plates for particles in the system.
-
-    :param platesSeparation: Distance between plates.
-    :param epsilon: Energy parameter for the plates.
-    :param sigma: Length parameter for the plates.
-    :param compressionVelocity: Velocity at which the plates are compressed.
-    :param minPlatesSeparation: Minimum distance between plates.
-    :param maxPlatesSeparation: Maximum distance between plates.
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Adds two parallel plates to the simulation box, typically used for confinement.",
+        "parameters": {
+            "platesSeparation": {
+                "description": "Distance between the two plates.",
+                "type": "float",
+                "default": null
+            },
+            "epsilon": {
+                "description": "Energy parameter for plate-particle interactions.",
+                "type": "float",
+                "default": null
+            },
+            "sigma": {
+                "description": "Distance parameter for plate-particle interactions.",
+                "type": "float",
+                "default": null
+            },
+            "compressionVelocity": {
+                "description": "Velocity at which the plates are compressed.",
+                "type": "float",
+                "default": 0.0
+            },
+            "minPlatesSeparation": {
+                "description": "Minimum allowed separation between plates.",
+                "type": "float",
+                "default": null
+            },
+            "maxPlatesSeparation": {
+                "description": "Maximum allowed separation between plates.",
+                "type": "float",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles that interact with the plates.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"plates\",
+            \"parameters\": {
+                \"platesSeparation\": 20.0,
+                \"epsilon\": 1.0,
+                \"sigma\": 1.0,
+                \"selection\": \"model1 all\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {'platesSeparation',

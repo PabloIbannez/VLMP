@@ -6,22 +6,44 @@ from . import simulationStepBase
 
 class patchPolymersMeasurement(simulationStepBase):
     """
-    Component name: patchPolymers
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 7/05/2023
-
-    This step is used to measure properties of the
-    polymers created by dynamic bonded patchy particles.
-    It computes size of the polymers and if they are
-    bonded to the surface or not.
-
-    :param startStep: First step to apply the simulationStep
-    :type startStep: int, optional
-    :param endStep: Last step to apply the simulationStep
-    :type endStep: int, optional
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures properties of polymers created by dynamic bonded patchy particles, including size and surface bonding.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for polymer measurements.",
+                "type": "str",
+                "default": null
+            },
+            "bufferSize": {
+                "description": "Size of the buffer for measurements.",
+                "type": "int",
+                "default": null
+            },
+            "surfaceEnergyThreshold": {
+                "description": "Energy threshold for determining surface bonding.",
+                "type": "float",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of patchy particles to measure.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"patchPolymersMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"patch_polymers.dat\",
+                \"bufferSize\": 1000,
+                \"surfaceEnergyThreshold\": -1.0,
+                \"selection\": \"model1 type patchy\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath","bufferSize","surfaceEnergyThreshold"}

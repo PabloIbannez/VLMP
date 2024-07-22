@@ -6,9 +6,32 @@ from . import simulationStepBase
 
 class nativeContactsMeasurement(simulationStepBase):
     """
-    Component name: nativeContactsMeasurement
-    Component type: simulationStep
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures the native contacts between selected pairs of particles, typically used in protein folding simulations.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for native contacts measurements.",
+                "type": "str",
+                "default": "native_contacts.dat"
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particle pairs for native contacts measurement.",
+                "type": "list of pairs"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"nativeContactsMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"contacts_data.dat\",
+                \"selection\": \"model1 contacts 1:5 6:10 11:15\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

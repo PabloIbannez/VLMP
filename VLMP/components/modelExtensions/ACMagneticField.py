@@ -7,22 +7,25 @@ import numpy as np
 from . import modelExtensionBase
 
 class ACMagneticField(modelExtensionBase):
-
     """
-    Component name: ACMagneticField
-    Component type: modelExtension
-
-    Author: P. Palacios-Alonso
-    Date: 16/10/2023
-
-    Alternating current (AC) magnetic field applied to a selection of magnetic particles
-
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
-
-    ...
+    {
+        "author": "P. Palacios-Alonso",
+        "description": "Applies an alternating current (AC) magnetic field to selected magnetic particles.",
+        "parameters": {
+            "b0": {"description": "Amplitude of the magnetic field", "type": "float", "default": null},
+            "frequency": {"description": "Frequency of the AC field", "type": "float", "default": null},
+            "direction": {"description": "Direction of the magnetic field", "type": "list of float", "default": [0, 0, 1]}
+        },
+        "example": "
+        {
+            \"type\": \"ACMagneticField\",
+            \"parameters\": {
+                \"b0\": 1.0,
+                \"frequency\": 100.0,
+                \"direction\": [0, 0, 1]
+            }
+        }"
+    }
     """
 
     availableParameters = {"b0", "frequency", "direction"}

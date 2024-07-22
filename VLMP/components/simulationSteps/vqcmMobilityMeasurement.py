@@ -6,12 +6,92 @@ from . import simulationStepBase
 
 class vqcmMeasurementFromMobility(simulationStepBase):
     """
-    Component name: vqcmMobilityMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Palacios-Alonso
-    Date: 01/04/2024
-
+    {
+        "author": "Pablo Palacios-Alonso",
+        "description": "Performs Virtual Quartz Crystal Microbalance (VQCM) measurements from mobility data to study viscoelastic properties of the system.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for VQCM measurements.",
+                "type": "str",
+                "default": null
+            },
+            "f0": {
+                "description": "Fundamental frequency of the quartz crystal.",
+                "type": "float",
+                "default": null
+            },
+            "overtone": {
+                "description": "Overtone number for the measurement.",
+                "type": "int",
+                "default": null
+            },
+            "hydrodynamicRadius": {
+                "description": "Hydrodynamic radius of the particles.",
+                "type": "float",
+                "default": null
+            },
+            "viscosity": {
+                "description": "Viscosity of the fluid.",
+                "type": "float",
+                "default": null
+            },
+            "vwall": {
+                "description": "Velocity of the wall.",
+                "type": "float",
+                "default": null
+            },
+            "fluidDensity": {
+                "description": "Density of the fluid.",
+                "type": "float",
+                "default": null
+            },
+            "kernel": {
+                "description": "Kernel function for force calculation. Options: 'Gaussian' or 'Peskin3p'.",
+                "type": "str",
+                "default": "Peskin3p"
+            },
+            "tolerance": {
+                "description": "Tolerance for Gaussian kernel. Only used if kernel is 'Gaussian'.",
+                "type": "float",
+                "default": 1e-5
+            },
+            "h": {
+                "description": "Step size for numerical integration. If 0, it's computed automatically.",
+                "type": "float",
+                "default": 0.0
+            },
+            "resonatorImpedance": {
+                "description": "Impedance of the resonator. If -1, it's ignored by UAMMD.",
+                "type": "float",
+                "default": -1.0
+            },
+            "tetherInteractorNames": {
+                "description": "List of names for tether interactors.",
+                "type": "list of str",
+                "default": null
+            }
+        },
+        "selections": {},
+        "example": "
+        {
+            \"type\": \"vqcmMeasurementFromMobility\",
+            \"parameters\": {
+                \"outputFilePath\": \"vqcm_mobility_results.dat\",
+                \"f0\": 5e6,
+                \"overtone\": 3,
+                \"hydrodynamicRadius\": 1e-9,
+                \"viscosity\": 1e-3,
+                \"vwall\": 1e-3,
+                \"fluidDensity\": 1000,
+                \"kernel\": \"Gaussian\",
+                \"tolerance\": 1e-6,
+                \"h\": 1e-6,
+                \"resonatorImpedance\": 1e6,
+                \"tetherInteractorNames\": [\"tether1\", \"tether2\"]
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath",

@@ -8,26 +8,30 @@ import numpy as np
 from . import modelExtensionBase
 
 class constraintCenterOfMassPosition(modelExtensionBase):
-
     """
-    Component name: constraintCenterOfMassPosition
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 14/03/2023
-
-    Apply a constraint to the center of mass of a selection of particles
-
-    :param selection: Selection of particles where the constraint will be applied
-    :type selection: list of dictionaries
-    :param K: Stiffness of the constraint
-    :type K: float
-    :param r0: Distance between the center of mass and the constraint position
-    :type r0: float
-    :param position: Position of the center of mass of the selection
-    :type position: list of floats
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a constraint to the center of mass of a selection of particles.
+                        The potential energy of the constraint is given by a harmonic potential.",
+        "parameters": {
+            "K": {"description": "Spring constant for the constraint", "type": "float or list of float", "default": null},
+            "r0": {"description": "Equilibrium distance from the constraint position", "type": "float", "default": null},
+            "position": {"description": "Position to constrain the center of mass to", "type": "list of float", "default": null}
+        },
+        "selections": {
+            "selection": {"description": "Particles to apply the constraint to", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"constraintCenterOfMassPosition\",
+            \"parameters\": {
+                \"K\": [100.0, 100.0, 0.0],
+                \"r0\": 0.0,
+                \"position\": [0.0, 0.0, 0.0],
+                \"selection\": \"model1\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"K","r0","position"}

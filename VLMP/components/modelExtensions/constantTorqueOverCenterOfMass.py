@@ -7,22 +7,25 @@ import numpy as np
 from . import modelExtensionBase
 
 class constantTorqueOverCenterOfMass(modelExtensionBase):
-
     """
-    Component name: constantTorqueOverCenterOfMass
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
-
-    Constant torque over center of mass
-
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param torque: Torque applied to the center of mass
-    :type torque: list of floats
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a constant torque to the center of mass of selected particles.",
+        "parameters": {
+            "torque": {"description": "Torque vector to be applied", "type": "list of float", "default": null}
+        },
+        "selections": {
+            "selection": {"description": "Particles to apply the torque to", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"constantTorqueOverCenterOfMass\",
+            \"parameters\": {
+                \"torque\": [0.0, 0.0, 1.0],
+                \"selection\": \"model1 type ROTOR\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"torque"}

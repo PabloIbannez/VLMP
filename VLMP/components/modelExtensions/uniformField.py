@@ -7,22 +7,23 @@ import numpy as np
 from . import modelExtensionBase
 
 class uniformMagneticField(modelExtensionBase):
-
     """
-    Component name: uniformMagneticField
-    Component type: modelExtension
-
-    Author: P. Palacios-Alonso
-    Date: 16/10/2023
-
-    Alternating current (Uniform) magnetic field applied to a selection of magnetic particles
-
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
-
-    ...
+    {
+        "author": "P. Palacios-Alonso",
+        "description": "Applies a uniform magnetic field to selected magnetic particles in the simulation.",
+        "parameters": {
+            "b0": {"description": "Magnitude of the magnetic field", "type": "float", "default": null},
+            "direction": {"description": "Direction of the magnetic field", "type": "list of float", "default": [0, 0, 1]}
+        },
+        "example": "
+        {
+            \"type\": \"uniformMagneticField\",
+            \"parameters\": {
+                \"b0\": 1.0,
+                \"direction\": [0, 0, 1]
+            }
+        }"
+    }
     """
 
     availableParameters = {"b0"}

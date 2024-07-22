@@ -6,12 +6,25 @@ from . import simulationStepBase
 
 class afmMeasurement(simulationStepBase):
     """
-    Component name: afmMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Performs measurements for Atomic Force Microscopy (AFM) simulations, recording force-distance data.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for AFM measurements.",
+                "type": "str",
+                "default": "afm_measurement.dat"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"afmMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"afm_data.dat\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

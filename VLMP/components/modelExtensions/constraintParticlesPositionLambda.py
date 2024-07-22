@@ -8,24 +8,42 @@ import numpy as np
 from . import modelExtensionBase
 
 class constraintParticlesPositionLambda(modelExtensionBase):
-
     """
-    Component name: constraintParticlesPositionLambda
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 5/12/2023
-
-    Apply a lambda constraint to the position of a set of particles.
-
-    :param selection: Selection of particles where the constraint will be applied
-    :type selection: list of dictionaries
-    :param K: Stiffness of the constraint
-    :type K: float
-    :param n: Exponent of the constraint
-    :type n: float
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a lambda-dependent positional constraint to a selection of particles.
+                        The applied potential is an harmonic potential with a lambda-dependent spring constant.
+                        (lambda^(n))",
+        "parameters": {
+            "K": {
+                "description": "Spring constant for the constraint.",
+                "type": "float or list of float",
+                "default": null
+            },
+            "n": {
+                "description": "Exponent for the lambda dependence.",
+                "type": "int",
+                "default": 2
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles to be constrained.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"constraintParticlesPositionLambda\",
+            \"parameters\": {
+                \"K\": [100.0, 100.0, 100.0],
+                \"n\": 2,
+                \"selection\": \"model1 type A B C\"
+            }
+        }
+        ",
+        "warning": "This potential requires an ensemble which includes the 'Lambda' variable."
+    }
     """
 
     availableParameters = {"K","n"}

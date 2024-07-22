@@ -6,23 +6,31 @@ from . import simulationStepBase
 
 class lambdaActivation(simulationStepBase):
     """
-    Component name: lambdaActivation
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 03/01/2023
-
-    Lambda activation.
-
-    :param activationStep: Activation step.
-    :type activationStep: int
-    :param measureStep: Measure step.
-    :type measureStep: int
-    :param pauseStep: Pause step.
-    :type pauseStep: int
-    :param lambdaValues: Lambda values.
-    :type lambdaValues: list
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Controls the activation of lambda parameter in thermodynamic integration simulations.",
+        "parameters": {
+            "lambdaValueStep": {
+                "description": "Step size for changing lambda value.",
+                "type": "float",
+                "default": 0.1
+            },
+            "lambdaValues": {
+                "description": "List of lambda values to use in the simulation.",
+                "type": "list of float",
+                "default": [0.0, 1.0]
+            }
+        },
+        "example": "
+        {
+            \"type\": \"lambdaActivation\",
+            \"parameters\": {
+                \"lambdaValueStep\": 0.1,
+                \"lambdaValues\": [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"lambdaValueStep","lambdaValues"}

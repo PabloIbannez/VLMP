@@ -4,16 +4,29 @@ import numpy as np
 from scipy.optimize import fsolve
 
 class surfaceMaxForce(modelExtensionBase):
-
     """
-    Component name: surfaceMaxForce
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    Common epsilon, sigma surface for particles in the system.
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Implements a surface interaction with a maximum force constraint.",
+        "parameters": {
+            "epsilon": {"description": "Energy parameter for surface-particle interaction", "type": "float", "default": null},
+            "surfacePosition": {"description": "Z-coordinate of the surface", "type": "float", "default": null},
+            "maxForce": {"description": "Maximum force allowed in the interaction", "type": "float", "default": null}
+        },
+        "selections": {
+            "selection": {"description": "Particles interacting with the surface", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"surfaceMaxForce\",
+            \"parameters\": {
+                \"epsilon\": 1.0,
+                \"surfacePosition\": -10.0,
+                \"maxForce\": 100.0,
+                \"selection\": \"model1 all\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"epsilon",

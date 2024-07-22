@@ -4,6 +4,7 @@ import inspect
 import json
 import copy
 import re
+from collections import OrderedDict
 
 base = "VLMP.components"
 available_components = ["systems",
@@ -75,7 +76,8 @@ def json_to_rst(js,availableParameters,requiredParameters,
                 rst += f"\t  - {paramInfo['type']}\n"
                 rst += f"\t  - {paramInfo['default']}\n"
             else:
-                print(f"Warning: {param} not found in docstring")
+                # Use yellow color for warnings
+                print(f"\033[93mWarning\033[0m: {param} not found in docstring")
 
         if len(availableParameters) - len(requiredParameters) > 0:
             rst += f".. list-table:: Optional Parameters\n"
@@ -97,7 +99,7 @@ def json_to_rst(js,availableParameters,requiredParameters,
                 rst += f"\t  - {paramInfo['type']}\n"
                 rst += f"\t  - {paramInfo['default']}\n"
             else:
-                print(f"Warning: {param} not found in docstring")
+                print(f"\033[93mWarning\033[0m: {param} not found in docstring")
 
     if "selections" in js:
 
@@ -117,7 +119,7 @@ def json_to_rst(js,availableParameters,requiredParameters,
                 rst += f"\t  - {selectionInfo['description']}\n"
                 rst += f"\t  - {selectionInfo['type']}\n"
             else:
-                print(f"Warning: {selection} not found in docstring")
+                print(f"\033[93mWarning\033[0m: {param} not found in docstring")
 
         if len(availableSelections) - len(requiredSelections) > 0:
             rst += f".. list-table:: Optional Selections\n"
@@ -135,6 +137,7 @@ def json_to_rst(js,availableParameters,requiredParameters,
                 selectionInfo = js["selections"][selection]
                 rst += f"\t* - {selection}\n"
                 rst += f"\t  - {selectionInfo['description']}\n"
+                rst += f"\t  - {selectionInfo['type']}\n"
 
     if "example" in js:
         # Add an example inside a code block
@@ -235,8 +238,6 @@ def process_string_value(key,value):
 
 def format_docstring(name,obj):
 
-    print(f"Processing {name} ...")
-
     docstring = obj.__doc__
 
     try:
@@ -267,9 +268,10 @@ def format_docstring(name,obj):
         rst = json_to_rst(doc,availableParameters,requiredParameters,
                               availableSelections,requiredSelections)
         #Print Success using green color
-        print(f"\033[92mSuccess\033[0m")
+        print(f"\033[92mSuccess\033[0m -> {name}")
     except Exception as e:
-        print(f"\033[91mError\033[0m parsing docstring for {name}, parsing as plain text.\nError message:\n    {e}")
+        print(f"\033[91mError\033[0m -> {name}. \nError message:\n    {e}")
+        print(f"Docstring:\n{docstring}")
         rst = docstring
 
     return name, rst
@@ -288,7 +290,7 @@ def iterate_classes_in_module(module):
     return doc
 
 def iterate_submodules(package_name):
-    doc = {}
+    doc = OrderedDict()
     package = importlib.import_module(package_name)
     for _, modname, ispkg in pkgutil.iter_modules(package.__path__):
         full_module_name = f"{package_name}.{modname}"
@@ -306,8 +308,15 @@ for component_type in available_components:
 
     doc = iterate_submodules(f"{base}.{component_type}")
 
+    #Sort the dictionary in alphabetical order
+    doc = OrderedDict(sorted(doc.items()))
+
     component_name = component_type[0].upper() + component_type[1:]
     fileName       = component_name + ".rst"
+
+    ref_list = []
+    for name in doc:
+        ref_list.append(f"{name}")
 
     with open(fileName, "w") as f:
         f.write(f"{component_name}\n")
@@ -315,7 +324,13 @@ for component_type in available_components:
 
         f.write(f".. include:: {component_name}Intro.rst\n\n")
 
+        for ref in ref_list:
+            f.write(f"- :ref:`{ref}`\n\n")
+
+        f.write("\n\n")
+
         for name, docstring in doc.items():
+            f.write(f"----\n\n")
             f.write(f"{name}\n")
             f.write("-" * len(name) + "\n\n")
             f.write(f"{docstring}\n\n")

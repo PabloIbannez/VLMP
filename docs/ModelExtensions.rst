@@ -3,511 +3,1433 @@ ModelExtensions
 
 .. include:: ModelExtensionsIntro.rst
 
+- :ref:`ACMagneticField`
+
+- :ref:`AFM`
+
+- :ref:`LennardJones`
+
+- :ref:`WCA`
+
+- :ref:`absortionSurface`
+
+- :ref:`addBond`
+
+- :ref:`constantForce`
+
+- :ref:`constantForceBetweenCentersOfMass`
+
+- :ref:`constantForceOverCenterOfMass`
+
+- :ref:`constantTorqueBetweenCentersOfMass`
+
+- :ref:`constantTorqueOverCenterOfMass`
+
+- :ref:`constraintCenterOfMassPosition`
+
+- :ref:`constraintParticlesListPositionLambda`
+
+- :ref:`constraintParticlesPosition`
+
+- :ref:`constraintParticlesPositionLambda`
+
+- :ref:`harmonicBondBetweenCentersOfMass`
+
+- :ref:`helixBoundaries`
+
+- :ref:`plates`
+
+- :ref:`sphericalShell`
+
+- :ref:`steric`
+
+- :ref:`surface`
+
+- :ref:`surfaceMaxForce`
+
+- :ref:`uniformMagneticField`
+
+
+
+----
+
 ACMagneticField
 ---------------
 
+	:author: P. Palacios-Alonso
 
-    Component name: ACMagneticField
-    Component type: modelExtension
+ Applies an alternating current (AC) magnetic field to selected magnetic particles.
 
-    Author: P. Palacios-Alonso
-    Date: 16/10/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Alternating current (AC) magnetic field applied to a selection of magnetic particles
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - b0
+	  - Amplitude of the magnetic field
+	  - float
+	  - 
+	* - frequency
+	  - Frequency of the AC field
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - direction
+	  - Direction of the magnetic field
+	  - list of float
+	  - [0, 0, 1]
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "ACMagneticField",
+		"parameters":{
+			"b0": 1.0,
+			"frequency": 100.0,
+			"direction": [0, 0, 1]
+		}
+	}
+
+
+
+----
 
 AFM
 ---
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: AFM
-    Component type: modelExtension
+ Atomic Force Microscopy (AFM) model extension for simulating AFM experiments. This extension add an interaction between a particle (the tip) and other set of particles (the sample). The interaction between the tip and the sample is modeled as a Lennard-Jones potential. The tip is modeled as a spherical particle with a spring attached to it.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    AFM model extension.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - epsilon
+	  - Energy parameter for tip-sample interaction
+	  - float
+	  - 
+	* - tipVelocity
+	  - Velocity of the AFM tip
+	  - float
+	  - 
+	* - K
+	  - Spring constant for the AFM cantilever
+	  - float
+	  - 
+	* - sigma
+	  - Distance parameter for tip-sample interaction
+	  - float
+	  - 
+	* - Kxy
+	  - Lateral spring constant
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param epsilon: epsilon parameter for tip-particle interaction
-    :type epsilon: float
-    :param sigma: sigma parameter for tip-particle interaction
-    :type sigma: float
-    :param K: spring constant
-    :type K: float
-    :param Kxy: xy spring constant
-    :type Kxy: float
-    :param tipVelocity: tip velocity
-    :type tipVelocity: float
-    :param startChipPosition: initial position of the chip
-    :type startChipPosition: list of float [x,y,z]
-    
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - indentationBackwardStep
+	  - Simulation step to start backward indentation
+	  - int
+	  - 
+	* - indentationStartStep
+	  - Simulation step to start indentation
+	  - int
+	  - 0
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	* - tip
+	  - Selection for the AFM tip
+	  - list of with one id, [id]
+	* - sample
+	  - Selection for the sample particles
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "AFM",
+		"parameters":{
+			"K": 1.0,
+			"Kxy": 0.5,
+			"epsilon": 1.0,
+			"sigma": 1.0,
+			"tipVelocity": 0.1,
+			"indentationStartStep": 1000,
+			"tip": "model1 type TIP",
+			"sample": "model2"
+		}
+	}
+
+
+
+----
 
 LennardJones
 ------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: LennardJones
-    Component type: modelExtension
+ Implements Lennard-Jones potential between particles for non-bonded interactions.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 21/09/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Lennard Jones potential between particles.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - cutOffFactor
+	  - Factor to multiply sigma to obtain the cut-off distance
+	  - float
+	  - 
+	* - interactionMatrix
+	  - Matrix of interaction parameters between different types of particles
+	  - list of lists
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param condition: Condition for the interaction. Options: "inter", "intra" ...
-    :type condition: str, default="inter"
-    :param interactionMatrix: Matrix of interaction parameters between different types of particles.
-    :type interactionMatrix: list of lists. Each list is a row of the matrix. Format type1,type2,epsilon,sigma
-    :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
-    :type cutOffFactor: float
-    :param addVerletList: If True, a Verlet list will be created for the interactions.
-    :type addVerletList: bool, optional, default=True
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - addVerletList
+	  - Whether to add a Verlet list for the interactions
+	  - bool
+	  - True
+	* - condition
+	  - Condition for the interaction (e.g., 'inter', 'intra')
+	  - str
+	  - inter
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "LennardJones",
+		"parameters":{
+			"interactionMatrix": [['A', 'B', 1.0, 1.0], ['B', 'B', 0.5, 1.2]],
+			"cutOffFactor": 2.5,
+			"condition": "inter"
+		}
+	}
+
+
+
+----
 
 WCA
 ---
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: WCA
-    Component type: modelExtension
+ Adds Weeks-Chandler-Andersen (WCA) potential interactions between particles.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 02/01/2024
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    WCA potential between particles.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - epsilon
+	  - Energy parameter for the WCA potential.
+	  - float
+	  - 1.0
+	* - cutOffFactor
+	  - Factor to multiply the sigma parameter to obtain the cut-off distance.
+	  - float
+	  - 2.5
+	* - addVerletList
+	  - If True, a Verlet list will be created for the interactions.
+	  - bool
+	  - True
+	* - condition
+	  - Condition for the interaction.
+	  - str
+	  - inter
 
-    :param condition: Condition for the interaction. Options: "inter", "intra" ...
-    :type condition: str, default="inter"
-    :param epsilon: epsilon parameter of the WCA potential
-    :type epsilon: float
-    :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
-    :type cutOffFactor: float
-    :param addVerletList: If True, a Verlet list will be created for the interactions.
-    :type addVerletList: bool, optional, default=True
+Example:
 
-    ...
-    
+.. code-block:: python
+
+	{
+		"type": "WCA",
+		"parameters":{
+			"condition": "inter",
+			"epsilon": 1.0,
+			"cutOffFactor": 2.5,
+			"addVerletList": True,
+			"selection": "model1 all"
+		}
+	}
+
+
+
+----
 
 absortionSurface
 ----------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: absortionSurface
-    Component type: modelExtension
+ Implements an absorption surface that attracts particles within a certain distance. Once the interaction starts this potential add an harmonic contraint to the particles that are below the heightThreshold
 
-    Author: Pablo Ibáñez-Freire
-    Date: 30/08/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    ...
-    
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - heightThreshold
+	  - Height above the surface where absorption starts
+	  - float
+	  - 
+	* - K
+	  - Spring constant for the absorption force
+	  - float
+	  - 
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "absortionSurface",
+		"parameters":{
+			"heightThreshold": 5.0,
+			"K": 10.0
+		}
+	}
+
+
+
+----
 
 addBond
 -------
 
+	:author: Pablo Ibáñez-Freire and Pablo Palacios
 
-    Component name: addBond
-    Component type: modelExtension
+ Adds a harmonic bond between two particles.
 
-    Author: Pablo Ibáñez-Freire and Pablo Palacios
-    Date: 19/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Elastic Network Model (ENM).
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - r0
+	  - Equilibrium distance of the bond
+	  - float
+	  - 
+	* - K
+	  - Spring constant for the bond
+	  - float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param K: Spring constant.
-    :type K: float
-    :param r0: Equilibrium distance.
-    :type r0: float
+	* - Name
+	  - Description
+	  - Type
+	* - selection2
+	  - Second particle in the bond
+	  - list of ids
+	* - selection1
+	  - First particle in the bond
+	  - list of ids
 
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "addBond",
+		"parameters":{
+			"K": 100.0,
+			"r0": 1.0,
+			"selection1": "model1 id 1",
+			"selection2": "model1 id 2"
+		}
+	}
+
+
+
+----
 
 constantForce
 -------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constantForce
-    Component type: modelExtension
+ Applies a constant force to a selection of particles. The force is applied over each individual particle.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 14/03/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Constant force applied to a set of particles
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - force
+	  - Force vector to be applied.
+	  - list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to which the force will be applied.
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constantForce",
+		"parameters":{
+			"force": [0.0, 0.0, -9.8],
+			"selection": "model1 type A B"
+		}
+	}
+
+
+
+----
 
 constantForceBetweenCentersOfMass
 ---------------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constantForceBetweenCentersOfMass
-    Component type: modelExtension
+ Applies a constant force between the centers of mass of two groups of particles.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Constant force between centers of mass of selected particles
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - force
+	  - Magnitude of the force to be applied.
+	  - float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection1: Selection for the first particle group
-    :type selection1: list of dictionaries
-    :param selection2: Selection for the second particle group
-    :type selection2: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: float
+	* - Name
+	  - Description
+	  - Type
+	* - selection2
+	  - Selection for the second group of particles.
+	  - list of ids
+	* - selection1
+	  - Selection for the first group of particles.
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constantForceBetweenCentersOfMass",
+		"parameters":{
+			"force": 10.0,
+			"selection1": "model1 chain A",
+			"selection2": "model2 chain B"
+		}
+	}
+
+
+
+----
 
 constantForceOverCenterOfMass
 -----------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constantForceOverCenterOfMass
-    Component type: modelExtension
+ Applies a constant force to the center of mass of a selection of particles. The applied force is distributed among the particles in the selection according to their mass.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Applies a constant force over the center of mass of a selection of particles.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - force
+	  - Force vector to be applied to the center of mass.
+	  - list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles whose center of mass will be affected.
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constantForceOverCenterOfMass",
+		"parameters":{
+			"force": [0.0, 0.0, -9.8],
+			"selection": "model1 chain A"
+		}
+	}
+
+
+
+----
 
 constantTorqueBetweenCentersOfMass
 ----------------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constantTorqueBetweenCentersOfMass
-    Component type: modelExtension
+ Applies a constant torque between the centers of mass of two groups of particles. The torque is applied in such a way that the two groups of particles rotate in opposite directions around the axis defined by the vector
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Constant torque between centers of mass of selected particles
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - torque
+	  - Magnitude of the torque to be applied
+	  - float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection1: Selection for the first particle group
-    :type selection1: list of dictionaries
-    :param selection2: Selection for the second particle group
-    :type selection2: list of dictionaries
-    :param torque: torque applied to the particles
-    :type torque: float
+	* - Name
+	  - Description
+	  - Type
+	* - selection2
+	  - Second group of particles
+	  - list of ids
+	* - selection1
+	  - First group of particles
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constantTorqueBetweenCentersOfMass",
+		"parameters":{
+			"torque": 1.0,
+			"selection1": "model1 chain A",
+			"selection2": "model1 chain B"
+		}
+	}
+
+
+
+----
 
 constantTorqueOverCenterOfMass
 ------------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constantTorqueOverCenterOfMass
-    Component type: modelExtension
+ Applies a constant torque to the center of mass of selected particles.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Constant torque over center of mass
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - torque
+	  - Torque vector to be applied
+	  - list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param torque: Torque applied to the center of mass
-    :type torque: list of floats
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Particles to apply the torque to
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constantTorqueOverCenterOfMass",
+		"parameters":{
+			"torque": [0.0, 0.0, 1.0],
+			"selection": "model1 type ROTOR"
+		}
+	}
+
+
+
+----
 
 constraintCenterOfMassPosition
 ------------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constraintCenterOfMassPosition
-    Component type: modelExtension
+ Applies a constraint to the center of mass of a selection of particles. The potential energy of the constraint is given by a harmonic potential.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 14/03/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Apply a constraint to the center of mass of a selection of particles
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - position
+	  - Position to constrain the center of mass to
+	  - list of float
+	  - 
+	* - r0
+	  - Equilibrium distance from the constraint position
+	  - float
+	  - 
+	* - K
+	  - Spring constant for the constraint
+	  - float or list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection: Selection of particles where the constraint will be applied
-    :type selection: list of dictionaries
-    :param K: Stiffness of the constraint
-    :type K: float
-    :param r0: Distance between the center of mass and the constraint position
-    :type r0: float
-    :param position: Position of the center of mass of the selection
-    :type position: list of floats
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Particles to apply the constraint to
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constraintCenterOfMassPosition",
+		"parameters":{
+			"K": [100.0, 100.0, 0.0],
+			"r0": 0.0,
+			"position": [0.0, 0.0, 0.0],
+			"selection": "model1"
+		}
+	}
+
+
+
+----
 
 constraintParticlesListPositionLambda
 -------------------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constraintParticlesListPositionLambda
-    Component type: modelExtension
+ Applies a lambda-dependent positional constraint to a list of specified particles. The potential applied is a harmonic potential multiplied by a lambda-dependent factor (lambda^n).
 
-    Author: Pablo Ibáñez-Freire
-    Date: 5/12/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Apply a lambda constraint to the position of a set of particles.
-    Particles are given by two lists, one with the ids and the other one with the positions
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - ids
+	  - List of particle IDs to be constrained.
+	  - list of int
+	  - 
+	* - K
+	  - Spring constant for the constraint.
+	  - float or list of float
+	  - 
+	* - positions
+	  - List of positions for each constrained particle.
+	  - list of list of float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param K: Stiffness of the constraint
-    :type K: float
-    :param n: Exponent of the constraint
-    :type n: int
-    :param ids: List of particle ids
-    :type ids: list of int
-    :param positions: List of particle positions
-    :type positions: list of list of float
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - n
+	  - Exponent for the lambda dependence.
+	  - int
+	  - 2
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constraintParticlesListPositionLambda",
+		"parameters":{
+			"K": [100.0, 100.0, 100.0],
+			"n": 2,
+			"ids": [1, 2, 3],
+			"positions": [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]]
+		}
+	}
+
+.. warning::
+
+	This potential requires an ensemble which includes the 'Lambda' variable.
+
+
+
+----
 
 constraintParticlesPosition
 ---------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constraintParticlesPosition
-    Component type: modelExtension
+ Applies a positional constraint to a selection of particles. The constraint is a harmonic potential with a spring constant K.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 30/10/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Apply a constraint to the position of a set of particles.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - K
+	  - Spring constant for the constraint.
+	  - float or list of float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection: Selection of particles where the constraint will be applied
-    :type selection: list of dictionaries
-    :param K: Stiffness of the constraint
-    :type K: float
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to be constrained.
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constraintParticlesPosition",
+		"parameters":{
+			"K": [100.0, 100.0, 100.0],
+			"selection": "model1 type A B C"
+		}
+	}
+
+
+
+----
 
 constraintParticlesPositionLambda
 ---------------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: constraintParticlesPositionLambda
-    Component type: modelExtension
+ Applies a lambda-dependent positional constraint to a selection of particles. The applied potential is an harmonic potential with a lambda-dependent spring constant. (lambda^(n))
 
-    Author: Pablo Ibáñez-Freire
-    Date: 5/12/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Apply a lambda constraint to the position of a set of particles.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - K
+	  - Spring constant for the constraint.
+	  - float or list of float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param selection: Selection of particles where the constraint will be applied
-    :type selection: list of dictionaries
-    :param K: Stiffness of the constraint
-    :type K: float
-    :param n: Exponent of the constraint
-    :type n: float
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - n
+	  - Exponent for the lambda dependence.
+	  - int
+	  - 2
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    ...
-    
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to be constrained.
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "constraintParticlesPositionLambda",
+		"parameters":{
+			"K": [100.0, 100.0, 100.0],
+			"n": 2,
+			"selection": "model1 type A B C"
+		}
+	}
+
+.. warning::
+
+	This potential requires an ensemble which includes the 'Lambda' variable.
+
+
+
+----
 
 harmonicBondBetweenCentersOfMass
 --------------------------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: harmonicBondBetweenCentersOfMass
-    Component type: modelExtension
+ Adds a harmonic bond between the centers of mass of two groups of particles.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Harmonic bond between centers of mass
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - r0
+	  - Equilibrium distance for the harmonic bond.
+	  - float
+	  - 
+	* - K
+	  - Spring constant for the harmonic bond.
+	  - float
+	  - 
+.. list-table:: Required Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    :param selection1: Selection for the first particle group
-    :type selection1: list of dictionaries
-    :param selection2: Selection for the second particle group
-    :type selection2: list of dictionaries
-    :param K: Spring constant
-    :type K: float
-    :param r0: Equilibrium distance
-    :type r0: float
+	* - Name
+	  - Description
+	  - Type
+	* - selection2
+	  - Selection for the second group of particles.
+	  - list of ids
+	* - selection1
+	  - Selection for the first group of particles.
+	  - list of ids
 
-    ...
-    
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "harmonicBondBetweenCentersOfMass",
+		"parameters":{
+			"K": 100.0,
+			"r0": 5.0,
+			"selection1": "model1 chain A",
+			"selection2": "model2 chain B"
+		}
+	}
+
+
+
+----
 
 helixBoundaries
 ---------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: helixBoundaries
-    Component type: modelExtension
+ Implements helical boundary conditions for simulations of helical structures.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 03/06/2024
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param helixPitch: pitch of the helix
-    :type helixPitch: float
-    :param helixRadius: radius of the helix
-    :type helixRadius: float
-    :param eps: helix sign, 1 for right-handed, -1 for left-handed
-    :type eps: float
-    :param nTurns: number of turns of the helix
-    :type nTurns: int
-    :param nPointsHelix: number of points to discretize the helix
-    :type nPointsHelix: int
-    :param helixInnerRadius: inner radius of the helix
-    :type helixInnerRadius: float
-    :param nx: number of points in the x direction
-    :type nx: int
-    :param ny: number of points in the y direction
-    :type ny: int
-    :param nz: number of points in the z direction
-    :type nz: int
-    :param K: spring constant for boundary conditions
-    :type K: float
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - helixInnerRadius
+	  - Inner radius of the helix
+	  - float
+	  - 
+	* - nTurns
+	  - Number of turns in the helix
+	  - int
+	  - 
+	* - nz
+	  - Number of points in z direction
+	  - int
+	  - 
+	* - ny
+	  - Number of points in y direction
+	  - int
+	  - 
+	* - helixRadius
+	  - Radius of the helix
+	  - float
+	  - 
+	* - helixPitch
+	  - Pitch of the helix
+	  - float
+	  - 
+	* - K
+	  - Spring constant for boundary conditions
+	  - float
+	  - 
+	* - nx
+	  - Number of points in x direction
+	  - int
+	  - 
+	* - nPointsHelix
+	  - Number of points to discretize the helix
+	  - int
+	  - 
+	* - eps
+	  - Helix handedness (1 for right-handed, -1 for left-handed)
+	  - float
+	  - 
+.. list-table:: Optional Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Particles to apply helical boundaries to
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "helixBoundaries",
+		"parameters":{
+			"helixPitch": 5.0,
+			"helixRadius": 10.0,
+			"eps": 1.0,
+			"nTurns": 5,
+			"nPointsHelix": 100,
+			"helixInnerRadius": 1.0,
+			"nx": 10,
+			"ny": 10,
+			"nz": 50,
+			"K": 100.0,
+			"selection": "model1 all"
+		}
+	}
+
+
+
+----
 
 plates
 ------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: plates
-    Component type: modelExtension
+ Adds two parallel plates to the simulation box, typically used for confinement.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Common epsilon, sigma plates for particles in the system.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - epsilon
+	  - Energy parameter for plate-particle interactions.
+	  - float
+	  - 
+	* - sigma
+	  - Distance parameter for plate-particle interactions.
+	  - float
+	  - 
+	* - platesSeparation
+	  - Distance between the two plates.
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param platesSeparation: Distance between plates.
-    :param epsilon: Energy parameter for the plates.
-    :param sigma: Length parameter for the plates.
-    :param compressionVelocity: Velocity at which the plates are compressed.
-    :param minPlatesSeparation: Minimum distance between plates.
-    :param maxPlatesSeparation: Maximum distance between plates.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - minPlatesSeparation
+	  - Minimum allowed separation between plates.
+	  - float
+	  - 
+	* - compressionVelocity
+	  - Velocity at which the plates are compressed.
+	  - float
+	  - 0.0
+	* - maxPlatesSeparation
+	  - Maximum allowed separation between plates.
+	  - float
+	  - 
+.. list-table:: Optional Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles that interact with the plates.
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "plates",
+		"parameters":{
+			"platesSeparation": 20.0,
+			"epsilon": 1.0,
+			"sigma": 1.0,
+			"selection": "model1 all"
+		}
+	}
+
+
+
+----
 
 sphericalShell
 --------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: sphericalShell
-    Component type: modelExtension
+ Creates a spherical shell potential around a selection of particles.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 15/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Spherical shell model extension for the model.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - shellCenter
+	  - Center of the spherical shell.
+	  - list of float
+	  - [0.0, 0.0, 0.0]
+	* - shellRadius
+	  - Radius of the spherical shell. This can be set to 'auto' to automatically set the radius.
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param shellCenter: Center of the spherical shell.
-    :type shellCenter: list of floats
-    :param shellRadius: Radius of the spherical shell.
-    :type shellRadius: float
-    :param shellEpsilon: Epsilon of the spherical shell.
-    :type shellEpsilon: float, optional (default = 1.0)
-    :param shellSigma: Sigma of the spherical shell.
-    :type shellSigma: float, optional (default = 1.0)
-    :param minShellRadius: Minimum radius of the spherical shell.
-    :type minShellRadius: float, optional (default = 0.0)
-    :param maxShellRadius: Maximum radius of the spherical shell.
-    :type maxShellRadius: float, optional (default = inf)
-    :param radiusVelocity: Velocity of the radius of the spherical shell.
-    :type radiusVelocity: float, optional (default = 0.0)
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - maxShellRadius
+	  - Maximum radius of the spherical shell.
+	  - float
+	  - 
+	* - shellSigma
+	  - Distance parameter for the shell potential.
+	  - float
+	  - 1.0
+	* - minShellRadius
+	  - Minimum radius of the spherical shell.
+	  - float
+	  - 0.0
+	* - shellEpsilon
+	  - Energy parameter for the shell potential.
+	  - float
+	  - 1.0
+	* - radiusVelocity
+	  - Velocity of the radius change.
+	  - float
+	  - 0.0
+.. list-table:: Optional Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    ...
-    
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Selection of particles to be confined within the shell.
+	  - list of ids
 
-intraSteric
------------
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "sphericalShell",
+		"parameters":{
+			"shellCenter": [0.0, 0.0, 0.0],
+			"shellRadius": 10.0,
+			"shellEpsilon": 1.0,
+			"shellSigma": 1.0,
+			"selection": "model1 all"
+		}
+	}
 
 
-    Component name: intraSteric
-    Component type: modelExtension
 
-    Author: Pablo Ibáñez-Freire
-    Date: 21/09/2023
+----
 
-    Steric interactions between particles. If molecues are bonded, the interaction is not considered.
+steric
+------
 
-    :param condition: Condition for the interaction. Options: "inter", "intra" ...
-    :type condition: str, default="inter"
-    :param epsilon: epsilon parameter for the interaction
-    :type epsilon: float
-    :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
-    :type cutOffFactor: float
-    :param addVerletList: If True, a Verlet list will be created for the interactions.
-    :type addVerletList: bool, optional, default=True
+	:author: Pablo Ibáñez-Freire
 
-    ...
-    
+ Adds steric interactions between particles. If molecules are bonded, the interaction is not considered.
+
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - epsilon
+	  - Energy parameter for the interaction.
+	  - float
+	  - 
+	* - cutOffFactor
+	  - Factor to multiply the sigma parameter to obtain the cut-off distance.
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - condition
+	  - Condition for the interaction.
+	  - str
+	  - inter
+	* - excludedBonds
+	  - Number of bonds to exclude from the steric interactions.                                 This option is only available if addVerletList is True.                                 If excludedBonds > 0, the Verlet list will be created                                 with the non-bonded interactions and the excluded bonds.
+	  - int
+	  - 0
+	* - addVerletList
+	  - If True, a Verlet list will be created for the interactions.
+	  - bool
+	  - True
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "steric",
+		"parameters":{
+			"condition": "inter",
+			"epsilon": 1.0,
+			"cutOffFactor": 2.5,
+			"addVerletList": True,
+			"selection": "model1 type A B C"
+		}
+	}
+
+
+
+----
 
 surface
 -------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: surface
-    Component type: modelExtension
+ Adds a surface interaction to the simulation.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Common epsilon, sigma surface for particles in the system.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - surfacePosition
+	  - Z-coordinate of the surface
+	  - float
+	  - 0.0
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    :param epsilon: epsilon of the surface
-    :type epsilon: float
-    :param surfacePosition: position of the surface
-    :type surfacePosition: float
-    :param ignoredTypes: types to ignore
-    :type ignoredTypes: list
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - epsilon
+	  - Energy parameter for surface-particle interaction
+	  - float
+	  - 1.0
+.. list-table:: Optional Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
 
-    
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Particles interacting with the surface
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "surface",
+		"parameters":{
+			"epsilon": 1.0,
+			"surfacePosition": -10.0,
+			"selection": "model1 all"
+		}
+	}
+
+
+
+----
 
 surfaceMaxForce
 ---------------
 
+	:author: Pablo Ibáñez-Freire
 
-    Component name: surfaceMaxForce
-    Component type: modelExtension
+ Implements a surface interaction with a maximum force constraint.
 
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Common epsilon, sigma surface for particles in the system.
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - surfacePosition
+	  - Z-coordinate of the surface
+	  - float
+	  - 
+	* - maxForce
+	  - Maximum force allowed in the interaction
+	  - float
+	  - 
+.. list-table:: Optional Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - epsilon
+	  - Energy parameter for surface-particle interaction
+	  - float
+	  - 
+.. list-table:: Optional Selections
+	:header-rows: 1
+	:widths: 20 20 20
+	:stub-columns: 1
+
+	* - Name
+	  - Description
+	  - Type
+	* - selection
+	  - Particles interacting with the surface
+	  - list of ids
+
+Example:
+
+.. code-block:: python
+
+	{
+		"type": "surfaceMaxForce",
+		"parameters":{
+			"epsilon": 1.0,
+			"surfacePosition": -10.0,
+			"maxForce": 100.0,
+			"selection": "model1 all"
+		}
+	}
+
+
+
+----
 
 uniformMagneticField
 --------------------
 
+	:author: P. Palacios-Alonso
 
-    Component name: uniformMagneticField
-    Component type: modelExtension
+ Applies a uniform magnetic field to selected magnetic particles in the simulation.
 
-    Author: P. Palacios-Alonso
-    Date: 16/10/2023
+.. list-table:: Required Parameters
+	:header-rows: 1
+	:widths: 20 20 20 20
+	:stub-columns: 1
 
-    Alternating current (Uniform) magnetic field applied to a selection of magnetic particles
+	* - Name
+	  - Description
+	  - Type
+	  - Default
+	* - b0
+	  - Magnitude of the magnetic field
+	  - float
+	  - 
 
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
+Example:
 
-    ...
-    
+.. code-block:: python
+
+	{
+		"type": "uniformMagneticField",
+		"parameters":{
+			"b0": 1.0,
+			"direction": [0, 0, 1]
+		}
+	}
+
+
 

@@ -3,21 +3,29 @@ from VLMP.components.modelExtensions import modelExtensionBase
 import numpy as np
 
 class addBond(modelExtensionBase):
-
     """
-    Component name: addBond
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire and Pablo Palacios
-    Date: 19/06/2023
-
-    Elastic Network Model (ENM).
-
-    :param K: Spring constant.
-    :type K: float
-    :param r0: Equilibrium distance.
-    :type r0: float
-
+    {
+        "author": "Pablo Ibáñez-Freire and Pablo Palacios",
+        "description": "Adds a harmonic bond between two particles.",
+        "parameters": {
+            "K": {"description": "Spring constant for the bond", "type": "float", "default": null},
+            "r0": {"description": "Equilibrium distance of the bond", "type": "float", "default": null}
+        },
+        "selections": {
+            "selection1": {"description": "First particle in the bond", "type": "list of ids"},
+            "selection2": {"description": "Second particle in the bond", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"addBond\",
+            \"parameters\": {
+                \"K\": 100.0,
+                \"r0\": 1.0,
+                \"selection1\": \"model1 id 1\",
+                \"selection2\": \"model1 id 2\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"K","r0"}

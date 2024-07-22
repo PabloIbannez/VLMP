@@ -1,35 +1,43 @@
 from VLMP.components.modelExtensions import modelExtensionBase
 
 class helixBoundaries(modelExtensionBase):
-
     """
-    Component name: helixBoundaries
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 03/06/2024
-
-    :param helixPitch: pitch of the helix
-    :type helixPitch: float
-    :param helixRadius: radius of the helix
-    :type helixRadius: float
-    :param eps: helix sign, 1 for right-handed, -1 for left-handed
-    :type eps: float
-    :param nTurns: number of turns of the helix
-    :type nTurns: int
-    :param nPointsHelix: number of points to discretize the helix
-    :type nPointsHelix: int
-    :param helixInnerRadius: inner radius of the helix
-    :type helixInnerRadius: float
-    :param nx: number of points in the x direction
-    :type nx: int
-    :param ny: number of points in the y direction
-    :type ny: int
-    :param nz: number of points in the z direction
-    :type nz: int
-    :param K: spring constant for boundary conditions
-    :type K: float
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Implements helical boundary conditions for simulations of helical structures.",
+        "parameters": {
+            "helixPitch": {"description": "Pitch of the helix", "type": "float", "default": null},
+            "helixRadius": {"description": "Radius of the helix", "type": "float", "default": null},
+            "eps": {"description": "Helix handedness (1 for right-handed, -1 for left-handed)", "type": "float", "default": null},
+            "nTurns": {"description": "Number of turns in the helix", "type": "int", "default": null},
+            "nPointsHelix": {"description": "Number of points to discretize the helix", "type": "int", "default": null},
+            "helixInnerRadius": {"description": "Inner radius of the helix", "type": "float", "default": null},
+            "nx": {"description": "Number of points in x direction", "type": "int", "default": null},
+            "ny": {"description": "Number of points in y direction", "type": "int", "default": null},
+            "nz": {"description": "Number of points in z direction", "type": "int", "default": null},
+            "K": {"description": "Spring constant for boundary conditions", "type": "float", "default": null}
+        },
+        "selections": {
+            "selection": {"description": "Particles to apply helical boundaries to", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"helixBoundaries\",
+            \"parameters\": {
+                \"helixPitch\": 5.0,
+                \"helixRadius\": 10.0,
+                \"eps\": 1.0,
+                \"nTurns\": 5,
+                \"nPointsHelix\": 100,
+                \"helixInnerRadius\": 1.0,
+                \"nx\": 10,
+                \"ny\": 10,
+                \"nz\": 50,
+                \"K\": 100.0,
+                \"selection\": \"model1 all\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"helixPitch","helixRadius",

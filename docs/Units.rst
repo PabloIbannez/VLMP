@@ -3,6 +3,14 @@ Units
 
 .. include:: UnitsIntro.rst
 
+- :ref:`KcalMol_A`
+
+- :ref:`none`
+
+
+
+----
+
 KcalMol_A
 ---------
 
@@ -20,6 +28,8 @@ Example:
 	}
 
 
+
+----
 
 none
 ----

@@ -6,30 +6,44 @@ from . import simulationStepBase
 
 class savePatchyParticlesState(simulationStepBase):
     """
-    Component name: savePatchyParticlesState
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 25/04/2023
-
-    This component is used to save the state of the simulation incliding the
-    patchy particles.
-
-    Avalible formats are:
-        * .coord
-        * .sp
-        * .xyz
-        * .pdb
-        * .itpv
-        * .itpd
-        * .dcd
-        * .lammpstrj
-        * .vel
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-    :param outputFormat: Format of the output file
-    :type outputFormat: str
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Saves the state of patchy particles, including their positions and patch orientations.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for saving the state.",
+                "type": "str",
+                "default": null
+            },
+            "outputFormat": {
+                "description": "Format of the output file (e.g., 'xyz', 'pdb', 'dcd').",
+                "type": "str",
+                "default": null
+            },
+            "pbc": {
+                "description": "Whether to apply periodic boundary conditions when saving.",
+                "type": "bool",
+                "default": false
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of patchy particles to save.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"savePatchyParticlesState\",
+            \"parameters\": {
+                \"outputFilePath\": \"patchy_state.xyz\",
+                \"outputFormat\": \"xyz\",
+                \"pbc\": true,
+                \"selection\": \"model1 type patchy\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath","outputFormat","pbc"}

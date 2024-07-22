@@ -6,12 +6,38 @@ from . import simulationStepBase
 
 class potentialEnergyMeasurement(simulationStepBase):
     """
-    Component name: potentialEnergyMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 18/10/2023
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures the potential energy of selected particles or the entire system.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for potential energy measurements.",
+                "type": "str",
+                "default": null
+            },
+            "potentials": {
+                "description": "List of potential types to measure. If not specified, all potentials are measured.",
+                "type": "list of str",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for potential energy measurement.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"potentialEnergyMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"potential_energy.dat\",
+                \"potentials\": [\"LennardJones\", \"Coulomb\"],
+                \"selection\": \"model1 type A\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath","potentials"}

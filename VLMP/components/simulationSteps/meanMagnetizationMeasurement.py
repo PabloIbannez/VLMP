@@ -6,17 +6,32 @@ from . import simulationStepBase
 
 class meanMagnetizationMeasurement(simulationStepBase):
     """
-    Component name: meanMagnetizationMeasurement
-    Component type: simulationStep
-
-    Author: P. Palacios Alonso
-    Date: 18/10/2023
-
-    This component writes the mean magnetization of the system to a file.
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-
+    {
+        "author": "P. Palacios Alonso",
+        "description": "Measures the mean magnetization of selected magnetic particles in the system.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for mean magnetization measurements.",
+                "type": "str",
+                "default": "mean_magnetization.dat"
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of magnetic particles for magnetization measurement.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"meanMagnetizationMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"magnetization_data.dat\",
+                \"selection\": \"model1 type magnetic\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

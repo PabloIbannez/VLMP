@@ -7,26 +7,26 @@ import numpy as np
 from . import modelExtensionBase
 
 class LennardJones(modelExtensionBase):
-
     """
-    Component name: LennardJones
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 21/09/2023
-
-    Lennard Jones potential between particles.
-
-    :param condition: Condition for the interaction. Options: "inter", "intra" ...
-    :type condition: str, default="inter"
-    :param interactionMatrix: Matrix of interaction parameters between different types of particles.
-    :type interactionMatrix: list of lists. Each list is a row of the matrix. Format type1,type2,epsilon,sigma
-    :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
-    :type cutOffFactor: float
-    :param addVerletList: If True, a Verlet list will be created for the interactions.
-    :type addVerletList: bool, optional, default=True
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Implements Lennard-Jones potential between particles for non-bonded interactions.",
+        "parameters": {
+            "interactionMatrix": {"description": "Matrix of interaction parameters between different types of particles", "type": "list of lists", "default": null},
+            "cutOffFactor": {"description": "Factor to multiply sigma to obtain the cut-off distance", "type": "float", "default": null},
+            "addVerletList": {"description": "Whether to add a Verlet list for the interactions", "type": "bool", "default": true},
+            "condition": {"description": "Condition for the interaction (e.g., 'inter', 'intra')", "type": "str", "default": "inter"}
+        },
+        "example": "
+        {
+            \"type\": \"LennardJones\",
+            \"parameters\": {
+                \"interactionMatrix\": [[\"A\", \"B\", 1.0, 1.0], [\"B\", \"B\", 0.5, 1.2]],
+                \"cutOffFactor\": 2.5,
+                \"condition\": \"inter\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"interactionMatrix","cutOffFactor","addVerletList","condition"}

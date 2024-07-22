@@ -7,22 +7,34 @@ import numpy as np
 from . import modelExtensionBase
 
 class constantForce(modelExtensionBase):
-
     """
-    Component name: constantForce
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 14/03/2023
-
-    Constant force applied to a set of particles
-
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a constant force to a selection of particles.
+                        The force is applied over each individual particle.",
+        "parameters": {
+            "force": {
+                "description": "Force vector to be applied.",
+                "type": "list of float",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles to which the force will be applied.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"constantForce\",
+            \"parameters\": {
+                \"force\": [0.0, 0.0, -9.8],
+                \"selection\": \"model1 type A B\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"force"}

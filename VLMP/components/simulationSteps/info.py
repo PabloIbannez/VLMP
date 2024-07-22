@@ -6,15 +6,17 @@ from . import simulationStepBase
 
 class info(simulationStepBase):
     """
-    Component name: saveState
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 13/03/2023
-
-    Simple info step, it shows the current step,
-    an estimation of the remaining time and the mean FPS.
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Provides basic information about the simulation progress, including current step, estimated remaining time, and mean FPS.",
+        "parameters": {},
+        "example": "
+        {
+            \"type\": \"info\",
+            \"parameters\": {}
+        }
+        "
+    }
     """
 
     availableParameters = set()

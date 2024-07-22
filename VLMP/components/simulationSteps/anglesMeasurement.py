@@ -6,10 +6,34 @@ from . import simulationStepBase
 
 class anglesMeasurement(simulationStepBase):
     """
-    Component name: anglesMeasurement
-    Component type: simulationStep
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures angles between specified triplets of particles in the simulation.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for angle measurements.",
+                "type": "str",
+                "default": "angles.dat"
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particle triplets for angle measurement.",
+                "type": "list of triplets"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"anglesMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"angle_data.dat\",
+                \"selection\": \"model1 forceField ANGLES\"
+            }
+        }
+        "
+    }
     """
+
     availableParameters = {"outputFilePath"}
     requiredParameters  = {"outputFilePath"}
     availableSelections = {"selection"}

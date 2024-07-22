@@ -8,27 +8,45 @@ import numpy as np
 from . import modelExtensionBase
 
 class constraintParticlesListPositionLambda(modelExtensionBase):
-
     """
-    Component name: constraintParticlesListPositionLambda
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 5/12/2023
-
-    Apply a lambda constraint to the position of a set of particles.
-    Particles are given by two lists, one with the ids and the other one with the positions
-
-    :param K: Stiffness of the constraint
-    :type K: float
-    :param n: Exponent of the constraint
-    :type n: int
-    :param ids: List of particle ids
-    :type ids: list of int
-    :param positions: List of particle positions
-    :type positions: list of list of float
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a lambda-dependent positional constraint to a list of specified particles.
+                        The potential applied is a harmonic potential multiplied by a lambda-dependent factor (lambda^n).",
+        "parameters": {
+            "K": {
+                "description": "Spring constant for the constraint.",
+                "type": "float or list of float",
+                "default": null
+            },
+            "n": {
+                "description": "Exponent for the lambda dependence.",
+                "type": "int",
+                "default": 2
+            },
+            "ids": {
+                "description": "List of particle IDs to be constrained.",
+                "type": "list of int",
+                "default": null
+            },
+            "positions": {
+                "description": "List of positions for each constrained particle.",
+                "type": "list of list of float",
+                "default": null
+            }
+        },
+        "example": "
+        {
+            \"type\": \"constraintParticlesListPositionLambda\",
+            \"parameters\": {
+                \"K\": [100.0, 100.0, 100.0],
+                \"n\": 2,
+                \"ids\": [1, 2, 3],
+                \"positions\": [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]]
+            }
+        }",
+        "warning": "This potential requires an ensemble which includes the 'Lambda' variable."
+    }
     """
 
     availableParameters = {"K","n","ids","positions"}

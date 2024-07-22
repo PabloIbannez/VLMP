@@ -7,26 +7,51 @@ import numpy as np
 from . import modelExtensionBase
 
 class WCA(modelExtensionBase):
-
     """
-    Component name: WCA
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 02/01/2024
-
-    WCA potential between particles.
-
-    :param condition: Condition for the interaction. Options: "inter", "intra" ...
-    :type condition: str, default="inter"
-    :param epsilon: epsilon parameter of the WCA potential
-    :type epsilon: float
-    :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
-    :type cutOffFactor: float
-    :param addVerletList: If True, a Verlet list will be created for the interactions.
-    :type addVerletList: bool, optional, default=True
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Adds Weeks-Chandler-Andersen (WCA) potential interactions between particles.",
+        "parameters": {
+            "condition": {
+                "description": "Condition for the interaction.",
+                "type": "str",
+                "default": "inter"
+            },
+            "epsilon": {
+                "description": "Energy parameter for the WCA potential.",
+                "type": "float",
+                "default": 1.0
+            },
+            "cutOffFactor": {
+                "description": "Factor to multiply the sigma parameter to obtain the cut-off distance.",
+                "type": "float",
+                "default": 2.5
+            },
+            "addVerletList": {
+                "description": "If True, a Verlet list will be created for the interactions.",
+                "type": "bool",
+                "default": true
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for WCA interactions.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"WCA\",
+            \"parameters\": {
+                \"condition\": \"inter\",
+                \"epsilon\": 1.0,
+                \"cutOffFactor\": 2.5,
+                \"addVerletList\": true,
+                \"selection\": \"model1 all\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"cutOffFactor","epsilon","cutOffFactor","addVerletList","condition"}

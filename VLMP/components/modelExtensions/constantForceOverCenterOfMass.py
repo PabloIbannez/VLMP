@@ -7,22 +7,34 @@ import numpy as np
 from . import modelExtensionBase
 
 class constantForceOverCenterOfMass(modelExtensionBase):
-
     """
-    Component name: constantForceOverCenterOfMass
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
-
-    Applies a constant force over the center of mass of a selection of particles.
-
-    :param selection: Selection of particles where the force is applied
-    :type selection: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: list of floats
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a constant force to the center of mass of a selection of particles. The applied
+                       force is distributed among the particles in the selection according to their mass.",
+        "parameters": {
+            "force": {
+                "description": "Force vector to be applied to the center of mass.",
+                "type": "list of float",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles whose center of mass will be affected.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"constantForceOverCenterOfMass\",
+            \"parameters\": {
+                \"force\": [0.0, 0.0, -9.8],
+                \"selection\": \"model1 chain A\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"force"}

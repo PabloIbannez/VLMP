@@ -6,20 +6,32 @@ from . import simulationStepBase
 
 class thermodynamicMeasurement(simulationStepBase):
     """
-    Component name: thermodynamicMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    This component performs a thermodynamic measurement of the system.
-    It measures the particle number, volume,
-    energy (per interaction), kinetic energy, total potential energy, total energy,
-    temperature, and virial.
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures various thermodynamic properties of the system, including energy, temperature, and pressure.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for thermodynamic measurements.",
+                "type": "str",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for thermodynamic measurements. If not specified, all particles are included.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"thermodynamicMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"thermo.dat\",
+                \"selection\": \"model1 all\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

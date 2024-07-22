@@ -1,23 +1,27 @@
 from VLMP.components.modelExtensions import modelExtensionBase
 
 class surface(modelExtensionBase):
-
     """
-    Component name: surface
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    Common epsilon, sigma surface for particles in the system.
-
-    :param epsilon: epsilon of the surface
-    :type epsilon: float
-    :param surfacePosition: position of the surface
-    :type surfacePosition: float
-    :param ignoredTypes: types to ignore
-    :type ignoredTypes: list
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Adds a surface interaction to the simulation.",
+        "parameters": {
+            "epsilon": {"description": "Energy parameter for surface-particle interaction", "type": "float", "default": 1.0},
+            "surfacePosition": {"description": "Z-coordinate of the surface", "type": "float", "default": 0.0}
+        },
+        "selections": {
+            "selection": {"description": "Particles interacting with the surface", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"surface\",
+            \"parameters\": {
+                \"epsilon\": 1.0,
+                \"surfacePosition\": -10.0,
+                \"selection\": \"model1 all\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"epsilon",

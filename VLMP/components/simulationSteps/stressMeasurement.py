@@ -6,19 +6,32 @@ from . import simulationStepBase
 
 class stressMeasurement(simulationStepBase):
     """
-    Component name: stressMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 29/09/2020
-
-    This component writes the stress tensor of the system to a file.
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-    :param radiusCutOff: Radius cutoff for the calculation of atom volumes
-    :type radiusCutOff: float
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures the stress tensor of the system.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for stress tensor measurements.",
+                "type": "str",
+                "default": null
+            },
+            "radiusCutOff": {
+                "description": "Radius cutoff for the calculation of atom volumes.",
+                "type": "float",
+                "default": null
+            }
+        },
+        "selections": {},
+        "example": "
+        {
+            \"type\": \"stressMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"stress_tensor.dat\",
+                \"radiusCutOff\": 2.5
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath","radiusCutOff"}

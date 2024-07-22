@@ -6,12 +6,38 @@ from . import simulationStepBase
 
 class thermodynamicIntegration(simulationStepBase):
     """
-    Component name: thermodynamicIntegration
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 06/11/2023
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Performs thermodynamic integration to calculate free energy differences.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for thermodynamic integration results.",
+                "type": "str",
+                "default": null
+            },
+            "stepLambda": {
+                "description": "Step size for lambda parameter in the integration.",
+                "type": "float",
+                "default": null
+            },
+            "lambdaValues": {
+                "description": "List of lambda values for the integration.",
+                "type": "list of float",
+                "default": null
+            }
+        },
+        "selections": {},
+        "example": "
+        {
+            \"type\": \"thermodynamicIntegration\",
+            \"parameters\": {
+                \"outputFilePath\": \"ti_results.dat\",
+                \"stepLambda\": 0.1,
+                \"lambdaValues\": [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath",

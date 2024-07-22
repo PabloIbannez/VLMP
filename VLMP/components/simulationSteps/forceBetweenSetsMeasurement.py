@@ -6,18 +6,38 @@ from . import simulationStepBase
 
 class forceBetweenSetsMeasurement(simulationStepBase):
     """
-    Component name: forceBetweenSetsMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Palacios-Alonso
-    Date: 12/02/2024
-
+    {
+        "author": "Pablo Palacios-Alonso",
+        "description": "Measures the force between two sets of particles in the simulation.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for force measurements.",
+                "type": "str",
+                "default": "force_between_sets.dat"
+            },
+            "setName_idList": {
+                "description": "Dictionary mapping set names to lists of particle IDs.",
+                "type": "dict",
+                "default": null
+            }
+        },
+        "example": "
+        {
+            \"type\": \"forceBetweenSetsMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"force_data.dat\",
+                \"setName_idList\": {\"set1\": [1, 2, 3], \"set2\": [4, 5, 6]}
+            }
+        }
+        "
+    }
     """
+
     availableParameters = {"setName_idList",
-                       "outputFilePath"}
+                           "outputFilePath"}
     requiredParameters  = {"setName_idList",
                            "outputFilePath"}
-    
+
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,
                          _name = name,

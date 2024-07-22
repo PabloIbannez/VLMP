@@ -7,27 +7,60 @@ import numpy as np
 from . import modelExtensionBase
 from ...utils.input import getLabelIndex
 
-class intraSteric(modelExtensionBase):
-
+class steric(modelExtensionBase):
     """
-    Component name: intraSteric
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 21/09/2023
-
-    Steric interactions between particles. If molecues are bonded, the interaction is not considered.
-
-    :param condition: Condition for the interaction. Options: "inter", "intra" ...
-    :type condition: str, default="inter"
-    :param epsilon: epsilon parameter for the interaction
-    :type epsilon: float
-    :param cutOffFactor: Factor to multiply the sigma parameter to obtain the cut-off distance.
-    :type cutOffFactor: float
-    :param addVerletList: If True, a Verlet list will be created for the interactions.
-    :type addVerletList: bool, optional, default=True
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Adds steric interactions between particles. If molecules are bonded, the interaction is not considered.",
+        "parameters": {
+            "condition": {
+                "description": "Condition for the interaction.",
+                "type": "str",
+                "default": "inter"
+            },
+            "epsilon": {
+                "description": "Energy parameter for the interaction.",
+                "type": "float",
+                "default": null
+            },
+            "cutOffFactor": {
+                "description": "Factor to multiply the sigma parameter to obtain the cut-off distance.",
+                "type": "float",
+                "default": null
+            },
+            "addVerletList": {
+                "description": "If True, a Verlet list will be created for the interactions.",
+                "type": "bool",
+                "default": true
+            },
+            "excludedBonds": {
+                "description": "Number of bonds to exclude from the steric interactions.
+                                This option is only available if addVerletList is True.
+                                If excludedBonds > 0, the Verlet list will be created
+                                with the non-bonded interactions and the excluded bonds.",
+                "type": "int",
+                "default": 0
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for steric interactions.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"steric\",
+            \"parameters\": {
+                \"condition\": \"inter\",
+                \"epsilon\": 1.0,
+                \"cutOffFactor\": 2.5,
+                \"addVerletList\": true,
+                \"selection\": \"model1 type A B C\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"epsilon","cutOffFactor","excludedBonds","addVerletList","condition"}
@@ -56,7 +89,7 @@ class intraSteric(modelExtensionBase):
         condition          = params.get("condition","inter")
 
         if excludedBonds > 0 and addVerletList == False:
-            self.logger.error("[intraSteric] excludedBonds > 0 and addVerletList == False. This is not allowed. Exiting...")
+            self.logger.error("[steric] excludedBonds > 0 and addVerletList == False. This is not allowed. Exiting...")
             raise Exception("Not compatible parameters.")
 
         ############################################################

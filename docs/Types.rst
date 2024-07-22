@@ -3,6 +3,14 @@ Types
 
 .. include:: TypesIntro.rst
 
+- :ref:`basic`
+
+- :ref:`none`
+
+
+
+----
+
 basic
 -----
 
@@ -19,12 +27,12 @@ basic
 	  - Description
 	  - Type
 	  - Default
-	* - radius
-	  - Default radius for a new type
-	  - float
-	  - 1.0
 	* - mass
 	  - Default mass for a new type
+	  - float
+	  - 1.0
+	* - radius
+	  - Default radius for a new type
 	  - float
 	  - 1.0
 	* - charge
@@ -41,6 +49,8 @@ Example:
 	}
 
 
+
+----
 
 none
 ----

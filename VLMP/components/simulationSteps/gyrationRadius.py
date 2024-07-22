@@ -6,15 +6,32 @@ from . import simulationStepBase
 
 class gyrationRadius(simulationStepBase):
     """
-    Component name: gyrationRadius
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 30/11/2023
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Calculates the radius of gyration for a selected group of particles over time.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for gyration radius measurements.",
+                "type": "str",
+                "default": "gyration_radius.dat"
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for gyration radius calculation.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"gyrationRadius\",
+            \"parameters\": {
+                \"outputFilePath\": \"gyration_data.dat\",
+                \"selection\": \"model1 type protein\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

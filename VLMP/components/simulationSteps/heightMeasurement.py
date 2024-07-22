@@ -6,20 +6,38 @@ from . import simulationStepBase
 
 class heightMeasurement(simulationStepBase):
     """
-    Component name: heightMeasurement
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 09/04/2023
-
-    This component measures the height of the particles selected.
-    The height is the average of the N particles with the highest z coordinate.
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-    :param particleNumberAverage: Number of particles to average the height
-    :type particleNumberAverage: int
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Measures the height of selected particles, typically used in surface-based simulations.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for height measurements.",
+                "type": "str",
+                "default": "height.dat"
+            },
+            "particleNumberAverage": {
+                "description": "Number of particles to average for height calculation.",
+                "type": "int",
+                "default": 1
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for height measurement.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"heightMeasurement\",
+            \"parameters\": {
+                \"outputFilePath\": \"height_data.dat\",
+                \"particleNumberAverage\": 5,
+                \"selection\": \"model1 type surface\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath","particleNumberAverage"}

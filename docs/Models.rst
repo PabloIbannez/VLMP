@@ -3,6 +3,46 @@ Models
 
 .. include:: ModelsIntro.rst
 
+- :ref:`CORONAVIRUS`
+
+- :ref:`ENM`
+
+- :ref:`FILE`
+
+- :ref:`HELIX`
+
+- :ref:`ICOSPHERE`
+
+- :ref:`IDP`
+
+- :ref:`KB`
+
+- :ref:`MADna`
+
+- :ref:`MAGNETICNP`
+
+- :ref:`MEMBRANE`
+
+- :ref:`PARTICLE`
+
+- :ref:`PROTEIN_IDP_PROTEIN`
+
+- :ref:`SBCG`
+
+- :ref:`SIMULATION`
+
+- :ref:`SOP`
+
+- :ref:`SPHEREMULTIBLOB`
+
+- :ref:`STERIC_LAMBDA_SOLVATION`
+
+- :ref:`WLC`
+
+
+
+----
+
 CORONAVIRUS
 -----------
 
@@ -33,30 +73,38 @@ CORONAVIRUS
 	  - Description
 	  - Type
 	  - Default
+	* - thetaLipidWithProtein
+	  - Angle parameter for lipid-protein interactions.
+	  - float
+	  - 0.0
+	* - muLipidWithProtein
+	  - Shape parameter for lipid-protein interactions.
+	  - float
+	  - 3.0
 	* - surface
 	  - Whether to include a simulated surface.
 	  - bool
 	  - False
-	* - nLipids
-	  - Number of lipid particles in the vesicle.
-	  - int
-	  - 1501
-	* - lipidRadius
-	  - Radius of each lipid particle.
+	* - proteinProteinEpsilon_kT
+	  - Energy parameter for protein-protein interactions in kT units.
 	  - float
-	  - 18.0
-	* - surfacePosition
-	  - Z-coordinate of the simulated surface.
+	  - 1.0
+	* - muLipidLipidWithProtein
+	  - Shape parameter for lipid-lipid interactions near proteins.
+	  - float
+	  - 3.0
+	* - thetaLipidLipidWithProtein
+	  - Angle parameter for lipid-lipid interactions near proteins.
 	  - float
 	  - 0.0
 	* - inputModelData
 	  - Path to the JSON file containing model parameters.
 	  - str
 	  - ./data/CORONAVIRUS.json
-	* - center
-	  - Center coordinates of the vesicle.
-	  - list of float
-	  - [0.0, 0.0, 0.0]
+	* - muLipids
+	  - Shape parameter for lipid-lipid interactions.
+	  - float
+	  - 3.0
 	* - chiLipids
 	  - Another shape parameter for lipid-lipid interactions.
 	  - float
@@ -65,18 +113,70 @@ CORONAVIRUS
 	  - Angle parameter for lipid-lipid interactions.
 	  - float
 	  - 0.0
+	* - epsilonLipids_kT
+	  - Energy parameter for lipid-lipid interactions in kT units.
+	  - float
+	  - 5.0
+	* - lipidRadius
+	  - Radius of each lipid particle.
+	  - float
+	  - 18.0
+	* - center
+	  - Center coordinates of the vesicle.
+	  - list of float
+	  - [0.0, 0.0, 0.0]
+	* - proteinLipidEpsilon_kT
+	  - Energy parameter for protein-lipid interactions in kT units.
+	  - float
+	  - 1.0
+	* - nLipids
+	  - Number of lipid particles in the vesicle.
+	  - int
+	  - 1501
+	* - chiLipidWithProtein
+	  - Another shape parameter for lipid-protein interactions.
+	  - float
+	  - 7.0
+	* - surfacePosition
+	  - Z-coordinate of the simulated surface.
+	  - float
+	  - 0.0
 	* - vesicleRadius
 	  - Radius of the vesicle.
 	  - float
 	  - 400.0
-	* - muLipids
-	  - Shape parameter for lipid-lipid interactions.
+	* - lipidSurfaceEpsilon_kT
+	  - Energy parameter for lipid-surface interactions in kT units.
 	  - float
-	  - 3.0
+	  - 1.0
+	* - proteinSurfaceEpsilon_kT
+	  - Energy parameter for protein-surface interactions in kT units.
+	  - float
+	  - 1.0
+	* - proteinPeakSurfaceEpsilon_kT
+	  - Energy parameter for peak protein-surface interactions in kT units.
+	  - float
+	  - 1.0
+	* - epsilonLipidWithProtein_kT
+	  - Energy parameter for lipid-protein interactions in kT units.
+	  - float
+	  - 5.0
 	* - nSpikes
 	  - Number of spike proteins to add to the vesicle surface.
 	  - int
 	  - 0
+	* - chiLipidLipidWithProtein
+	  - Another shape parameter for lipid-lipid interactions near proteins.
+	  - float
+	  - 7.0
+	* - peakProteins
+	  - List of protein types considered as peak proteins.
+	  - list of str
+	  - ['S10']
+	* - epsilonLipidLipidWithProtein_kT
+	  - Energy parameter for lipid-lipid interactions near proteins in kT units.
+	  - float
+	  - 5.0
 
 Example:
 
@@ -88,7 +188,7 @@ Example:
 			"nLipids": 2000,
 			"vesicleRadius": 500.0,
 			"nSpikes": 50,
-			"epsilonLipids": 5.5,
+			"epsilonLipids_kT": 5.5,
 			"surface": True,
 			"surfacePosition": -400.0
 		}
@@ -101,6 +201,8 @@ References:
 	.. [Arkhipov2006] Arkhipov, A., Freddolino, P. L., & Schulten, K. (2006). Stability and dynamics of virus capsids described by coarse-grained modeling. Structure, 14(12), 1767-1777.
 
 
+
+----
 
 ENM
 ---
@@ -145,20 +247,20 @@ ENM
 	  - If True, calculates the Solvent Accessible Surface Area.
 	  - bool
 	  - False
-	* - centerInput
-	  - If True, centers the input structure.
-	  - bool
-	  - True
 	* - enmCut
 	  - Cutoff distance for including spring connections between residues.
 	  - float
 	  - 
+	* - aggregateChains
+	  - If True, treats multiple chains as a single entity.
+	  - bool
+	  - True
 	* - K
 	  - Spring constant for the harmonic interactions.
 	  - float
 	  - 
-	* - aggregateChains
-	  - If True, treats multiple chains as a single entity.
+	* - centerInput
+	  - If True, centers the input structure.
 	  - bool
 	  - True
 
@@ -185,6 +287,8 @@ References:
 	.. [pyGrained] https://github.com/PabloIbannez/pyGrained
 
 
+
+----
 
 FILE
 ----
@@ -246,6 +350,8 @@ Example:
 
 
 
+----
+
 HELIX
 -----
 
@@ -278,6 +384,14 @@ HELIX
 	  - Description
 	  - Type
 	  - Default
+	* - variant
+	  - Variant of the model to use ('fixedCosine', 'fixedExponential', 'dynamicCosine', 'dynamicExponential', 'twoStatesCosine', 'twoStatesExponential').
+	  - str
+	  - 
+	* - nMonomers
+	  - Number of monomers in the helix.
+	  - int
+	  - 
 	* - helixRadius
 	  - Radius of the helix.
 	  - float
@@ -290,14 +404,6 @@ HELIX
 	  - Energy parameter for monomer-monomer interactions.
 	  - float
 	  - 
-	* - nMonomers
-	  - Number of monomers in the helix.
-	  - int
-	  - 
-	* - variant
-	  - Variant of the model to use ('fixedCosine', 'fixedExponential', 'dynamicCosine', 'dynamicExponential', 'twoStatesCosine', 'twoStatesExponential').
-	  - str
-	  - 
 .. list-table:: Optional Parameters
 	:header-rows: 1
 	:widths: 20 20 20 20
@@ -307,10 +413,10 @@ HELIX
 	  - Description
 	  - Type
 	  - Default
-	* - helicity
-	  - Helicity of the structure (1.0 for right-handed, -1.0 for left-handed).
-	  - float
-	  - 1.0
+	* - init
+	  - Initialization method ('random', 'line', or 'helix').
+	  - str
+	  - random
 	* - mode
 	  - Simulation mode ('bulk' or 'surface').
 	  - str
@@ -319,10 +425,10 @@ HELIX
 	  - Radius of each monomer.
 	  - float
 	  - 0.5
-	* - init
-	  - Initialization method ('random', 'line', or 'helix').
-	  - str
-	  - random
+	* - helicity
+	  - Helicity of the structure (1.0 for right-handed, -1.0 for left-handed).
+	  - float
+	  - 1.0
 
 Example:
 
@@ -346,6 +452,8 @@ Example:
 	This model is under development and may not be fully functional or optimized.
 
 
+
+----
 
 ICOSPHERE
 ---------
@@ -390,14 +498,18 @@ ICOSPHERE
 	  - Description
 	  - Type
 	  - Default
-	* - particleRadius
-	  - Radius of each particle.
-	  - float
-	  - 1.0
 	* - radius
 	  - Radius of the icosphere.
 	  - float
 	  - 1.0
+	* - resolution
+	  - Subdivision level for icosphere.
+	  - int
+	  - 1
+	* - steric
+	  - Whether to include steric interactions between particles.
+	  - bool
+	  - False
 	* - particleCharge
 	  - Charge of each particle.
 	  - float
@@ -410,22 +522,18 @@ ICOSPHERE
 	  - Center position of the icosphere.
 	  - list of float
 	  - [0.0, 0.0, 0.0]
-	* - steric
-	  - Whether to include steric interactions between particles.
-	  - bool
-	  - False
-	* - resolution
-	  - Subdivision level for icosphere.
-	  - int
-	  - 1
-	* - particleMass
-	  - Mass of each particle.
+	* - particleRadius
+	  - Radius of each particle.
 	  - float
 	  - 1.0
 	* - Kd
 	  - Spring constant for dihedral angles (if applicable).
 	  - float
 	  - 0.0
+	* - particleMass
+	  - Mass of each particle.
+	  - float
+	  - 1.0
 
 Example:
 
@@ -445,6 +553,8 @@ Example:
 
 
 
+----
+
 IDP
 ---
 
@@ -453,6 +563,8 @@ IDP
 	This model is currently under development. Please, use it with caution.
 
 
+
+----
 
 KB
 --
@@ -501,16 +613,16 @@ KB
 	  - Description
 	  - Type
 	  - Default
+	* - aggregateChains
+	  - If true, treats multiple chains as a single entity.
+	  - bool
+	  - True
 	* - SASA
 	  - If true, calculates the Solvent Accessible Surface Area.
 	  - bool
 	  - False
 	* - centerInput
 	  - If true, centers the input structure.
-	  - bool
-	  - True
-	* - aggregateChains
-	  - If true, treats multiple chains as a single entity.
 	  - bool
 	  - True
 
@@ -539,6 +651,8 @@ References:
 	.. [pyGrained] https://github.com/PabloIbannez/pyGrained
 
 
+
+----
 
 MADna
 -----
@@ -577,6 +691,18 @@ MADna
 	  - Description
 	  - Type
 	  - Default
+	* - variant
+	  - Variant of the model to use. 'fast' option available for improved computational speed.
+	  - str
+	  - 
+	* - inputModelData
+	  - Path to the JSON file containing model parameters. Allows for customization of base model parameters.
+	  - str
+	  - ./data/MADna.json
+	* - debyeLength
+	  - Debye length for electrostatic interactions. Controls the range of electrostatic forces.
+	  - float
+	  - 10.8
 	* - debyeFactor
 	  - Factor to scale the Debye length. Used to set the cutoff distance for electrostatic interactions.
 	  - float
@@ -585,18 +711,6 @@ MADna
 	  - Dielectric constant of the medium. Affects the strength of electrostatic interactions.
 	  - float
 	  - 78.3
-	* - inputModelData
-	  - Path to the JSON file containing model parameters. Allows for customization of base model parameters.
-	  - str
-	  - ./data/MADna.json
-	* - variant
-	  - Variant of the model to use. 'fast' option available for improved computational speed.
-	  - str
-	  - 
-	* - debyeLength
-	  - Debye length for electrostatic interactions. Controls the range of electrostatic forces.
-	  - float
-	  - 10.8
 
 Example:
 
@@ -618,6 +732,8 @@ References:
 	.. [Assenza2022] Assenza, S., & Pérez, R. (2022). Accurate Sequence-Dependent Coarse-Grained Model for Conformational and Elastic Properties of Double-Stranded DNA. Journal of Chemical Theory and Computation, 18(5), 3239-3256.
 
 
+
+----
 
 MAGNETICNP
 ----------
@@ -649,13 +765,13 @@ MAGNETICNP
 	  - Saturation magnetization of the nanoparticles.
 	  - float
 	  - 
-	* - nParticles
-	  - Number of magnetic nanoparticles in the simulation.
-	  - int
-	  - 
 	* - coreRadius
 	  - Radius of the magnetic core of the nanoparticles.
 	  - float
+	  - 
+	* - nParticles
+	  - Number of magnetic nanoparticles in the simulation.
+	  - int
 	  - 
 .. list-table:: Optional Parameters
 	:header-rows: 1
@@ -666,6 +782,18 @@ MAGNETICNP
 	  - Description
 	  - Type
 	  - Default
+	* - anisotropy
+	  - Magnetic anisotropy constant of the nanoparticles.
+	  - float
+	  - 
+	* - coreRadiusStd
+	  - Standard deviation of the core radius for size distribution.
+	  - float
+	  - 0.0
+	* - particleName
+	  - Name identifier for the particle type.
+	  - str
+	  - A
 	* - initAxis
 	  - Axis for initial alignment if 'aligned' orientation is chosen.
 	  - list of float
@@ -674,30 +802,18 @@ MAGNETICNP
 	  - Width of the coating layer on the nanoparticles.
 	  - float
 	  - 0.0
-	* - coreRadiusStd
-	  - Standard deviation of the core radius for size distribution.
-	  - float
-	  - 0.0
-	* - coatingWidthStd
-	  - Standard deviation of the coating width.
-	  - float
-	  - 0.0
 	* - initOrientation
 	  - Initial orientation of magnetic moments. Options: 'aligned' or 'random'.
 	  - str
 	  - aligned
+	* - coatingWidthStd
+	  - Standard deviation of the coating width.
+	  - float
+	  - 0.0
 	* - anisotropyStd
 	  - Standard deviation of the anisotropy constant for particle-to-particle variation.
 	  - float
 	  - 0.0
-	* - particleName
-	  - Name identifier for the particle type.
-	  - str
-	  - A
-	* - anisotropy
-	  - Magnetic anisotropy constant of the nanoparticles.
-	  - float
-	  - 
 
 Example:
 
@@ -717,6 +833,8 @@ Example:
 
 
 
+----
+
 MEMBRANE
 --------
 
@@ -725,6 +843,8 @@ MEMBRANE
 	This model is currently under development. Please, use it with caution.
 
 
+
+----
 
 PARTICLE
 --------
@@ -769,22 +889,22 @@ PARTICLE
 	  - Description
 	  - Type
 	  - Default
-	* - particleCharge
-	  - Charge of the particle.
-	  - float
-	  - 0.0
-	* - position
-	  - Initial position of the particle in 3D space.
-	  - list of float
-	  - [0.0, 0.0, 0.0]
-	* - particleRadius
-	  - Radius of the particle.
-	  - float
-	  - 1.0
 	* - particleMass
 	  - Mass of the particle.
 	  - float
 	  - 1.0
+	* - particleRadius
+	  - Radius of the particle.
+	  - float
+	  - 1.0
+	* - position
+	  - Initial position of the particle in 3D space.
+	  - list of float
+	  - [0.0, 0.0, 0.0]
+	* - particleCharge
+	  - Charge of the particle.
+	  - float
+	  - 0.0
 
 Example:
 
@@ -803,6 +923,8 @@ Example:
 
 
 
+----
+
 PROTEIN_IDP_PROTEIN
 -------------------
 
@@ -811,6 +933,8 @@ PROTEIN_IDP_PROTEIN
 	This model is currently under development. Please, use it with caution.
 
 
+
+----
 
 SBCG
 ----
@@ -848,21 +972,21 @@ SBCG
 	  - Number of steps in the coarse-graining refinement process.
 	  - int
 	  - 
-	* - bondsModel
-	  - Model used for bonded interactions.(ENM or count)
-	  - str
-	  - 
-	* - resolution
-	  - Resolution of the coarse-graining, number of atoms per bead.
-	  - float
-	  - 
 	* - nativeContactsModel
 	  - Model used for native contact interactions (CA).
+	  - str
+	  - 
+	* - bondsModel
+	  - Model used for bonded interactions.(ENM or count)
 	  - str
 	  - 
 	* - PDB
 	  - Path to the input PDB file or a valid PDB ID for download.
 	  - str
+	  - 
+	* - resolution
+	  - Resolution of the coarse-graining, number of atoms per bead.
+	  - float
 	  - 
 .. list-table:: Optional Parameters
 	:header-rows: 1
@@ -877,12 +1001,12 @@ SBCG
 	  - If true, calculates the Solvent Accessible Surface Area.
 	  - bool
 	  - False
-	* - centerInput
-	  - If true, centers the input structure.
-	  - bool
-	  - True
 	* - aggregateChains
 	  - If true, treats multiple chains as a single entity.
+	  - bool
+	  - True
+	* - centerInput
+	  - If true, centers the input structure.
 	  - bool
 	  - True
 
@@ -909,6 +1033,8 @@ References:
 	.. [pyGrained] https://github.com/PabloIbannez/pyGrained
 
 
+
+----
 
 SIMULATION
 ----------
@@ -968,6 +1094,8 @@ Example:
 
 
 
+----
+
 SOP
 ---
 
@@ -1019,16 +1147,16 @@ SOP
 	  - If true, calculates the Solvent Accessible Surface Area.
 	  - bool
 	  - False
-	* - centerInput
-	  - If true, centers the input structure.
-	  - bool
-	  - True
 	* - epsilonNC
 	  - Energy scale for native contacts.
 	  - float
 	  - 1.0
 	* - aggregateChains
 	  - If true, treats multiple chains as a single entity.
+	  - bool
+	  - True
+	* - centerInput
+	  - If true, centers the input structure.
 	  - bool
 	  - True
 
@@ -1057,6 +1185,8 @@ References:
 	.. [pyGrained] https://github.com/PabloIbannez/pyGrained
 
 
+
+----
 
 SPHEREMULTIBLOB
 ---------------
@@ -1103,6 +1233,58 @@ SPHEREMULTIBLOB
 	  - Description
 	  - Type
 	  - Default
+	* - radiusOfSphere
+	  - Radius of the overall spherical structure.
+	  - float
+	  - 1.0
+	* - tethersPerBlob
+	  - Number of tethers per blob particle.
+	  - int
+	  - 
+	* - particlesPerSphere
+	  - Number of particles per sphere.
+	  - int
+	  - 31
+	* - heightReference
+	  - Reference height for sphere placement.
+	  - float
+	  - 0.0
+	* - particleRadius
+	  - Radius of each particle.
+	  - float
+	  - 
+	* - numberOfSpheres
+	  - Number of spheres to create.
+	  - int
+	  - 1
+	* - Ktethers
+	  - Spring constant for tether bonds.
+	  - float
+	  - 0.0
+	* - heightTethersThreshold
+	  - Height threshold for adding tethers.
+	  - float
+	  - 
+	* - particleName
+	  - Name or type of the particles making up the sphere.
+	  - str
+	  - 
+	* - maxTries
+	  - Maximum number of attempts to place spheres.
+	  - int
+	  - 100
+	* - particleCharge
+	  - Charge of each particle.
+	  - float
+	  - 0.0
+	* - thetaTethers
+	  - Angle for tether placement.
+	  - float
+	  - 
+	* - heightMean
+	  - Mean height for sphere placement.
+	  - float
+	  - 0.0
 	* - heightStd
 	  - Standard deviation of height for sphere placement.
 	  - float
@@ -1111,38 +1293,6 @@ SPHEREMULTIBLOB
 	  - Type of sphere geometry to use ('icosidodecahedron' or 'icosphere').
 	  - str
 	  - icosidodecahedron
-	* - radiusOfSphere
-	  - Radius of the overall spherical structure.
-	  - float
-	  - 1.0
-	* - heightReference
-	  - Reference height for sphere placement.
-	  - float
-	  - 0.0
-	* - heightMean
-	  - Mean height for sphere placement.
-	  - float
-	  - 0.0
-	* - particlesPerSphere
-	  - Number of particles per sphere.
-	  - int
-	  - 31
-	* - numberOfSpheres
-	  - Number of spheres to create.
-	  - int
-	  - 1
-	* - particleCharge
-	  - Charge of each particle.
-	  - float
-	  - 0.0
-	* - particleRadius
-	  - Radius of each particle.
-	  - float
-	  - 
-	* - particleName
-	  - Name or type of the particles making up the sphere.
-	  - str
-	  - 
 	* - particleMass
 	  - Mass of each particle.
 	  - float
@@ -1167,6 +1317,8 @@ Example:
 	}
 
 
+
+----
 
 STERIC_LAMBDA_SOLVATION
 -----------------------
@@ -1213,6 +1365,18 @@ STERIC_LAMBDA_SOLVATION
 	  - Description
 	  - Type
 	  - Default
+	* - epsilon
+	  - Epsilon parameter of the steric potential.
+	  - float
+	  - 1.0
+	* - particleName
+	  - Name of the particle to be added to the system.
+	  - str
+	  - W
+	* - addVerletList
+	  - If True, a Verlet list will be created for the interactions.
+	  - bool
+	  - True
 	* - particleCharge
 	  - Charge of the particle to be added to the system.
 	  - float
@@ -1221,34 +1385,22 @@ STERIC_LAMBDA_SOLVATION
 	  - Factor to multiply the sigma parameter to obtain the cut-off distance.
 	  - float
 	  - 1.5
-	* - epsilon
-	  - Epsilon parameter of the steric potential.
+	* - alpha
+	  - Alpha parameter of the steric potential for soft-core behavior.
+	  - float
+	  - 0.5
+	* - condition
+	  - Condition for the interaction. Options: 'inter', 'intra', etc.
+	  - str
+	  - inter
+	* - particleRadius
+	  - Radius of the particle to be added to the system.
 	  - float
 	  - 1.0
 	* - padding
 	  - Padding to be added to the box to place the particle.
 	  - list of two lists of three floats
 	  - [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-	* - condition
-	  - Condition for the interaction. Options: 'inter', 'intra', etc.
-	  - str
-	  - inter
-	* - alpha
-	  - Alpha parameter of the steric potential for soft-core behavior.
-	  - float
-	  - 0.5
-	* - addVerletList
-	  - If True, a Verlet list will be created for the interactions.
-	  - bool
-	  - True
-	* - particleRadius
-	  - Radius of the particle to be added to the system.
-	  - float
-	  - 1.0
-	* - particleName
-	  - Name of the particle to be added to the system.
-	  - str
-	  - W
 	* - particleMass
 	  - Mass of the particle to be added to the system.
 	  - float
@@ -1275,6 +1427,8 @@ Example:
 	The model requires a ensemble with a lambda parameter. Otherwise, the simulation will fail.
 
 
+
+----
 
 WLC
 ---
@@ -1317,6 +1471,10 @@ WLC
 	  - Description
 	  - Type
 	  - Default
+	* - typeName
+	  - Name identifier for the particle type.
+	  - str
+	  - A
 	* - Kb
 	  - Spring constant for bonds.
 	  - float
@@ -1329,10 +1487,6 @@ WLC
 	  - Spring constant for angles (bending rigidity).
 	  - float
 	  - 1.0
-	* - typeName
-	  - Name identifier for the particle type.
-	  - str
-	  - A
 	* - b
 	  - Equilibrium distance between consecutive particles.
 	  - float

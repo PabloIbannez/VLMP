@@ -7,24 +7,38 @@ import numpy as np
 from . import modelExtensionBase
 
 class constantForceBetweenCentersOfMass(modelExtensionBase):
-
     """
-    Component name: constantForceBetweenCentersOfMass
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
-
-    Constant force between centers of mass of selected particles
-
-    :param selection1: Selection for the first particle group
-    :type selection1: list of dictionaries
-    :param selection2: Selection for the second particle group
-    :type selection2: list of dictionaries
-    :param force: Force applied to the particles
-    :type force: float
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a constant force between the centers of mass of two groups of particles.",
+        "parameters": {
+            "force": {
+                "description": "Magnitude of the force to be applied.",
+                "type": "float",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection1": {
+                "description": "Selection for the first group of particles.",
+                "type": "list of ids"
+            },
+            "selection2": {
+                "description": "Selection for the second group of particles.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"constantForceBetweenCentersOfMass\",
+            \"parameters\": {
+                \"force\": 10.0,
+                \"selection1\": \"model1 chain A\",
+                \"selection2\": \"model2 chain B\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters  = {"force"}

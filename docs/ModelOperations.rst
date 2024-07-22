@@ -3,6 +3,26 @@ ModelOperations
 
 .. include:: ModelOperationsIntro.rst
 
+- :ref:`alignInertiaMomentAlongVector`
+
+- :ref:`distributeRandomly`
+
+- :ref:`rotation`
+
+- :ref:`setCenterOfMassPosition`
+
+- :ref:`setContactDistance`
+
+- :ref:`setParticleLowestPosition`
+
+- :ref:`setParticlePositions`
+
+- :ref:`setParticleXYPosition`
+
+
+
+----
+
 alignInertiaMomentAlongVector
 -----------------------------
 
@@ -49,6 +69,8 @@ Example:
 
 
 
+----
+
 distributeRandomly
 ------------------
 
@@ -65,14 +87,14 @@ distributeRandomly
 	  - Description
 	  - Type
 	  - Default
-	* - randomRotation
-	  - Whether to apply random rotations to the particles.
-	  - bool
-	  - True
 	* - mode
 	  - Distribution mode, either 'box' or 'sphere'.
 	  - str
 	  - box
+	* - randomRotation
+	  - Whether to apply random rotations to the particles.
+	  - bool
+	  - True
 	* - avoidClashes
 	  - Number of attempts to avoid particle clashes. If 0, clashes are not avoided.
 	  - int
@@ -104,6 +126,8 @@ Example:
 	}
 
 
+
+----
 
 rotation
 --------
@@ -156,6 +180,8 @@ Example:
 
 
 
+----
+
 setCenterOfMassPosition
 -----------------------
 
@@ -202,6 +228,8 @@ Example:
 
 
 
+----
+
 setContactDistance
 ------------------
 
@@ -218,14 +246,14 @@ setContactDistance
 	  - Description
 	  - Type
 	  - Default
-	* - resolution
-	  - Resolution for the contact distance adjustment.
-	  - float
-	  - 0.1
 	* - distance
 	  - Target contact distance between the selections.
 	  - float
 	  - 
+	* - resolution
+	  - Resolution for the contact distance adjustment.
+	  - float
+	  - 0.1
 .. list-table:: Optional Parameters
 	:header-rows: 1
 	:widths: 20 20 20 20
@@ -247,11 +275,11 @@ setContactDistance
 	* - Name
 	  - Description
 	  - Type
-	* - reference
-	  - Reference selection of particles.
-	  - list of ids
 	* - mobile
 	  - Mobile selection of particles to be moved.
+	  - list of ids
+	* - reference
+	  - Reference selection of particles.
 	  - list of ids
 
 Example:
@@ -270,6 +298,8 @@ Example:
 	}
 
 
+
+----
 
 setParticleLowestPosition
 -------------------------
@@ -336,6 +366,8 @@ Example:
 
 
 
+----
+
 setParticlePositions
 --------------------
 
@@ -352,13 +384,13 @@ setParticlePositions
 	  - Description
 	  - Type
 	  - Default
-	* - positions
-	  - List of new positions for the selected particles.
-	  - list of list of float
-	  - 
 	* - ids
 	  - List of particle IDs to move.
 	  - list of int
+	  - 
+	* - positions
+	  - List of new positions for the selected particles.
+	  - list of list of float
 	  - 
 
 Example:
@@ -374,6 +406,8 @@ Example:
 	}
 
 
+
+----
 
 setParticleXYPosition
 ---------------------

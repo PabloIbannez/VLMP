@@ -6,15 +6,32 @@ from . import simulationStepBase
 
 class meanRadius(simulationStepBase):
     """
-    Component name: meanRadius
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 24/10/2023
-
-    :param outputFilePath: Path to the output file
-    :type outputFilePath: str
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Calculates the mean radius of selected particles over time.",
+        "parameters": {
+            "outputFilePath": {
+                "description": "Path to the output file for mean radius measurements.",
+                "type": "str",
+                "default": "mean_radius.dat"
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles for mean radius calculation.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"meanRadius\",
+            \"parameters\": {
+                \"outputFilePath\": \"radius_data.dat\",
+                \"selection\": \"model1 type sphere\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"outputFilePath"}

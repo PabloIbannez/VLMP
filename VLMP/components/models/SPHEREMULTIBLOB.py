@@ -71,7 +71,19 @@ class SPHEREMULTIBLOB(modelBase):
                      "default":0.0},
         "heightReference":{"description":"Reference height for sphere placement.",
                            "type":"float",
-                           "default":0.0}
+                           "default":0.0},
+        "Ktethers":{"description":"Spring constant for tether bonds.",
+                    "type":"float",
+                    "default":0.0},
+        "heightTethersThreshold":{"description":"Height threshold for adding tethers.",
+                                  "type":"float"},
+        "tethersPerBlob":{"description":"Number of tethers per blob particle.",
+                          "type":"int"},
+        "thetaTethers":{"description":"Angle for tether placement.",
+                        "type":"float"},
+        "maxTries":{"description":"Maximum number of attempts to place spheres.",
+                    "type":"int",
+                    "default":100}
      },
      "example":"
          {

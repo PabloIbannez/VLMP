@@ -6,23 +6,43 @@ from . import simulationStepBase
 
 class lambdaCycle(simulationStepBase):
     """
-    Component name: lambdaCycle
-    Component type: simulationStep
-
-    Author: Pablo Ibáñez-Freire
-    Date: 03/01/2023
-
-    Lambda cycle.
-
-    :param activationStep: Activation step.
-    :type activationStep: int
-    :param measureStep: Measure step.
-    :type measureStep: int
-    :param pauseStep: Pause step.
-    :type pauseStep: int
-    :param lambdaValues: Lambda values.
-    :type lambdaValues: list
-
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Implements a cycle of lambda values for enhanced sampling in thermodynamic integration.",
+        "parameters": {
+            "activationStep": {
+                "description": "Number of steps for each lambda activation phase.",
+                "type": "int",
+                "default": 1000
+            },
+            "measureStep": {
+                "description": "Number of steps for measurement at each lambda value.",
+                "type": "int",
+                "default": 500
+            },
+            "pauseStep": {
+                "description": "Number of steps for pause between lambda changes.",
+                "type": "int",
+                "default": 100
+            },
+            "lambdaValues": {
+                "description": "List of lambda values to cycle through.",
+                "type": "list of float",
+                "default": [0.0, 1.0]
+            }
+        },
+        "example": "
+        {
+            \"type\": \"lambdaCycle\",
+            \"parameters\": {
+                \"activationStep\": 1000,
+                \"measureStep\": 500,
+                \"pauseStep\": 100,
+                \"lambdaValues\": [0.0, 0.25, 0.5, 0.75, 1.0]
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"activationStep","measureStep","pauseStep","lambdaValues"}

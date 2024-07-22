@@ -7,32 +7,66 @@ import numpy as np
 from . import modelExtensionBase
 
 class sphericalShell(modelExtensionBase):
-
     """
-    Component name: sphericalShell
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 15/06/2023
-
-    Spherical shell model extension for the model.
-
-    :param shellCenter: Center of the spherical shell.
-    :type shellCenter: list of floats
-    :param shellRadius: Radius of the spherical shell.
-    :type shellRadius: float
-    :param shellEpsilon: Epsilon of the spherical shell.
-    :type shellEpsilon: float, optional (default = 1.0)
-    :param shellSigma: Sigma of the spherical shell.
-    :type shellSigma: float, optional (default = 1.0)
-    :param minShellRadius: Minimum radius of the spherical shell.
-    :type minShellRadius: float, optional (default = 0.0)
-    :param maxShellRadius: Maximum radius of the spherical shell.
-    :type maxShellRadius: float, optional (default = inf)
-    :param radiusVelocity: Velocity of the radius of the spherical shell.
-    :type radiusVelocity: float, optional (default = 0.0)
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Creates a spherical shell potential around a selection of particles.",
+        "parameters": {
+            "shellCenter": {
+                "description": "Center of the spherical shell.",
+                "type": "list of float",
+                "default": [0.0, 0.0, 0.0]
+            },
+            "shellRadius": {
+                "description": "Radius of the spherical shell. This can be set to 'auto' to automatically set the radius.",
+                "type": "float",
+                "default": null
+            },
+            "shellEpsilon": {
+                "description": "Energy parameter for the shell potential.",
+                "type": "float",
+                "default": 1.0
+            },
+            "shellSigma": {
+                "description": "Distance parameter for the shell potential.",
+                "type": "float",
+                "default": 1.0
+            },
+            "minShellRadius": {
+                "description": "Minimum radius of the spherical shell.",
+                "type": "float",
+                "default": 0.0
+            },
+            "maxShellRadius": {
+                "description": "Maximum radius of the spherical shell.",
+                "type": "float",
+                "default": null
+            },
+            "radiusVelocity": {
+                "description": "Velocity of the radius change.",
+                "type": "float",
+                "default": 0.0
+            }
+        },
+        "selections": {
+            "selection": {
+                "description": "Selection of particles to be confined within the shell.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"sphericalShell\",
+            \"parameters\": {
+                \"shellCenter\": [0.0, 0.0, 0.0],
+                \"shellRadius\": 10.0,
+                \"shellEpsilon\": 1.0,
+                \"shellSigma\": 1.0,
+                \"selection\": \"model1 all\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"shellCenter",

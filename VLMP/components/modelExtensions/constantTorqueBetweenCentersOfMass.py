@@ -7,24 +7,29 @@ import numpy as np
 from . import modelExtensionBase
 
 class constantTorqueBetweenCentersOfMass(modelExtensionBase):
-
     """
-    Component name: constantTorqueBetweenCentersOfMass
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
-
-    Constant torque between centers of mass of selected particles
-
-    :param selection1: Selection for the first particle group
-    :type selection1: list of dictionaries
-    :param selection2: Selection for the second particle group
-    :type selection2: list of dictionaries
-    :param torque: torque applied to the particles
-    :type torque: float
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Applies a constant torque between the centers of mass of two groups of particles.
+                        The torque is applied in such a way that the two groups of particles
+                        rotate in opposite directions around the axis defined by the vector",
+        "parameters": {
+            "torque": {"description": "Magnitude of the torque to be applied", "type": "float", "default": null}
+        },
+        "selections": {
+            "selection1": {"description": "First group of particles", "type": "list of ids"},
+            "selection2": {"description": "Second group of particles", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"constantTorqueBetweenCentersOfMass\",
+            \"parameters\": {
+                \"torque\": 1.0,
+                \"selection1\": \"model1 chain A\",
+                \"selection2\": \"model1 chain B\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"torque"}

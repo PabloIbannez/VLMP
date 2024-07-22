@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    'sphinx.ext.autosectionlabel',
 ]
 
 intersphinx_mapping = {
@@ -67,3 +68,4 @@ html_theme_options = {
 }
 
 mathjax3_config = {'chtml': {'displayAlign': 'left'}}
+

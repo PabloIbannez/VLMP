@@ -3,6 +3,24 @@ Integrators
 
 .. include:: IntegratorsIntro.rst
 
+- :ref:`BBK`
+
+- :ref:`EulerMaruyama`
+
+- :ref:`EulerMaruyamaRigidBody`
+
+- :ref:`EulerMaruyamaRigidBodyPatchesState`
+
+- :ref:`GFJ`
+
+- :ref:`MagneticBrownian`
+
+- :ref:`NVE`
+
+
+
+----
+
 BBK
 ---
 
@@ -19,16 +37,16 @@ BBK
 	  - Description
 	  - Type
 	  - Default
-	* - frictionConstant
-	  - Friction constant of the integrator
+	* - timeStep
+	  - Time step of the integrator
 	  - float
 	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
-	* - timeStep
-	  - Time step of the integrator
+	* - frictionConstant
+	  - Friction constant of the integrator
 	  - float
 	  - 
 
@@ -47,6 +65,8 @@ Example:
 
 
 
+----
+
 EulerMaruyama
 -------------
 
@@ -63,13 +83,13 @@ EulerMaruyama
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
-	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
+	  - 
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 	* - viscosity
 	  - Viscosity of the fluid
@@ -91,6 +111,8 @@ Example:
 
 
 
+----
+
 EulerMaruyamaRigidBody
 ----------------------
 
@@ -107,13 +129,13 @@ EulerMaruyamaRigidBody
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
-	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
+	  - 
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 	* - viscosity
 	  - Viscosity of the fluid
@@ -135,6 +157,8 @@ Example:
 
 
 
+----
+
 EulerMaruyamaRigidBodyPatchesState
 ----------------------------------
 
@@ -151,13 +175,13 @@ EulerMaruyamaRigidBodyPatchesState
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
-	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
+	  - 
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 	* - viscosity
 	  - Viscosity of the fluid
@@ -179,6 +203,8 @@ Example:
 
 
 
+----
+
 GFJ
 ---
 
@@ -195,16 +221,16 @@ GFJ
 	  - Description
 	  - Type
 	  - Default
-	* - frictionConstant
-	  - Friction constant of the integrator
+	* - timeStep
+	  - Time step of the integrator
 	  - float
 	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
 	  - 
-	* - timeStep
-	  - Time step of the integrator
+	* - frictionConstant
+	  - Friction constant of the integrator
 	  - float
 	  - 
 
@@ -223,6 +249,8 @@ Example:
 
 
 
+----
+
 MagneticBrownian
 ----------------
 
@@ -239,18 +267,6 @@ MagneticBrownian
 	  - Description
 	  - Type
 	  - Default
-	* - msat
-	  - Saturation magnetization
-	  - float
-	  - 
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
-	  - 
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
-	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
@@ -258,6 +274,18 @@ MagneticBrownian
 	* - magneticIntegrationAlgorithm
 	  - Algorithm for magnetic integration
 	  - string
+	  - 
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
+	  - 
+	* - msat
+	  - Saturation magnetization
+	  - float
+	  - 
+	* - viscosity
+	  - Viscosity of the fluid
+	  - float
 	  - 
 .. list-table:: Optional Parameters
 	:header-rows: 1
@@ -268,12 +296,12 @@ MagneticBrownian
 	  - Description
 	  - Type
 	  - Default
-	* - gyroRatio
-	  - Gyromagnetic ratio
-	  - float
-	  - 
 	* - damping
 	  - Damping factor
+	  - float
+	  - 
+	* - gyroRatio
+	  - Gyromagnetic ratio
 	  - float
 	  - 
 
@@ -296,6 +324,8 @@ Example:
 
 
 
+----
+
 NVE
 ---
 
@@ -312,13 +342,13 @@ NVE
 	  - Description
 	  - Type
 	  - Default
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
-	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
+	  - 
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 
 Example:

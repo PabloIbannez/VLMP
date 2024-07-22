@@ -3,6 +3,14 @@ Ensembles
 
 .. include:: EnsemblesIntro.rst
 
+- :ref:`NVT`
+
+- :ref:`NVTlambda`
+
+
+
+----
+
 NVT
 ---
 
@@ -42,6 +50,8 @@ Example:
 
 
 
+----
+
 NVTlambda
 ---------
 
@@ -58,12 +68,12 @@ NVTlambda
 	  - Description
 	  - Type
 	  - Default
-	* - lambda
-	  - Lambda parameter for thermodynamic integration
-	  - float
-	  - 
 	* - box
 	  - Size of the simulation box
+	  - float
+	  - 
+	* - lambda
+	  - Lambda parameter for thermodynamic integration
 	  - float
 	  - 
 	* - temperature

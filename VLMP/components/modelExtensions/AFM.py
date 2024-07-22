@@ -1,28 +1,42 @@
 from VLMP.components.modelExtensions import modelExtensionBase
 
 class AFM(modelExtensionBase):
-
     """
-    Component name: AFM
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 17/06/2023
-
-    AFM model extension.
-
-    :param epsilon: epsilon parameter for tip-particle interaction
-    :type epsilon: float
-    :param sigma: sigma parameter for tip-particle interaction
-    :type sigma: float
-    :param K: spring constant
-    :type K: float
-    :param Kxy: xy spring constant
-    :type Kxy: float
-    :param tipVelocity: tip velocity
-    :type tipVelocity: float
-    :param startChipPosition: initial position of the chip
-    :type startChipPosition: list of float [x,y,z]
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Atomic Force Microscopy (AFM) model extension for simulating AFM experiments.
+                       This extension add an interaction between a particle (the tip) and other set of
+                       particles (the sample). The interaction between the tip and the sample is modeled
+                       as a Lennard-Jones potential. The tip is modeled as a spherical particle with a
+                       spring attached to it.",
+        "parameters": {
+            "K": {"description": "Spring constant for the AFM cantilever", "type": "float", "default": null},
+            "Kxy": {"description": "Lateral spring constant", "type": "float", "default": null},
+            "epsilon": {"description": "Energy parameter for tip-sample interaction", "type": "float", "default": null},
+            "sigma": {"description": "Distance parameter for tip-sample interaction", "type": "float", "default": null},
+            "tipVelocity": {"description": "Velocity of the AFM tip", "type": "float", "default": null},
+            "indentationStartStep": {"description": "Simulation step to start indentation", "type": "int", "default": 0},
+            "indentationBackwardStep": {"description": "Simulation step to start backward indentation", "type": "int", "default": null}
+        },
+        "selections": {
+            "tip": {"description": "Selection for the AFM tip", "type": "list of with one id, [id]"},
+            "sample": {"description": "Selection for the sample particles", "type": "list of ids"}
+        },
+        "example": "
+        {
+            \"type\": \"AFM\",
+            \"parameters\": {
+                \"K\": 1.0,
+                \"Kxy\": 0.5,
+                \"epsilon\": 1.0,
+                \"sigma\": 1.0,
+                \"tipVelocity\": 0.1,
+                \"indentationStartStep\": 1000,
+                \"tip\": \"model1 type TIP\",
+                \"sample\": \"model2\"
+            }
+        }"
+    }
     """
 
     availableParameters = {"epsilon",

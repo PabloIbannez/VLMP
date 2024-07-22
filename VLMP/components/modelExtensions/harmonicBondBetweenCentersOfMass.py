@@ -7,26 +7,44 @@ import numpy as np
 from . import modelExtensionBase
 
 class harmonicBondBetweenCentersOfMass(modelExtensionBase):
-
     """
-    Component name: harmonicBondBetweenCentersOfMass
-    Component type: modelExtension
-
-    Author: Pablo Ibáñez-Freire
-    Date: 04/04/2023
-
-    Harmonic bond between centers of mass
-
-    :param selection1: Selection for the first particle group
-    :type selection1: list of dictionaries
-    :param selection2: Selection for the second particle group
-    :type selection2: list of dictionaries
-    :param K: Spring constant
-    :type K: float
-    :param r0: Equilibrium distance
-    :type r0: float
-
-    ...
+    {
+        "author": "Pablo Ibáñez-Freire",
+        "description": "Adds a harmonic bond between the centers of mass of two groups of particles.",
+        "parameters": {
+            "K": {
+                "description": "Spring constant for the harmonic bond.",
+                "type": "float",
+                "default": null
+            },
+            "r0": {
+                "description": "Equilibrium distance for the harmonic bond.",
+                "type": "float",
+                "default": null
+            }
+        },
+        "selections": {
+            "selection1": {
+                "description": "Selection for the first group of particles.",
+                "type": "list of ids"
+            },
+            "selection2": {
+                "description": "Selection for the second group of particles.",
+                "type": "list of ids"
+            }
+        },
+        "example": "
+        {
+            \"type\": \"harmonicBondBetweenCentersOfMass\",
+            \"parameters\": {
+                \"K\": 100.0,
+                \"r0\": 5.0,
+                \"selection1\": \"model1 chain A\",
+                \"selection2\": \"model2 chain B\"
+            }
+        }
+        "
+    }
     """
 
     availableParameters = {"K","r0"}
