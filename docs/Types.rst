@@ -27,18 +27,18 @@ basic
 	  - Description
 	  - Type
 	  - Default
-	* - mass
-	  - Default mass for a new type
-	  - float
-	  - 1.0
-	* - radius
-	  - Default radius for a new type
-	  - float
-	  - 1.0
 	* - charge
 	  - Default charge for a new type
 	  - float
 	  - 0.0
+	* - radius
+	  - Default radius for a new type
+	  - float
+	  - 1.0
+	* - mass
+	  - Default mass for a new type
+	  - float
+	  - 1.0
 
 Example:
 

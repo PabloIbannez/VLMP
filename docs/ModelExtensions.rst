@@ -69,12 +69,12 @@ ACMagneticField
 	  - Description
 	  - Type
 	  - Default
-	* - b0
-	  - Amplitude of the magnetic field
-	  - float
-	  - 
 	* - frequency
 	  - Frequency of the AC field
+	  - float
+	  - 
+	* - b0
+	  - Amplitude of the magnetic field
 	  - float
 	  - 
 .. list-table:: Optional Parameters
@@ -128,20 +128,20 @@ AFM
 	  - Energy parameter for tip-sample interaction
 	  - float
 	  - 
-	* - tipVelocity
-	  - Velocity of the AFM tip
-	  - float
-	  - 
 	* - K
 	  - Spring constant for the AFM cantilever
 	  - float
 	  - 
-	* - sigma
-	  - Distance parameter for tip-sample interaction
-	  - float
-	  - 
 	* - Kxy
 	  - Lateral spring constant
+	  - float
+	  - 
+	* - tipVelocity
+	  - Velocity of the AFM tip
+	  - float
+	  - 
+	* - sigma
+	  - Distance parameter for tip-sample interaction
 	  - float
 	  - 
 .. list-table:: Optional Parameters
@@ -153,14 +153,14 @@ AFM
 	  - Description
 	  - Type
 	  - Default
-	* - indentationBackwardStep
-	  - Simulation step to start backward indentation
-	  - int
-	  - 
 	* - indentationStartStep
 	  - Simulation step to start indentation
 	  - int
 	  - 0
+	* - indentationBackwardStep
+	  - Simulation step to start backward indentation
+	  - int
+	  - 
 .. list-table:: Required Selections
 	:header-rows: 1
 	:widths: 20 20 20
@@ -231,14 +231,14 @@ LennardJones
 	  - Description
 	  - Type
 	  - Default
-	* - addVerletList
-	  - Whether to add a Verlet list for the interactions
-	  - bool
-	  - True
 	* - condition
 	  - Condition for the interaction (e.g., 'inter', 'intra')
 	  - str
 	  - inter
+	* - addVerletList
+	  - Whether to add a Verlet list for the interactions
+	  - bool
+	  - True
 
 Example:
 
@@ -273,22 +273,22 @@ WCA
 	  - Description
 	  - Type
 	  - Default
-	* - epsilon
-	  - Energy parameter for the WCA potential.
-	  - float
-	  - 1.0
 	* - cutOffFactor
 	  - Factor to multiply the sigma parameter to obtain the cut-off distance.
 	  - float
 	  - 2.5
-	* - addVerletList
-	  - If True, a Verlet list will be created for the interactions.
-	  - bool
-	  - True
+	* - epsilon
+	  - Energy parameter for the WCA potential.
+	  - float
+	  - 1.0
 	* - condition
 	  - Condition for the interaction.
 	  - str
 	  - inter
+	* - addVerletList
+	  - If True, a Verlet list will be created for the interactions.
+	  - bool
+	  - True
 
 Example:
 
@@ -366,12 +366,12 @@ addBond
 	  - Description
 	  - Type
 	  - Default
-	* - r0
-	  - Equilibrium distance of the bond
-	  - float
-	  - 
 	* - K
 	  - Spring constant for the bond
+	  - float
+	  - 
+	* - r0
+	  - Equilibrium distance of the bond
 	  - float
 	  - 
 .. list-table:: Required Selections
@@ -675,13 +675,13 @@ constraintCenterOfMassPosition
 	  - Position to constrain the center of mass to
 	  - list of float
 	  - 
-	* - r0
-	  - Equilibrium distance from the constraint position
-	  - float
-	  - 
 	* - K
 	  - Spring constant for the constraint
 	  - float or list of float
+	  - 
+	* - r0
+	  - Equilibrium distance from the constraint position
+	  - float
 	  - 
 .. list-table:: Required Selections
 	:header-rows: 1
@@ -733,13 +733,13 @@ constraintParticlesListPositionLambda
 	  - List of particle IDs to be constrained.
 	  - list of int
 	  - 
-	* - K
-	  - Spring constant for the constraint.
-	  - float or list of float
-	  - 
 	* - positions
 	  - List of positions for each constrained particle.
 	  - list of list of float
+	  - 
+	* - K
+	  - Spring constant for the constraint.
+	  - float or list of float
 	  - 
 .. list-table:: Optional Parameters
 	:header-rows: 1
@@ -907,12 +907,12 @@ harmonicBondBetweenCentersOfMass
 	  - Description
 	  - Type
 	  - Default
-	* - r0
-	  - Equilibrium distance for the harmonic bond.
-	  - float
-	  - 
 	* - K
 	  - Spring constant for the harmonic bond.
+	  - float
+	  - 
+	* - r0
+	  - Equilibrium distance for the harmonic bond.
 	  - float
 	  - 
 .. list-table:: Required Selections
@@ -964,12 +964,28 @@ helixBoundaries
 	  - Description
 	  - Type
 	  - Default
+	* - K
+	  - Spring constant for boundary conditions
+	  - float
+	  - 
+	* - helixPitch
+	  - Pitch of the helix
+	  - float
+	  - 
 	* - helixInnerRadius
 	  - Inner radius of the helix
 	  - float
 	  - 
-	* - nTurns
-	  - Number of turns in the helix
+	* - eps
+	  - Helix handedness (1 for right-handed, -1 for left-handed)
+	  - float
+	  - 
+	* - helixRadius
+	  - Radius of the helix
+	  - float
+	  - 
+	* - nPointsHelix
+	  - Number of points to discretize the helix
 	  - int
 	  - 
 	* - nz
@@ -980,29 +996,13 @@ helixBoundaries
 	  - Number of points in y direction
 	  - int
 	  - 
-	* - helixRadius
-	  - Radius of the helix
-	  - float
-	  - 
-	* - helixPitch
-	  - Pitch of the helix
-	  - float
-	  - 
-	* - K
-	  - Spring constant for boundary conditions
-	  - float
+	* - nTurns
+	  - Number of turns in the helix
+	  - int
 	  - 
 	* - nx
 	  - Number of points in x direction
 	  - int
-	  - 
-	* - nPointsHelix
-	  - Number of points to discretize the helix
-	  - int
-	  - 
-	* - eps
-	  - Helix handedness (1 for right-handed, -1 for left-handed)
-	  - float
 	  - 
 .. list-table:: Optional Selections
 	:header-rows: 1
@@ -1057,16 +1057,16 @@ plates
 	  - Description
 	  - Type
 	  - Default
+	* - platesSeparation
+	  - Distance between the two plates.
+	  - float
+	  - 
 	* - epsilon
 	  - Energy parameter for plate-particle interactions.
 	  - float
 	  - 
 	* - sigma
 	  - Distance parameter for plate-particle interactions.
-	  - float
-	  - 
-	* - platesSeparation
-	  - Distance between the two plates.
 	  - float
 	  - 
 .. list-table:: Optional Parameters
@@ -1078,14 +1078,14 @@ plates
 	  - Description
 	  - Type
 	  - Default
-	* - minPlatesSeparation
-	  - Minimum allowed separation between plates.
-	  - float
-	  - 
 	* - compressionVelocity
 	  - Velocity at which the plates are compressed.
 	  - float
 	  - 0.0
+	* - minPlatesSeparation
+	  - Minimum allowed separation between plates.
+	  - float
+	  - 
 	* - maxPlatesSeparation
 	  - Maximum allowed separation between plates.
 	  - float
@@ -1136,14 +1136,14 @@ sphericalShell
 	  - Description
 	  - Type
 	  - Default
-	* - shellCenter
-	  - Center of the spherical shell.
-	  - list of float
-	  - [0.0, 0.0, 0.0]
 	* - shellRadius
 	  - Radius of the spherical shell. This can be set to 'auto' to automatically set the radius.
 	  - float
 	  - 
+	* - shellCenter
+	  - Center of the spherical shell.
+	  - list of float
+	  - [0.0, 0.0, 0.0]
 .. list-table:: Optional Parameters
 	:header-rows: 1
 	:widths: 20 20 20 20
@@ -1153,10 +1153,6 @@ sphericalShell
 	  - Description
 	  - Type
 	  - Default
-	* - maxShellRadius
-	  - Maximum radius of the spherical shell.
-	  - float
-	  - 
 	* - shellSigma
 	  - Distance parameter for the shell potential.
 	  - float
@@ -1165,14 +1161,18 @@ sphericalShell
 	  - Minimum radius of the spherical shell.
 	  - float
 	  - 0.0
-	* - shellEpsilon
-	  - Energy parameter for the shell potential.
-	  - float
-	  - 1.0
 	* - radiusVelocity
 	  - Velocity of the radius change.
 	  - float
 	  - 0.0
+	* - shellEpsilon
+	  - Energy parameter for the shell potential.
+	  - float
+	  - 1.0
+	* - maxShellRadius
+	  - Maximum radius of the spherical shell.
+	  - float
+	  - 
 .. list-table:: Optional Selections
 	:header-rows: 1
 	:widths: 20 20 20
@@ -1220,12 +1220,12 @@ steric
 	  - Description
 	  - Type
 	  - Default
-	* - epsilon
-	  - Energy parameter for the interaction.
-	  - float
-	  - 
 	* - cutOffFactor
 	  - Factor to multiply the sigma parameter to obtain the cut-off distance.
+	  - float
+	  - 
+	* - epsilon
+	  - Energy parameter for the interaction.
 	  - float
 	  - 
 .. list-table:: Optional Parameters
@@ -1237,18 +1237,18 @@ steric
 	  - Description
 	  - Type
 	  - Default
-	* - condition
-	  - Condition for the interaction.
-	  - str
-	  - inter
-	* - excludedBonds
-	  - Number of bonds to exclude from the steric interactions.                                 This option is only available if addVerletList is True.                                 If excludedBonds > 0, the Verlet list will be created                                 with the non-bonded interactions and the excluded bonds.
-	  - int
-	  - 0
 	* - addVerletList
 	  - If True, a Verlet list will be created for the interactions.
 	  - bool
 	  - True
+	* - excludedBonds
+	  - Number of bonds to exclude from the steric interactions.                                 This option is only available if addVerletList is True.                                 If excludedBonds > 0, the Verlet list will be created                                 with the non-bonded interactions and the excluded bonds.
+	  - int
+	  - 0
+	* - condition
+	  - Condition for the interaction.
+	  - str
+	  - inter
 
 Example:
 
@@ -1347,12 +1347,12 @@ surfaceMaxForce
 	  - Description
 	  - Type
 	  - Default
-	* - surfacePosition
-	  - Z-coordinate of the surface
-	  - float
-	  - 
 	* - maxForce
 	  - Maximum force allowed in the interaction
+	  - float
+	  - 
+	* - surfacePosition
+	  - Z-coordinate of the surface
 	  - float
 	  - 
 .. list-table:: Optional Parameters

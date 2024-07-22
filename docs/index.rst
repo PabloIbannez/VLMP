@@ -16,7 +16,9 @@ Welcome to VLMP's documentation!
    Components
    Simulation
    Simulation Pool
+   VLMP Execution
    Workflow
+   Experiments
 
 .. toctree::
    :maxdepth: 4
@@ -41,14 +43,6 @@ Welcome to VLMP's documentation!
 
 .. toctree::
    :maxdepth: 4
-   :caption: Extending VLMP
-
-   How to extend VLMP?
-   Sharing your extension
-   Templates
-
-.. toctree::
-   :maxdepth: 4
    :caption: Utils
 
    Input
@@ -63,3 +57,12 @@ Welcome to VLMP's documentation!
    Design
    Implementation
    Backend
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Extending VLMP
+
+   How to extend VLMP?
+   Sharing your extension
+   Templates
+

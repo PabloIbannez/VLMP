@@ -13,6 +13,8 @@ available_components = ["systems",
                         "models", "modelOperations", "modelExtensions",
                         "integrators", "simulationSteps"]
 
+baseExperiments = "VLMP.experiments"
+
 def fix_multiline_json(json_string):
     # Fix multiline strings
     json_string = re.sub(r'"\s*(\S[^"]*?\S)\s*"', lambda m: '"{}"'.format(m.group(1).replace('\n', ' ')), json_string, flags=re.DOTALL)
@@ -334,3 +336,14 @@ for component_type in available_components:
             f.write(f"{name}\n")
             f.write("-" * len(name) + "\n\n")
             f.write(f"{docstring}\n\n")
+
+# Create available experiments list. Iterate over files in experiments folder but __init__.py
+available_experiments = {}
+package = importlib.import_module(baseExperiments)
+
+for _, modname, ispkg in pkgutil.iter_modules(package.__path__):
+    available_experiments[modname] = f"{baseExperiments}.{modname}"
+
+with open(f"AvailableExperiments.rst", "w") as f:
+    for experiment in available_experiments:
+        f.write(f"- :ref:`{experiment}`\n")

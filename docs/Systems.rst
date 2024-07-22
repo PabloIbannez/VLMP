@@ -42,10 +42,6 @@ backup
 	  - Description
 	  - Type
 	  - Default
-	* - backupStartStep
-	  - Step at which the backup starts
-	  - ullint
-	  - 0
 	* - backupEndStep
 	  - Step at which the backup ends
 	  - ullint
@@ -54,6 +50,10 @@ backup
 	  - Path to the backup file
 	  - str
 	  - backup
+	* - backupStartStep
+	  - Step at which the backup starts
+	  - ullint
+	  - 0
 
 Example:
 

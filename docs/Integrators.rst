@@ -37,13 +37,13 @@ BBK
 	  - Description
 	  - Type
 	  - Default
-	* - timeStep
-	  - Time step of the integrator
-	  - float
-	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
+	  - 
+	* - timeStep
+	  - Time step of the integrator
+	  - float
 	  - 
 	* - frictionConstant
 	  - Friction constant of the integrator
@@ -83,6 +83,10 @@ EulerMaruyama
 	  - Description
 	  - Type
 	  - Default
+	* - viscosity
+	  - Viscosity of the fluid
+	  - float
+	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
@@ -90,10 +94,6 @@ EulerMaruyama
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
-	  - 
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
 	  - 
 
 Example:
@@ -129,6 +129,10 @@ EulerMaruyamaRigidBody
 	  - Description
 	  - Type
 	  - Default
+	* - viscosity
+	  - Viscosity of the fluid
+	  - float
+	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
@@ -136,10 +140,6 @@ EulerMaruyamaRigidBody
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
-	  - 
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
 	  - 
 
 Example:
@@ -175,6 +175,10 @@ EulerMaruyamaRigidBodyPatchesState
 	  - Description
 	  - Type
 	  - Default
+	* - viscosity
+	  - Viscosity of the fluid
+	  - float
+	  - 
 	* - timeStep
 	  - Time step of the integrator
 	  - float
@@ -182,10 +186,6 @@ EulerMaruyamaRigidBodyPatchesState
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
-	  - 
-	* - viscosity
-	  - Viscosity of the fluid
-	  - float
 	  - 
 
 Example:
@@ -221,13 +221,13 @@ GFJ
 	  - Description
 	  - Type
 	  - Default
-	* - timeStep
-	  - Time step of the integrator
-	  - float
-	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
+	  - 
+	* - timeStep
+	  - Time step of the integrator
+	  - float
 	  - 
 	* - frictionConstant
 	  - Friction constant of the integrator
@@ -267,17 +267,9 @@ MagneticBrownian
 	  - Description
 	  - Type
 	  - Default
-	* - timeStep
-	  - Time step of the integrator
-	  - float
-	  - 
 	* - magneticIntegrationAlgorithm
 	  - Algorithm for magnetic integration
 	  - string
-	  - 
-	* - integrationSteps
-	  - Number of integration steps
-	  - int
 	  - 
 	* - msat
 	  - Saturation magnetization
@@ -286,6 +278,14 @@ MagneticBrownian
 	* - viscosity
 	  - Viscosity of the fluid
 	  - float
+	  - 
+	* - timeStep
+	  - Time step of the integrator
+	  - float
+	  - 
+	* - integrationSteps
+	  - Number of integration steps
+	  - int
 	  - 
 .. list-table:: Optional Parameters
 	:header-rows: 1
@@ -296,12 +296,12 @@ MagneticBrownian
 	  - Description
 	  - Type
 	  - Default
-	* - damping
-	  - Damping factor
-	  - float
-	  - 
 	* - gyroRatio
 	  - Gyromagnetic ratio
+	  - float
+	  - 
+	* - damping
+	  - Damping factor
 	  - float
 	  - 
 
@@ -342,13 +342,13 @@ NVE
 	  - Description
 	  - Type
 	  - Default
-	* - timeStep
-	  - Time step of the integrator
-	  - float
-	  - 
 	* - integrationSteps
 	  - Number of integration steps
 	  - int
+	  - 
+	* - timeStep
+	  - Time step of the integrator
+	  - float
 	  - 
 
 Example:

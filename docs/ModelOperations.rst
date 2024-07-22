@@ -145,13 +145,13 @@ rotation
 	  - Description
 	  - Type
 	  - Default
-	* - axis
-	  - Axis of rotation.
-	  - list of float
-	  - 
 	* - angle
 	  - Angle of rotation in radians.
 	  - float
+	  - 
+	* - axis
+	  - Axis of rotation.
+	  - list of float
 	  - 
 .. list-table:: Required Selections
 	:header-rows: 1
@@ -275,11 +275,11 @@ setContactDistance
 	* - Name
 	  - Description
 	  - Type
-	* - mobile
-	  - Mobile selection of particles to be moved.
-	  - list of ids
 	* - reference
 	  - Reference selection of particles.
+	  - list of ids
+	* - mobile
+	  - Mobile selection of particles to be moved.
 	  - list of ids
 
 Example:
