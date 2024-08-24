@@ -2,6 +2,13 @@ import sys,os
 
 import logging
 
+from colorama import init  as colorama_init
+from colorama import Fore  as colorama_Fore
+from colorama import Style as colorama_Style
+
+# Init colorama
+colorama_init()
+
 import json
 
 ################### DEBUG MODE ##################
@@ -53,6 +60,30 @@ if "-m" not in sys.argv:
     #This done to avoid the error when running the program with -m option.
     #When running with -m option a large number of libraries imported by VLMP
     #are not needed.
+
+    v_color_logo = colorama_Fore.LIGHTGREEN_EX
+    l_color_logo = colorama_Fore.LIGHTBLUE_EX
+    m_color_logo = colorama_Fore.LIGHTRED_EX
+    p_color_logo = colorama_Fore.LIGHTYELLOW_EX
+
+    reset_color = colorama_Style.RESET_ALL
+
+    # Define the ASCII art with colors
+    vlmp_art = [
+        "\n",
+        f"   {v_color_logo}██╗   ██╗{l_color_logo}██╗     {m_color_logo}███╗   ███╗{p_color_logo}██████╗{reset_color}",
+        f"   {v_color_logo}██║   ██║{l_color_logo}██║     {m_color_logo}████╗ ████║{p_color_logo}██╔══██╗{reset_color}",
+        f"   {v_color_logo}██║   ██║{l_color_logo}██║     {m_color_logo}██╔████╔██║{p_color_logo}██████╔╝{reset_color}",
+        f"   {v_color_logo}╚██╗ ██╔╝{l_color_logo}██║     {m_color_logo}██║╚██╔╝██║{p_color_logo}██╔═══╝{reset_color}",
+        f"   {v_color_logo} ╚████╔╝ {l_color_logo}███████╗{m_color_logo}██║ ╚═╝ ██║{p_color_logo}██║{reset_color}",
+        f"   {v_color_logo}  ╚═══╝  {l_color_logo}╚══════╝{m_color_logo}╚═╝     ╚═╝{p_color_logo}╚═╝{reset_color}"
+    ]
+
+    vlmp_subtext = [f"    {v_color_logo}VIRTUAL   {l_color_logo}LAB    {m_color_logo}MODELING {p_color_logo} PLATFORM{reset_color}"]
+
+    vlmp_logo = vlmp_art + vlmp_subtext + ["\n"]
+    for line in vlmp_logo:
+        print(line)
 
     logger.info("Starting VLMP...")
 
