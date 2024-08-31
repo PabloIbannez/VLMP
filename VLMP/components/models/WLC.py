@@ -150,11 +150,13 @@ class WLC(modelBase):
 
         if selectionType == "polymerIndex":
             sel = []
-            for pIndex in params["polymerIndex"]:
+            # Convert selectionOptions to a list of ints
+            indices = selectionOptions.split()
+            indices = [int(i) for i in indices]
+            for pIndex in indices:
                 if pIndex < -self.N or pIndex > self.N or pIndex == 0:
                     self.logger.error(f"[WLC] Invalid polymer index {pIndex}")
                     raise Exception("Invalid polymer index")
-
                 if pIndex > 0:
                     sel.append(pIndex-1)
                 if pIndex < 0:

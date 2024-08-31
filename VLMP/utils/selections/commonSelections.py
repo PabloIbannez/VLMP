@@ -130,6 +130,7 @@ def forceFieldSelection(model, selectionType, selectionOptions, applyOffset=Fals
             sel = [model.getIdOffset() + i for i in sel]
         else:
             sel = [[model.getIdOffset() + i for i in bond] for bond in sel]
+
     return sel
 
 
@@ -164,5 +165,6 @@ def processCommonSelection(models, selectionType, selectionOptions, applyOffset=
         modelsNames = [model.getName() for model in models]
         logger.warning(f"[CommonSelection] Selection type {selectionType} with options {selectionOptions} "
                        f"is empty for models {modelsNames}")
+
 
     return sel

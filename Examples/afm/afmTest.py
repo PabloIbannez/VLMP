@@ -16,7 +16,7 @@ samples = {
                    "modelOperations":[{"type":"rotation",
                                        "parameters":{"axis":[1.0,0.0,0.0],
                                                      "angle":3.141592/2.0,
-                                                     "selection":{"models":["FILE"]}}}]
+                                                     "selection":"FILE"}}]
                    }
            }
 
@@ -31,13 +31,20 @@ parameters = {
               "AFM":{"K":0.05,
                      "Kxy":100.0,
                      "epsilon":1.0,
+                     "sigma":1.0,
                      "tipVelocity":[0.0],
                      "thermalizationSteps":100000000,
                      "indentationSteps":10000000,
                      "tipMass":1000.0,
                      "tipRadius":250.0,
-                     "initialTipSampleDistance":10.0
-                    },
+                     "initialTipSampleDistance":10.0,
+                     "indentationPositionX":0.0,
+                     "indentationPositionY":0.0},
+              "indentation": {
+                  "thermalizationSteps": 10000,
+                  "indentationSteps": 50000,
+                  "fixSampleDuringThermalization": True,
+                  "KxyFixing": 10.0},
               "surface":{"epsilon":-1.0,
                          "absorptionHeight":10.0,
                          "absorptionK":10.0},

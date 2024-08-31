@@ -1,6 +1,6 @@
 import VLMP
 
-from VLMP.utils.utils import picosecond2KcalMol_A_time
+from VLMP.utils.units import picosecond2KcalMol_A_time
 
 ps2AKMA = picosecond2KcalMol_A_time()
 
@@ -16,7 +16,7 @@ for i in range(copies):
                            "ensemble":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
                            "integrators":[{"type":"BBK","parameters":{"timeStep":0.02*ps2AKMA,"frictionConstant":1.0/ps2AKMA,"integrationSteps":1000000}}],
                            "models":[{"type":"SBCG",
-                                     "parameters":{"PDB":"mergedTMV_20.pdb",
+                                     "parameters":{"PDB":"mergedTMV_9.pdb",
                                                    "resolution":150,
                                                    "steps":10000,
                                                    "SASA":False,

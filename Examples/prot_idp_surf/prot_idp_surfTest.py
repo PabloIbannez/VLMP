@@ -40,14 +40,14 @@ for seq in sequences:
                                      ],
                            "modelOperations":[{"type":"setParticleLowestPosition",
                                                "parameters":{"position":-200.0,"considerRadius":True,"radiusFactor":1.1,
-                                                             "selection":{"models":["PROTEIN_IDP_PROTEIN"]}}
+                                                             "selection":"PROTEIN_IDP_PROTEIN"}
                                                }],
                            "modelExtensions":[{"type":"WCA",
                                                "parameters":{"addVerletList":False}
                                               },
                                               {"type":"constraintParticlesPosition",
                                                "parameters":{"K":100.0,
-                                                             "selection":{"expression":{"particleId":[0]}}}}],
+                                                             "selection":"PROTEIN_IDP_PROTEIN id 0"}}],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
                                                                                 "pbc":True,
                                                                                 "outputFilePath":"output",

@@ -297,6 +297,9 @@ def processSelections(models,selections):
                 procTokens[i] = tuple(sorted(procTokens[i]))
             # Remove duplicates
             procTokens = list(set(procTokens))
+            # Convert back to list
+            for i in range(len(procTokens)):
+                procTokens[i] = list(procTokens[i])
 
 
         processedSelections[sel] = procTokens

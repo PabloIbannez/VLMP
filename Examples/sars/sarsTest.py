@@ -20,8 +20,7 @@ for i in range(copies):
                            "models":[{"type":"CORONAVIRUS","parameters":{"nSpikes":40,"surface":True}}],
                            "modelExtensions":[{"type":"constantTorqueOverCenterOfMass",
                                                "parameters":{"torque":[0.0,0.0,-1.0],
-                                                             "selection":{"expression":{"type":"lipids"}}
-                                                            },
+                                                             "selection":"CORONAVIRUS type lipids"}
 
                                                }],
                            "simulationSteps":[{"type":"saveState","parameters":{"startStep":10000,

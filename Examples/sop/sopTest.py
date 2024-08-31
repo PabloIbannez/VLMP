@@ -23,7 +23,7 @@ for i in range(copies):
                                                                                 "outputFormat":"sp"}},
                                               {"type":"nativeContactsMeasurement","parameters":{"intervalStep":10000,
                                                                                                 "outputFilePath":"nativeContacts.dat",
-                                                                                                "selection":{"expression":{"forceField":"nativeContacts"}}}},
+                                                                                                "selection":"SOP forceField nativeContacts"}},
                                               {"type":"info","parameters":{"intervalStep":10000}}]
 
                            })

@@ -94,10 +94,6 @@ for v,m,i in toCheck:
                                     ],
                             "simulationSteps":[
                                                {"type":"info","parameters":{"intervalStep":10000}}
-                                               #,
-                                               #{"type":"potentialMeasurement","parameters":{"intervalStep":10000,
-                                               #                                             "outputFilePath":"potMeasure.dat",
-                                               #                                             "selection":{}}}
                                                ]
                            })
 
@@ -125,7 +121,7 @@ for v,m,i in toCheck:
         # Add constant force
         simulationPool[-1]["modelExtensions"] = [{"type":"constantForce","parameters":{"force":[0.0,0.0,-5.0],
                                                                                        "endStep":250000,
-                                                                                       "selection":{}}}]
+                                                                                       "selection":"all"}}]
 
 vlmp = VLMP.VLMP()
 

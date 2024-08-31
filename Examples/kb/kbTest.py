@@ -1,6 +1,6 @@
 import VLMP
 
-from VLMP.utils.utils import picosecond2KcalMol_A_time
+from VLMP.utils.units import picosecond2KcalMol_A_time
 
 ps2AKMA = picosecond2KcalMol_A_time()
 

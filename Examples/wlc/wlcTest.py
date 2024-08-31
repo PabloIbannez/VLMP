@@ -27,12 +27,9 @@ for ka in Ka:
                 "parameters":{"N":L,"b":1.0,"Kb":Kb,"Ka":ka}}],
      "modelExtensions":[{"type":"constantForceBetweenCentersOfMass",
                          "parameters":{"force":1.0,
-                                       "selection1":{
-                                           "expression":{"polymerIndex":[ 1]}
-                                       },
-                                       "selection2":{
-                                           "expression":{"polymerIndex":[-1]}}}
-                                       }],
+                                       "selection1":"WLC polymerIndex  1",
+                                       "selection2":"WLC polymerIndex -1"}
+                         }],
      "simulationSteps":[{"type":"saveState",
                          "parameters":{"intervalStep":10000,
                                        "outputFilePath":"output",
@@ -40,9 +37,7 @@ for ka in Ka:
                         {"type":"anglesMeasurement",
                          "parameters":{"intervalStep":1000,
                                        "outputFilePath":"angles.dat",
-                                       "selection":{
-                                           "expression":{"forceField":["angles"]}}
-                                       }},
+                                       "selection":"WLC forceField angles_wlc"}},
                         {"type":"info","parameters":{"intervalStep":10000}}]
 
     }

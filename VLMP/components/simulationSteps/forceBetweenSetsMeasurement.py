@@ -37,6 +37,8 @@ class forceBetweenSetsMeasurement(simulationStepBase):
                            "outputFilePath"}
     requiredParameters  = {"setName_idList",
                            "outputFilePath"}
+    availableSelections = set()
+    requiredSelections  = set()
 
     def __init__(self,name,**params):
         super().__init__(_type = self.__class__.__name__,

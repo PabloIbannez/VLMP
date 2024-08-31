@@ -5,7 +5,7 @@ from VLMP.utils.units import picosecond2KcalMol_A_time
 ps2AKMA = picosecond2KcalMol_A_time()
 
 copies = 1
-icoPerSet = 1
+icoPerSet = 20
 
 simulationPool = []
 for i in range(copies):
@@ -13,8 +13,7 @@ for i in range(copies):
     models = []
     for m in range(icoPerSet):
         models.append({"name":f"sphere_{m}",
-                       #"type":"ICOSPHERE",
-                       "type":"CORONAVIRUS_MESH",
+                       "type":"ICOSPHERE",
                        "parameters":{"particleName":"ICO",
                                      "particleRadius":3.0,
                                      "particleMass":1.0,
@@ -32,7 +31,7 @@ for i in range(copies):
                            "models":models.copy(),
                            "modelOperations":[{"type":"distributeRandomly","parameters":{"mode":{"sphere":{"radius":40.0,"center":[0.0,0.0,0.0]}},
                                                                                          #"avoidClashes":False,
-                                                                                         "selection":{}}}],
+                                                                                         "selection":"all"}}],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
                                                                                 "outputFilePath":"test",
                                                                                 "outputFormat":"sp"}},

@@ -308,7 +308,7 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                                                initialTipSampleDistance_smp+tipRadius_smp]}})
 
             #Declare selections
-            tipSelection = ["TIP"]
+            tipSelection = "TIP"
             sampleSelection = []
 
             if len(smpModels) > 0:
@@ -318,32 +318,29 @@ class HighThroughputAFM(VLMP.VLMP):
                         sampleSelection.append(mdl["name"])
                     else:
                         sampleSelection.append(mdl["type"])
+                sampleSelection = " and ".join(sampleSelection)
 
 
-                ###Model operations
-                #if self.maxForce is not None:
-                #    sim["modelOperations"].append({"type":"setParticleLowestPosition","parameters":{"position":self.surfacePosition,
-                #                                                                                    "considerRadius":True,
-                #                                                                                    "radiusFactor":2.0,
-                #                                                                                    "selection":{"models":copy.deepcopy(sampleSelection)}}})
-                #else:
-
-                sim["modelOperations"].append({"type":"setCenterOfMassPosition","parameters":{"position":[0.0,0.0,0.0],
-                                                                                              "selection":{"models":copy.deepcopy(sampleSelection)}}})
+                sim["modelOperations"].append({"type":"setCenterOfMassPosition",
+                                               "parameters":{"position":[0.0,0.0,0.0],
+                                                             "selection":sampleSelection}})
 
                 if self.addSurface:
-                    sim["modelOperations"].append({"type":"setParticleLowestPosition","parameters":{"position":surfacePosition_smp,
-                                                                                                    "considerRadius":True,
-                                                                                                    "selection":{"models":copy.deepcopy(sampleSelection)}}})
+                    sim["modelOperations"].append({"type":"setParticleLowestPosition",
+                                                   "parameters":{"position":surfacePosition_smp,
+                                                                 "considerRadius":True,
+                                                                 "selection":sampleSelection}})
 
-                sim["modelOperations"].append({"type":"setContactDistance","parameters":{"distance":initialTipSampleDistance_smp,
-                                                                                         "resolution":self.contactResolution,
-                                                                                         "inverse":True,
-                                                                                         "reference":{"models":copy.deepcopy(sampleSelection)},
-                                                                                         "mobile":{"models":copy.deepcopy(tipSelection)}}})
+                sim["modelOperations"].append({"type":"setContactDistance",
+                                               "parameters":{"distance":initialTipSampleDistance_smp,
+                                                             "resolution":self.contactResolution,
+                                                             "inverse":True,
+                                                             "reference":sampleSelection,
+                                                             "mobile":tipSelection}})
 
-                sim["modelOperations"].append({"type":"setParticleXYPosition","parameters":{"position":[indentationPositionX_smp,indentationPositionY_smp],
-                                                                                            "selection":{"models":copy.deepcopy(tipSelection)}}})
+                sim["modelOperations"].append({"type":"setParticleXYPosition",
+                                               "parameters":{"position":[indentationPositionX_smp,indentationPositionY_smp],
+                                                             "selection":tipSelection}})
             ###Model extensions
 
             #Add AFM
@@ -353,8 +350,8 @@ class HighThroughputAFM(VLMP.VLMP):
                                                                       "sigma":sigma_smp,
                                                                       "tipVelocity":tipVelocity_smp,
                                                                       "indentationStartStep":thermSteps_smp,
-                                                                      "tip":{"models":copy.deepcopy(tipSelection)},
-                                                                      "sample":{"models":copy.deepcopy(sampleSelection)}}})
+                                                                      "tip":tipSelection,
+                                                                      "sample":sampleSelection}})
             if self.backwardIndentation:
                 sim["modelExtensions"][-1]["parameters"]["indentationBackwardStep"] = thermSteps_smp + indentSteps_smp
 
@@ -373,9 +370,7 @@ class HighThroughputAFM(VLMP.VLMP):
                          "parameters":{"K":[KxyFixing_smp,KxyFixing_smp,0.0],
                                        "r0":0.0,
                                        "position":[0.0,0.0,0.0],
-                                       "selection":{"models":copy.deepcopy(sampleSelection)}
-                                      }
-                         }
+                                       "selection":sampleSelection}}
 
                 if fixingStartStep is not None:
                     entry["parameters"]["startStep"] = fixingStartStep
@@ -392,11 +387,11 @@ class HighThroughputAFM(VLMP.VLMP):
                     sim["modelExtensions"].append({"type":"surfaceMaxForce","parameters":{"epsilon":epsilonSurface_smp,
                                                                                           "surfacePosition":surfacePosition_smp,
                                                                                           "maxForce":self.maxForce,
-                                                                                          "selection":{"models":copy.deepcopy(sampleSelection)}}})
+                                                                                          "selection":sampleSelection}})
                 else:
                     sim["modelExtensions"].append({"type":"surface","parameters":{"epsilon":epsilonSurface_smp,
                                                                                   "surfacePosition":surfacePosition_smp,
-                                                                                  "selection":{"models":copy.deepcopy(sampleSelection)}}})
+                                                                                  "selection":sampleSelection}})
 
                 if self.absorptionHeight is not None:
                     sim["modelExtensions"].append({"type":"absortionSurface","parameters":{"heightThreshold":absorptionHeight_smp,

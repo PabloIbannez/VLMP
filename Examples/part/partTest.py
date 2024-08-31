@@ -14,7 +14,6 @@ for i in range(copies):
     for m in range(icoPerSet):
         models.append({"name":f"part_{m}",
                        "type":"ICOSPHERE",
-                       #"type":"PARTICLE",
                        "parameters":{"particleName":"A",
                                      "particleRadius":5.0,
                                      "particleMass":1.0,
@@ -23,7 +22,7 @@ for i in range(copies):
                                      }})
 
     models.append({"type":"WLC",
-                   "parameters":{"typeName":"B","N":100,"b":10.0,"Kb":10.0,"Ka":5.0,"stericInteraction":True}})
+                   "parameters":{"typeName":"B","N":100,"b":10.0,"Kb":10.0,"Ka":5.0}})
 
     interactionMatrix = []
     interactionMatrix.append(["A","A",1.0,10.0])
@@ -37,16 +36,23 @@ for i in range(copies):
                            "ensemble":[{"type":"NVT","parameters":{"box":[10000.0,10000.0,10000.0],"temperature":300.0}}],
                            "integrators":[{"type":"BBK","parameters":{"timeStep":0.0002*ps2AKMA,"frictionConstant":0.2/ps2AKMA,"integrationSteps":10000000}}],
                            "models":models.copy(),
-                           "modelExtensions":[{"type":"interLennardJones","parameters":{"cutOffFactor":2.5,
-                                                                                        "interactionMatrix":interactionMatrix.copy(),
-                                                                                        "addVerletList":False}},
+                           "modelExtensions":[
+                                              {"type":"steric","parameters":{"cutOffFactor":2.5,
+                                                                             "epsilon":1.0,
+                                                                             "addVerletList":True,
+                                                                             "condition":"intra",
+                                                                             "excludedBonds":2}},
+                                              {"type":"LennardJones","parameters":{"cutOffFactor":2.5,
+                                                                                   "interactionMatrix":interactionMatrix.copy(),
+                                                                                   "addVerletList":False,
+                                                                                   "condition":"inter"}},
                                               {"type":"sphericalShell",
                                                "parameters":{
                                                              "shellRadius":"auto",
                                                              "shellCenter":[0,0,0],
                                                              "minShellRadius":50.0,
                                                              "radiusVelocity":-0.5,
-                                                             "selection":{}
+                                                             "selection":"all"
                                                             }}
                                               ],
                            "modelOperations":[{"type":"distributeRandomly","parameters":{
@@ -55,7 +61,7 @@ for i in range(copies):
                                                                                          #"mode":{"box":{}},
                                                                                          "avoidClashes":10000,
                                                                                          "randomRotation":True,
-                                                                                         "selection":{}}}],
+                                                                                         "selection":"all"}}],
                            "simulationSteps":[{"type":"saveState","parameters":{"intervalStep":1000,
                                                                                 "outputFilePath":"test",
                                                                                 "outputFormat":"sp"}},
