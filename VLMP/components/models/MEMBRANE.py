@@ -68,8 +68,11 @@ class MEMBRANE(modelBase):
 
         types = self.getTypes()
 
-        types.addType(name="H",radius=sigmaH/2.0,charge=0.0,mass=100.0)
-        types.addType(name="T",radius=sigmaT/2.0,charge=0.0,mass=100.0)
+        types.addType(name="POPC_H1",radius=sigmaH/2.0,charge=0.0,mass=100.0)
+        types.addType(name="POPC_H2",radius=sigmaH/2.0,charge=0.0,mass=100.0)
+        types.addType(name="POPC_T1",radius=sigmaT/2.0,charge=0.0,mass=100.0)
+        types.addType(name="POPC_T2",radius=sigmaT/2.0,charge=0.0,mass=100.0)
+        types.addType(name="POPC_T3",radius=sigmaT/2.0,charge=0.0,mass=100.0)
 
         box = self.getEnsemble().getEnsembleComponent("box")
 
@@ -83,7 +86,7 @@ class MEMBRANE(modelBase):
         dx = sigmaT + spacing
         dy = sigmaT + spacing
 
-        lipid = ["T","T","T","H","H"]
+        lipid = ["POPC_T3","POPC_T2","POPC_T1","POPC_H2","POPC_H1"]
 
         lipidZ = [0.0]*len(lipid)
         lipidZ[0] = sigmaT/2.0 + zSpacing
@@ -158,6 +161,7 @@ class MEMBRANE(modelBase):
         forceField["verletList"]["type"]       = ["VerletConditionalListSet", "intra_inter"]
         forceField["verletList"]["parameters"] = {"cutOffVerletFactor":1.2}
 
+        # Repulsive part of the potential
         forceField["WCA"] = {}
         forceField["WCA"]["type"]       = ["NonBonded", "WCAType1"]
         forceField["WCA"]["parameters"] = {"cutOffFactor": 2.5,
@@ -166,22 +170,46 @@ class MEMBRANE(modelBase):
         forceField["WCA"]["labels"] = ["name_i", "name_j", "epsilon", "sigma"]
         forceField["WCA"]["data"]   = []
 
-        forceField["WCA"]["data"].append(["T","T",eps,sigmaT])
-        forceField["WCA"]["data"].append(["T","H",eps,(sigmaT+sigmaH)/2.0])
-        forceField["WCA"]["data"].append(["H","H",eps,sigmaH])
+        for l1 in lipid:
+            for l2 in lipid:
+                typ1 = l1.split("_")[1]
+                typ1 = typ1[0]
 
-        # Chapuza for the moment
-        forceField["LJ"] = {}
-        forceField["LJ"]["type"]       = ["NonBonded", "LennardJonesType2"]
-        forceField["LJ"]["parameters"] = {"cutOffFactor": 2.5,
-                                          "condition":"inter"}
+                typ2 = l2.split("_")[1]
+                typ2 = typ2[0]
 
-        forceField["LJ"]["labels"] = ["name_i", "name_j", "epsilon", "sigma"]
-        forceField["LJ"]["data"]   = []
+                if typ1 == typ2:
+                    if typ1 == "H":
+                        forceField["WCA"]["data"].append([l1,l2,eps,sigmaH])
+                    if typ1 == "T":
+                        forceField["WCA"]["data"].append([l1,l2,eps,sigmaT])
+                else:
+                    forceField["WCA"]["data"].append([l1,l2,eps,(sigmaT+sigmaH)/2.0])
 
-        forceField["LJ"]["data"].append(["T","T",eps,sigmaT])
-        forceField["LJ"]["data"].append(["T","H",0.0,(sigmaT+sigmaH)/2.0])
-        forceField["LJ"]["data"].append(["H","H",0.0,sigmaH])
+        # Attractive part of the potential
+        forceField["ATT"] = {}
+        forceField["ATT"]["type"]       = ["NonBonded", "LaTorre"]
+        forceField["ATT"]["parameters"] = {"condition":"inter"}
+
+        forceField["ATT"]["labels"] = ["name_i", "name_j", "epsilon", "sigma","w"]
+        forceField["ATT"]["data"]   = []
+
+        for l1 in lipid:
+            for l2 in lipid:
+                typ1 = l1.split("_")[1]
+
+                typ2 = l2.split("_")[1]
+
+                if "H" in typ1 or "H" in typ2:
+                    forceField["ATT"]["data"].append([l1,l2,0.0,0.0,0.0]) # Head-head and head-tail interactions are not considered
+                    continue
+                if "T1" in typ1 and "T3" in typ2:
+                    forceField["ATT"]["data"].append([l1,l2,0.0,0.0,0.0]) # T1-T3 interactions are not considered
+                    continue
+                if "T3" in typ1 and "T1" in typ2:
+                    forceField["ATT"]["data"].append([l1,l2,0.0,0.0,0.0]) # T3-T1 interactions are not considered
+                    continue
+                forceField["ATT"]["data"].append([l1,l2,eps,sigmaT,w])
 
         #Set model
         self.setState(state)
