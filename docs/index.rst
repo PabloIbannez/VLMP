@@ -28,10 +28,10 @@ Welcome to VLMP's documentation!
    Units
    Types
    Ensembles
-   Integrators
    Models
    ModelOperations
    ModelExtensions
+   Integrators
    SimulationSteps
 
 .. toctree::
@@ -58,11 +58,14 @@ Welcome to VLMP's documentation!
    Implementation
    Backend
 
-.. toctree::
-   :maxdepth: 4
-   :caption: Extending VLMP
-
-   How to extend VLMP?
-   Sharing your extension
-   Templates
+..
+    .. toctree::
+       :maxdepth: 4
+       :caption: Extending VLMP
+    
+       How to extend VLMP?
+       Install extension
+       Sharing your extension
+       Templates
+       Components in detail
 
