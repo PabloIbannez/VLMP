@@ -1,6 +1,8 @@
 Templates
 =========
 
+List of available templates for creating new components.
+
 ----
 
 System
