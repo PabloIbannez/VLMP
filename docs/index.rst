@@ -58,14 +58,14 @@ Welcome to VLMP's documentation!
    Implementation
    Backend
 
-..
-    .. toctree::
-       :maxdepth: 4
-       :caption: Extending VLMP
-    
-       How to extend VLMP?
-       Install extension
-       Sharing your extension
-       Templates
-       Components in detail
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Extending VLMP
+             
+   How to extend VLMP?
+   Install extension
+   Sharing your extension
+   Templates
+   Components in detail
 
