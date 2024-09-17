@@ -41,22 +41,23 @@ Welcome to VLMP's documentation!
    HighThroughputAFM
    SurfaceUmbrellaSampling
 
-.. toctree::
-   :maxdepth: 4
-   :caption: Utils
-
-   Input
-   Units utils
-   Selections
-   Geometry
-
-.. toctree::
-   :maxdepth: 4
-   :caption: VLMP under the hood
-
-   Design
-   Implementation
-   Backend
+.. 
+  .. toctree::
+     :maxdepth: 4
+     :caption: Utils
+  
+     Input
+     Units utils
+     Selections
+     Geometry
+  
+  .. toctree::
+     :maxdepth: 4
+     :caption: VLMP under the hood
+  
+     Design
+     Implementation
+     Backend
 
 
 .. toctree::
@@ -67,5 +68,4 @@ Welcome to VLMP's documentation!
    Install extension
    Sharing your extension
    Templates
-   Components in detail
 
