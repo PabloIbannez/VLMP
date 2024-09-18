@@ -3,75 +3,72 @@
 #Comments begin with a hash (#) and they can be removed.
 
 import sys, os
-
 import logging
-
 from . import ensembleBase
 
 class __ENSEMBLE_TEMPLATE__(ensembleBase):
     """
-    Component name: __ENSEMBLE_TEMPLATE__ # Name of the component
-    Component type: ensemble # Type of the component
+    {"author": "__AUTHOR__",
+     "description":
+     "Brief description of what this ensemble does and its purpose in the simulation.
+      Provide any relevant background information or key features here.
+      You can use multiple lines for clarity",
 
-    Author: __AUTHOR__ # Author of the component
-    Date: __DATE__ # Date of last modification
-
-    # Description of the component
-    ...
-    ...
-    ...
-
-    :param param1: Description of the parameter 1
-    :type param1: type of the parameter 1
-    :param param2: Description of the parameter 2
-    :type param2: type of the parameter 2
-    :param param3: Description of the parameter 3
-    :type param3: type of the parameter 3, optional
-    ...
+     "parameters":{
+        "param1":{"description":"Description of parameter 1",
+                  "type":"type of param1 (e.g., float, int, str)",
+                  "default":null},
+        "param2":{"description":"Description of parameter 2",
+                  "type":"type of param2",
+                  "default":null},
+        "param3":{"description":"Description of optional parameter 3",
+                  "type":"type of param3",
+                  "default":"default_value"}
+     },
+     "example":"
+         {
+            \"type\":\"__ENSEMBLE_TEMPLATE__\",
+            \"parameters\":{
+                \"param1\":value1,
+                \"param2\":value2,
+                \"param3\":value3
+            }
+         }
+        "
+    }
     """
 
-    def __init__(self,name,**kwargs):
-        super().__init__(_type= self.__class__.__name__,
-                         _name= name,
-                         availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
-                         requiredParameters = ["param1","param2",...], # List of required parameters
-                         **kwargs)
+    availableParameters = {"param1", "param2", "param3"}
+    requiredParameters  = {"param1", "param2"}
+
+    def __init__(self,name,**params):
+        super().__init__(_type = self.__class__.__name__,
+                         _name = name,
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         **params)
 
         ############################################################
         ############################################################
         ############################################################
 
-        #Note logger is accessible through self.logger !!!
-        #self.logger.info("Message")
+        # Access logger if needed
+        # self.logger.info("Initializing __ENSEMBLE_TEMPLATE__")
 
-        #Define the component dictionary
-        #Particular characteristics of the component are defined here
-        #Rembember this dictionary is inteterpreted by the UAMMD-structured !!!
-        self.ensemble = {}
+        # Read parameters
+        param1 = params["param1"]
+        param2 = params["param2"]
+        param3 = params.get("param3", "default_value")
 
-        #Editable part ...
+        # Process parameters if necessary
+        # processed_param = some_function(param1, param2)
 
-        #Read the parameters
+        # Set the ensemble name
+        self.setEnsembleName("__ENSEMBLE_TEMPLATE__") # This has to be a UAMMD-structured available ensemble name
 
-        param1 = kwargs.get("param1")
-        param2 = kwargs.get("param2")
+        self.addEnsembleComponent("componentName1", value)
+        self.addEnsembleComponent("componentName2", value)
+        # ...
 
-        #It is recommended to define a default value those parameters that are not required
-        param3 = kwargs.get("param3",defaultValue = 0.0)
-
-        ############################################################
-
-        #Process the parameters
-
-        #For example:
-        param1 = param1 + param2
-        ...
-
-        ############################################################
-
-        #Define the component dictionary
-
-        self.ensemble["parameters"] = {"param1":param1,
-                                       "param2":param2,
-                                       "param3":param3,
-                                       ...}
+        # Log completion if needed
+        # self.logger.info("__ENSEMBLE_TEMPLATE__ initialized successfully")

@@ -2,98 +2,77 @@
 # This template is used to create the SYSTEM component.
 # Comments begin with a hash (#) and they can be removed.
 
-import sys
-import os
+import sys, os
 import logging
 from . import systemBase
 
 class __SYSTEM_TEMPLATE__(systemBase):
     """
-    {
-    "author": "__AUTHOR__",
-    "description": "Short text describing what the new system does.",
-    "parameters": {
-        "param1": {"description": "Description of the first parameter.",
-                   "type": "type1 (int, str, bool, ...)"},
-        "param2": {"description": "Description of the second parameter.",
-                   "type": "type2 (int, str, bool, ...)"},
-        "param3": {"description": "Description of the third parameter.",
-                   "type": "type3",
-                   "default": false}
-    },
-    "example": "
-    {
-        \"type\": \"__SYSTEM_TEMPLATE__\",
-        \"parameters\": {
-            \"param1\": 1,
-            \"param2\": 10,
-            \"param3\": 12
-        }
-    }
-    "
+    {"author": "__AUTHOR__",
+     "description":
+     "Brief description of what this system component does and its purpose in the simulation.
+      Explain how it affects the overall simulation setup, any global properties it defines,
+      and when it should be used. Provide any relevant background information here.
+      You can use multiple lines for clarity.",
+     "parameters":{
+        "param1":{"description":"Description of parameter 1",
+                  "type":"type of param1 (e.g., float, int, str)",
+                  "default":null},
+        "param2":{"description":"Description of parameter 2",
+                  "type":"type of param2",
+                  "default":null},
+        "param3":{"description":"Description of optional parameter 3",
+                  "type":"type of param3",
+                  "default":"default_value"}
+     },
+     "example":"
+         {
+            \"type\":\"__SYSTEM_TEMPLATE__\",
+            \"parameters\":{
+                \"param1\":value1,
+                \"param2\":value2,
+                \"param3\":value3
+            }
+         }
+        "
     }
     """
-    
-    # Define available and required parameters for the component
-    availableParameters = {"param1", "param2", "param3"}  # List of all valid parameters for this component
-    requiredParameters  = {"param1", "param2"}            # Parameters that must be provided by the user
+
+    availableParameters = {"param1", "param2", "param3"}
+    requiredParameters  = {"param1", "param2"}
 
     def __init__(self, name, **params):
-        """
-        Initializes the __SYSTEM_TEMPLATE__ component.
-
-        :param name: The name of the component instance.
-        :param params: A dictionary of parameters supplied to the component.
-        """
-        # Initialize the base class with the component type, name, and parameters
-        super().__init__(_type=self.__class__.__name__,
-                         _name=name,
-                         availableParameters=self.availableParameters,
-                         requiredParameters=self.requiredParameters,
+        super().__init__(_type = self.__class__.__name__,
+                         _name = name,
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
                          **params)
 
-        # Initialize the system dictionary for this component
-        # Rembember that this dictionary is inteterpreted by UAMMD-structured.
+        # Access logger if needed
+        # self.logger.info("Initializing __SYSTEM_TEMPLATE__")
+
+        # Read parameters
+        param1 = params["param1"]
+        param2 = params["param2"]
+        param3 = params.get("param3", "default_value")
+
+        # Process parameters if necessary
+        # processed_param = some_function(param1, param2)
+
+        # Generate the system configuration using UAMMD-structured format
         system = {
             name: {
-                "type": ["Simulation", "__SYSTEM_TEMPLATE__"],  # Types of simulations this component can handle
-                "parameters": {}  # Parameters will be added here after processing
+                "type": ["System", "__SYSTEM_TEMPLATE__"],  # UAMMD-structured type
+                "parameters": {  # UAMMD-structured parameters
+                    "param1": param1,
+                    "param2": param2,
+                    "param3": param3
+                }
             }
         }
 
-        ############################################################
-        # Read and Validate Parameters
-        ############################################################
-
-        # Retrieve the required parameters from the input params dictionary
-        param1 = params.get("param1")
-        param2 = params.get("param2")
-        
-        # Retrieve the optional param3, providing a default value if it's not set
-        param3 = params.get("param3", 0.0)
-
-        ############################################################
-        # Process Parameters
-        ############################################################
-        # Perform any necessary calculations or transformations on the input parameters.
-        # Example: square of param1, add param2 and param3, and compute some new values
-        newParam1 = param1 ** 2
-        newParam2 = param2 + param3
-        newParam3 = param3 ** 2 + 3
-
-        # Assign processed parameters to the system dictionary
-        system[name]["parameters"]["param1"] = newParam1
-        system[name]["parameters"]["param2"] = newParam2
-
-        # Only include param3 if it's non-zero (optional behavior)
-        if param3 != 0: 
-            system[name]["parameters"]["param3"] = newParam3
-
-        ############################################################
-        # Set System Configuration
-        ############################################################
-        # Set the component's system configuration using the processed system dictionary
+        # Set the system configuration
         self.setSystem(system)
 
-        # Log initialization info
-        self.logger.info(f"Initialized {name} with parameters: {params}")
+        # Log completion if needed
+        # self.logger.info("__SYSTEM_TEMPLATE__ initialized successfully")

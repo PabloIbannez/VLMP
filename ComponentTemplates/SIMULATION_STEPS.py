@@ -1,91 +1,104 @@
-#Template for the SIMULATION_STEPS component.
-#This template is used to create the SIMULATION_STEPS component.
-#Comments begin with a hash (#) and they can be removed.
-
 import sys, os
-
 import logging
-
 from . import simulationStepBase
 
 class __SIMULATION_STEPS_TEMPLATE__(simulationStepBase):
     """
-    Component name: __SIMULATION_STEPS_TEMPLATE__ # Name of the component
-    Component type: simulationStepBase # Type of the component
-
-    Author: __AUTHOR__ # Author of the component
-    Date: __DATE__ # Date of last modification
-
-    # Description of the component
-    ...
-    ...
-    ...
-
-    :param param1: Description of the parameter 1
-    :type param1: type of the parameter 1
-    :param param2: Description of the parameter 2
-    :type param2: type of the parameter 2
-    :param param3: Description of the parameter 3
-    :type param3: type of the parameter 3, optional
-    ...
+    {
+    "author": "__AUTHOR__",
+    "description": "Brief description of what this simulation step does.",
+    "parameters": {
+        "intervalStep": {"description": "Interval at which this step is executed",
+                         "type": "int"},
+        "param1": {"description": "Description of parameter 1",
+                   "type": "type of param1"},
+        "param2": {"description": "Description of parameter 2",
+                   "type": "type of param2"},
+        "param3": {"description": "Description of parameter 3",
+                   "type": "type of param3",
+                   "default": "default value if any"}
+    },
+    "selections": {
+        "selection1": {"description": "Description of selection 1",
+                       "type": "type of selection1"},
+        "selection2": {"description": "Description of selection 2",
+                       "type": "type of selection2"}
+    },
+    "example": "
+    {
+        \"type\": \"__SIMULATION_STEPS_TEMPLATE__\",
+        \"parameters\": {
+            \"intervalStep\": 100,
+            \"param1\": value1,
+            \"param2\": value2,
+            \"selection1\": \"model1 type A\",
+            \"selection2\": \"model2 type B\"
+        }
+    }
+    "
+    }
     """
 
-    def __init__(self,name,**params):
-        super().__init__(_type = self.__class__.__name__,
-                         _name = name,
-                         availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
-                         requiredParameters   = ["param1","param2",...], # List of required parameters
-                         availableSelections  = ["selection1","selection2",...], # List of selections used by the component
-                         requiredSelections   = ["selection1","selection2",...], # List of required selections
-                         #If none use set() instead of [] for available and required parameters and selections
+    availableParameters = {"intervalStep", "param1", "param2", "param3"}
+    requiredParameters = {"intervalStep", "param1", "param2"}
+    availableSelections = {"selection1", "selection2"}
+    requiredSelections = {"selection1"}
+
+    def __init__(self, name, **params):
+        super().__init__(_type=self.__class__.__name__,
+                         _name=name,
+                         availableParameters=self.availableParameters,
+                         requiredParameters=self.requiredParameters,
+                         availableSelections=self.availableSelections,
+                         requiredSelections=self.requiredSelections,
                          **params)
 
         ############################################################
-        ############################################################
-        ############################################################
-
-        #Note there several accesible methods than can be used
-        #Units: getUnits()
-        #Types: getTypes()
-
-        #Note logger is accessible through self.logger
-        #self.logger.info("Message")
-
-        #Read the parameters
-
-        outputFilePath = self.getParameter("outputFilePath")
-
-        param1 = self.getParameter("param1")
-        param2 = self.getParameter("param2")
-
-        #It is recommended to define a default value those parameters that are not required
-        param3 = self.getParameter("param3",defaultValue = 0.0)
-
+        # Access and process parameters
         ############################################################
 
-        #Here we have to fill the simulationStep itself.
-        #Remember you have to use UAMMD-structured syntax
+        intervalStep = params["intervalStep"]
+        param1 = params["param1"]
+        param2 = params["param2"]
+        param3 = params.get("param3", "default_value")
 
-        parameters = {}
+        # Process selections
+        selection1 = self.getSelection("selection1")
+        selection2 = self.getSelection("selection2") if "selection2" in params else None
 
-        parameters["outputFilePath"] = outputFilePath
-        parameters["param1"] = param1
-        parameters["paramA"] = param2+param3
+        ############################################################
+        # Set up the simulation step
+        ############################################################
 
         simulationStep = {
-            name : { #We use the name of the component as the name of the simulationStep
-                "type" : ["SimulationStepClass","SimulationStepSubClass"], #Type of the simulationStep
-                "parameters" : {**parameters} #Parameters of the simulationStep
+            name: {
+                "type": ["SimulationStepType", "SimulationStepSubType"],
+                "parameters": {
+                    "intervalStep": intervalStep,
+                    "param1": param1,
+                    "param2": param2,
+                    "param3": param3
+                }
             }
         }
 
-        ############################################################
+        # If the simulation step requires additional data, add it here
+        if selection1:
+            simulationStep[name]["labels"] = ["id"]
+            simulationStep[name]["data"] = [[id] for id in selection1]
 
-        #We can add the group the simulationSteps is applied to
-        #We can use a given selection
-
+        # Set the group if needed (e.g., if the step applies to a specific selection)
         self.setGroup("selection1")
 
-        #We finally add the simulationStep to the component
-        self.setSimulationSteps(simulationStep)
+        # Set the simulation step
+        self.setSimulationStep(simulationStep)
 
+        ############################################################
+        # Log simulation step setup
+        ############################################################
+
+        self.logger.info(f"Initialized {name} simulation step with interval {intervalStep}")
+
+    def _additional_processing(self, selection):
+        # Example method for additional processing if needed
+        pass

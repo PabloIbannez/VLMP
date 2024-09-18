@@ -1,62 +1,66 @@
-#Template for the UNITS component.
-#This template is used to create the UNITS component.
-#Comments begin with a hash (#) and they can be removed.
-
 import sys, os
-
 import logging
-
 from . import unitsBase
 
 class __UNITS_TEMPLATE__(unitsBase):
     """
-    Component name: __UNITS_TEMPLATE__ # Name of the component
-    Component type: units # Type of the component
-
-    Author: __AUTHOR__ # Author of the component
-    Date: __DATE__ # Date of last modification
-
-    # Description of the component
-    ...
-    ...
-    ...
-
-    :param param1: Description of the parameter 1
-    :type param1: type of the parameter 1
-    :param param2: Description of the parameter 2
-    :type param2: type of the parameter 2
-    :param param3: Description of the parameter 3
-    :type param3: type of the parameter 3, optional
-    ...
+    {
+    "author": "__AUTHOR__",
+    "description": "Brief description of this unit system and its application in the simulation.",
+    "parameters": {
+        "customConstant1": {"description": "Description of custom constant 1",
+                            "type": "float",
+                            "default": 1.0},
+        "customConstant2": {"description": "Description of custom constant 2",
+                            "type": "float",
+                            "default": 1.0}
+    },
+    "example": "
+    {
+        \"type\": \"__UNITS_TEMPLATE__\",
+        \"parameters\": {
+            \"customConstant1\": 2.5,
+            \"customConstant2\": 3.14
+        }
+    }
+    "
+    }
     """
 
-    def __init__(self,name,**kwargs):
-        super().__init__(_type = self.__class__.__name__,
-                         _name = name,
-                         availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
-                         requiredParameters = ["param1","param2",...], # List of required parameters
-                         **kwargs)
+    availableParameters = {"customConstant1", "customConstant2"}
+    requiredParameters = set()  # All parameters are optional in this example
+
+    def __init__(self, name, **params):
+        super().__init__(_type=self.__class__.__name__,
+                         _name=name,
+                         availableParameters=self.availableParameters,
+                         requiredParameters=self.requiredParameters,
+                         **params)
 
         ############################################################
+        # Access and process parameters
         ############################################################
+
+        customConstant1 = params.get("customConstant1", 1.0)
+        customConstant2 = params.get("customConstant2", 1.0)
+
+        ############################################################
+        # Set up units
         ############################################################
 
-        #Note logger is accessible through self.logger !!!
-        #self.logger.info("Message")
+        # Set the name of this unit system
+        self.setUnitsName("CustomUnits")
 
-        #AvailableConstants is required by the integratorBase class
-        #If this parameter is not provided, an error is raised
-        self.availableConstants = { # List of constants defined by the component
-            "KBOLTZ": 123141241,
-            "ELECOEF": 78428429,
-            ...
-        }
+        # Add standard constants
+        self.addConstant("KBOLTZ", 1.380649e-23)  # Boltzmann constant in SI units
+        self.addConstant("ELECOEF", 8.9875517923e9)  # Coulomb's constant in SI units
 
-        self.unitsUAMMD = "unitsUAMMD" # Name of the units in UAMMD-structured
+        # Add custom constants
+        self.addConstant("CUSTOM1", customConstant1)
+        self.addConstant("CUSTOM2", customConstant2)
 
-        def getConstant(self,constantName):
-            if constantName not in self.availableConstants:
-                self.logger.error("[__UNITS_TEMPLATE__] Constant {} not available".format(constantName))
-                raise "Constant not available"
+        ############################################################
+        # Log units setup
+        ############################################################
 
-            return self.availableConstants[constantName]
+        self.logger.info(f"Initialized {name} units with {len(self._constants)} constants")

@@ -1,86 +1,86 @@
-#Template for the INTEGRATORS component.
-#This template is used to create the INTEGRATORS component.
-#Comments begin with a hash (#) and they can be removed.
-
 import sys, os
-
 import logging
-
 from . import integratorBase
 
 class __INTEGRATORS_TEMPLATE__(integratorBase):
     """
-    Component name: __INTEGRATORS_TEMPLATE__ # Name of the component
-    Component type: integrator # Type of the component
-
-    Author: __AUTHOR__ # Author of the component
-    Date: __DATE__ # Date of last modification
-
-    # Description of the component
-    ...
-    ...
-    ...
-
-    :param param1: Description of the parameter 1
-    :type param1: type of the parameter 1
-    :param param2: Description of the parameter 2
-    :type param2: type of the parameter 2
-    :param param3: Description of the parameter 3
-    :type param3: type of the parameter 3, optional
-    ...
+    {"author": "__AUTHOR__",
+     "description":
+     "Brief description of what this integrator does and its purpose in the simulation.
+      Explain the integration method, its advantages, and when it should be used.
+      Provide any relevant background information or key features here.
+      You can use multiple lines for clarity",
+     "parameters":{
+        "integrationSteps":{"description":"Number of integration steps",
+                            "type":"int",
+                            "default":null},
+        "timeStep":{"description":"Time step for integration",
+                    "type":"float",
+                    "default":null},
+        "param1":{"description":"Description of parameter 1",
+                  "type":"type of param1",
+                  "default":null},
+        "param2":{"description":"Description of optional parameter 2",
+                  "type":"type of param2",
+                  "default":"default_value"}
+     },
+     "example":"
+         {
+            \"type\":\"__INTEGRATORS_TEMPLATE__\",
+            \"parameters\":{
+                \"integrationSteps\":1000,
+                \"timeStep\":0.001,
+                \"param1\":value1,
+                \"param2\":value2
+            }
+         }
+        "
+    }
     """
 
-    def __init__(self,name,**kwargs):
-        super().__init__(_type= self.__class__.__name__,
-                         _name= name,
-                         availableParameters  = ["integrationSteps","param1","param2","param3",...], # List of parameters used by the component
-                         requiredParameters = ["integrationSteps","param1","param2",...], # List of required parameters
-                         **kwargs)
+    availableParameters = {"integrationSteps", "timeStep", "param1", "param2"}
+    requiredParameters  = {"integrationSteps", "timeStep", "param1"}
+
+    def __init__(self,name,**params):
+        super().__init__(_type = self.__class__.__name__,
+                         _name = name,
+                         availableParameters = self.availableParameters,
+                         requiredParameters  = self.requiredParameters,
+                         **params)
 
         ############################################################
         ############################################################
         ############################################################
 
-        #Note logger is accessible through self.logger !!!
-        #self.logger.info("Message")
+        # Access logger if needed
+        # self.logger.info("Initializing __INTEGRATORS_TEMPLATE__")
 
-        #Integration steps is required by the integratorBase class
-        #If this parameter is not provided, an error is raised
-        self.integrationSteps = kwargs.get("integrationSteps")
+        # Read parameters
+        integrationSteps = params["integrationSteps"]
+        timeStep = params["timeStep"]
+        param1 = params["param1"]
+        param2 = params.get("param2", "default_value")
 
-        #Define the component dictionary
-        #Particular characteristics of the component are defined here
-        #Rembember this dictionary is inteterpreted by the UAMMD-structured !!!
-        self.integrator = {}
+        # Process parameters if necessary
+        # processed_param = some_function(param1, timeStep)
 
-        #Editable part ...
+        # Define the integrator dictionary using UAMMD-structured format
+        integrator = {
+            "type": ["Integrator", "__INTEGRATORS_TEMPLATE__"],  # UAMMD-structured type
+            "parameters": {  # UAMMD-structured parameters
+                "timeStep": timeStep,
+                "param1": param1,
+                "param2": param2
+                # Add any other necessary parameters
+                # Note: integrationSteps is handled separately by UAMMD
+            }
+        }
 
-        #Read the parameters
+        # Set the integration steps
+        self.setIntegrationSteps(integrationSteps)
 
-        param1 = kwargs.get("param1")
-        param2 = kwargs.get("param2")
+        # Set the integrator
+        self.setIntegrator(integrator)
 
-        #It is recommended to define a default value those parameters that are not required
-        param3 = kwargs.get("param3",defaultValue = 0.0)
-
-        ############################################################
-
-        #Process the parameters
-
-        #For example:
-        param1 = param1 + param2
-        ...
-
-        ############################################################
-
-        #Define the component dictionary
-
-        self.integrator = {
-                           "type"=["IntegratorClass","IntegratorSubClass"],
-                           "parameters":{
-                                "param1":param1,
-                                "param2":param2,
-                                "param3":param3,
-                               ... #Note than integrationSteps is not included here !!!
-                            }
-                           }
+        # Log completion if needed
+        # self.logger.info("__INTEGRATORS_TEMPLATE__ initialized successfully")
