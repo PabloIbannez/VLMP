@@ -5,765 +5,881 @@ List of available templates for creating new components.
 
 ----
 
-System
+SYSTEM
 ------
 
 .. code-block:: python
+  :linenos:
 
-    # Template for the SYSTEM component.
-    # This template is used to create the SYSTEM component.
-    # Comments begin with a hash (#) and they can be removed.
+  # Template for the SYSTEM component.
+  # This template is used to create the SYSTEM component.
+  # Comments begin with a hash (#) and they can be removed.
 
-    import sys
-    import os
-    import logging
-    from . import systemBase
+  import sys, os
+  import logging
+  from . import systemBase
 
-    class __SYSTEM_TEMPLATE__(systemBase):
-        """
-        {
-        "author": "__AUTHOR__",
-        "description": "Short text describing what the new system does.",
-        "parameters": {
-            "param1": {"description": "Description of the first parameter.",
-                       "type": "type1 (int, str, bool, ...)"},
-            "param2": {"description": "Description of the second parameter.",
-                       "type": "type2 (int, str, bool, ...)"},
-            "param3": {"description": "Description of the third parameter.",
-                       "type": "type3",
-                       "default": false}
-        },
-        "example": "
-        {
-            \"type\": \"__SYSTEM_TEMPLATE__\",
-            \"parameters\": {
-                \"param1\": 1,
-                \"param2\": 10,
-                \"param3\": 12
-            }
-        }
-        "
-        }
-        """
+  class __SYSTEM_TEMPLATE__(systemBase):
+      """
+      {"author": "__AUTHOR__",
+       "description":
+       "Brief description of what this system component does and its purpose in the simulation.
+        Explain how it affects the overall simulation setup, any global properties it defines,
+        and when it should be used. Provide any relevant background information here.
+        You can use multiple lines for clarity.",
+       "parameters":{
+          "param1":{"description":"Description of parameter 1",
+                    "type":"type of param1 (e.g., float, int, str)",
+                    "default":null},
+          "param2":{"description":"Description of parameter 2",
+                    "type":"type of param2",
+                    "default":null},
+          "param3":{"description":"Description of optional parameter 3",
+                    "type":"type of param3",
+                    "default":"default_value"}
+       },
+       "example":"
+           {
+              \"type\":\"__SYSTEM_TEMPLATE__\",
+              \"parameters\":{
+                  \"param1\":value1,
+                  \"param2\":value2,
+                  \"param3\":value3
+              }
+           }
+          "
+      }
+      """
 
-        # Define available and required parameters for the component
-        availableParameters = {"param1", "param2", "param3"}  # List of all valid parameters for this component
-        requiredParameters  = {"param1", "param2"}            # Parameters that must be provided by the user
+      availableParameters = {"param1", "param2", "param3"}
+      requiredParameters  = {"param1", "param2"}
 
-        def __init__(self, name, **params):
-            """
-            Initializes the __SYSTEM_TEMPLATE__ component.
+      def __init__(self, name, **params):
+          super().__init__(_type = self.__class__.__name__,
+                           _name = name,
+                           availableParameters = self.availableParameters,
+                           requiredParameters  = self.requiredParameters,
+                           **params)
 
-            :param name: The name of the component instance.
-            :param params: A dictionary of parameters supplied to the component.
-            """
-            # Initialize the base class with the component type, name, and parameters
-            super().__init__(_type=self.__class__.__name__,
-                             _name=name,
-                             availableParameters=self.availableParameters,
-                             requiredParameters=self.requiredParameters,
-                             **params)
+          # Access logger if needed
+          # self.logger.info("Initializing __SYSTEM_TEMPLATE__")
 
-            # Initialize the system dictionary for this component
-            # Remember that this dictionary is interpreted by UAMMD-structured.
-            system = {
-                name: {
-                    "type": ["Simulation", "__SYSTEM_TEMPLATE__"],  # Types of simulations this component can handle
-                    "parameters": {}  # Parameters will be added here after processing
-                }
-            }
+          # Read parameters
+          param1 = params["param1"]
+          param2 = params["param2"]
+          param3 = params.get("param3", "default_value")
 
-            ############################################################
-            # Read and Validate Parameters
-            ############################################################
+          # Process parameters if necessary
+          # processed_param = some_function(param1, param2)
 
-            # Retrieve the required parameters from the input params dictionary
-            param1 = params.get("param1")
-            param2 = params.get("param2")
-            
-            # Retrieve the optional param3, providing a default value if it's not set
-            param3 = params.get("param3", 0.0)
+          # Generate the system configuration using UAMMD-structured format
+          system = {
+              name: {
+                  "type": ["System", "__SYSTEM_TEMPLATE__"],  # UAMMD-structured type
+                  "parameters": {  # UAMMD-structured parameters
+                      "param1": param1,
+                      "param2": param2,
+                      "param3": param3
+                  }
+              }
+          }
 
-            ############################################################
-            # Process Parameters
-            ############################################################
-            # Perform any necessary calculations or transformations on the input parameters.
-            # Example: square of param1, add param2 and param3, and compute some new values
-            newParam1 = param1 ** 2
-            newParam2 = param2 + param3
-            newParam3 = param3 ** 2 + 3
+          # Set the system configuration
+          self.setSystem(system)
 
-            # Assign processed parameters to the system dictionary
-            system[name]["parameters"]["param1"] = newParam1
-            system[name]["parameters"]["param2"] = newParam2
+          # Log completion if needed
+          # self.logger.info("__SYSTEM_TEMPLATE__ initialized successfully")
 
-            # Only include param3 if it's non-zero (optional behavior)
-            if param3 != 0: 
-                system[name]["parameters"]["param3"] = newParam3
-
-            ############################################################
-            # Set System Configuration
-            ############################################################
-            # Set the component's system configuration using the processed system dictionary
-            self.setSystem(system)
-
-            # Log initialization info
-            self.logger.info(f"Initialized {name} with parameters: {params}")
-
-Units
+UNITS
 -----
 
 .. code-block:: python
+  :linenos:
 
-    #Template for the UNITS component.
-    #This template is used to create the UNITS component.
-    #Comments begin with a hash (#) and they can be removed.
-    
-    import sys, os
-    
-    import logging
-    
-    from . import unitsBase
-    
-    class __UNITS_TEMPLATE__(unitsBase):
-        """
-        Component name: __UNITS_TEMPLATE__ # Name of the component
-        Component type: units # Type of the component
-    
-        Author: __AUTHOR__ # Author of the component
-        Date: __DATE__ # Date of last modification
-    
-        # Description of the component
-        ...
-        ...
-        ...
-    
-        :param param1: Description of the parameter 1
-        :type param1: type of the parameter 1
-        :param param2: Description of the parameter 2
-        :type param2: type of the parameter 2
-        :param param3: Description of the parameter 3
-        :type param3: type of the parameter 3, optional
-        ...
-        """
-    
-        def __init__(self,name,**kwargs):
-            super().__init__(_type = self.__class__.__name__,
-                             _name = name,
-                             availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
-                             requiredParameters = ["param1","param2",...], # List of required parameters
-                             **kwargs)
-    
-            ############################################################
-            ############################################################
-            ############################################################
-    
-            #Note logger is accessible through self.logger !!!
-            #self.logger.info("Message")
-    
-            #AvailableConstants is required by the integratorBase class
-            #If this parameter is not provided, an error is raised
-            self.availableConstants = { # List of constants defined by the component
-                "KBOLTZ": 123141241,
-                "ELECOEF": 78428429,
-                ...
-            }
-    
-            self.unitsUAMMD = "unitsUAMMD" # Name of the units in UAMMD-structured
-    
-            def getConstant(self,constantName):
-                if constantName not in self.availableConstants:
-                    self.logger.error("[__UNITS_TEMPLATE__] Constant {} not available".format(constantName))
-                    raise "Constant not available"
-    
-                return self.availableConstants[constantName]
+  import sys, os
+  import logging
+  from . import unitsBase
 
- 
-Ensemble
+  class __UNITS_TEMPLATE__(unitsBase):
+      """
+      {
+      "author": "__AUTHOR__",
+      "description": "Brief description of this unit system and its application in the simulation.",
+      "parameters": {
+          "customConstant1": {"description": "Description of custom constant 1",
+                              "type": "float",
+                              "default": 1.0},
+          "customConstant2": {"description": "Description of custom constant 2",
+                              "type": "float",
+                              "default": 1.0}
+      },
+      "example": "
+      {
+          \"type\": \"__UNITS_TEMPLATE__\",
+          \"parameters\": {
+              \"customConstant1\": 2.5,
+              \"customConstant2\": 3.14
+          }
+      }
+      "
+      }
+      """
+
+      availableParameters = {"customConstant1", "customConstant2"}
+      requiredParameters = set()  # All parameters are optional in this example
+
+      def __init__(self, name, **params):
+          super().__init__(_type=self.__class__.__name__,
+                           _name=name,
+                           availableParameters=self.availableParameters,
+                           requiredParameters=self.requiredParameters,
+                           **params)
+
+          ############################################################
+          # Access and process parameters
+          ############################################################
+
+          customConstant1 = params.get("customConstant1", 1.0)
+          customConstant2 = params.get("customConstant2", 1.0)
+
+          ############################################################
+          # Set up units
+          ############################################################
+
+          # Set the name of this unit system
+          self.setUnitsName("CustomUnits")
+
+          # Add standard constants
+          self.addConstant("KBOLTZ", 1.380649e-23)  # Boltzmann constant in SI units
+          self.addConstant("ELECOEF", 8.9875517923e9)  # Coulomb's constant in SI units
+
+          # Add custom constants
+          self.addConstant("CUSTOM1", customConstant1)
+          self.addConstant("CUSTOM2", customConstant2)
+
+          ############################################################
+          # Log units setup
+          ############################################################
+
+          self.logger.info(f"Initialized {name} units with {len(self._constants)} constants")
+
+TYPES
+-----
+
+.. code-block:: python
+  :linenos:
+
+  import sys, os
+  import logging
+  from . import typesBase
+
+  class __TYPES_TEMPLATE__(typesBase):
+      """
+      {
+      "author": "__AUTHOR__",
+      "description": "Brief description of what these types represent in the simulation.",
+      "parameters": {
+          "defaultMass": {"description": "Default mass for new types",
+                          "type": "float",
+                          "default": 1.0},
+          "defaultRadius": {"description": "Default radius for new types",
+                            "type": "float",
+                            "default": 0.5},
+          "param1": {"description": "Description of additional parameter 1",
+                     "type": "type of param1"},
+          "param2": {"description": "Description of additional parameter 2",
+                     "type": "type of param2"}
+      },
+      "example": "
+      {
+          \"type\": \"__TYPES_TEMPLATE__\",
+          \"parameters\": {
+              \"defaultMass\": 2.0,
+              \"defaultRadius\": 0.75,
+              \"param1\": value1,
+              \"param2\": value2
+          }
+      }
+      "
+      }
+      """
+
+      availableParameters = {"defaultMass", "defaultRadius", "param1", "param2"}
+      requiredParameters = set()  # All parameters are optional in this example
+
+      def __init__(self, name, **params):
+          super().__init__(_type=self.__class__.__name__,
+                           _name=name,
+                           availableParameters=self.availableParameters,
+                           requiredParameters=self.requiredParameters,
+                           **params)
+
+          ############################################################
+          # Access and process parameters
+          ############################################################
+
+          self.defaultMass = params.get("defaultMass", 1.0)
+          self.defaultRadius = params.get("defaultRadius", 0.5)
+          self.param1 = params.get("param1")
+          self.param2 = params.get("param2")
+
+          ############################################################
+          # Set up types
+          ############################################################
+
+          self.setTypesName("CustomTypes")  # Set the name for this set of types
+
+          # Add default components for each type
+          self.addTypesComponent("mass", self.defaultMass)
+          self.addTypesComponent("radius", self.defaultRadius)
+
+          # Add additional components if needed
+          if self.param1 is not None:
+              self.addTypesComponent("param1", self.param1)
+          if self.param2 is not None:
+              self.addTypesComponent("param2", self.param2)
+
+          ############################################################
+          # Define specific types (example)
+          ############################################################
+
+          self.addType(name="TypeA", mass=1.0, radius=0.5)
+          self.addType(name="TypeB", mass=2.0, radius=0.75)
+
+          # If additional parameters were defined, include them in type definitions
+          if self.param1 is not None and self.param2 is not None:
+              self.addType(name="TypeC", mass=1.5, radius=0.6, param1=self.param1, param2=self.param2)
+
+          ############################################################
+          # Log types setup
+          ############################################################
+
+          self.logger.info(f"Initialized {name} types with {len(self.getTypes())} defined types")
+
+ENSEMBLE
 --------
 
 .. code-block:: python
+  :linenos:
 
-    #Template for the ENSEMBLE component.
-    #This template is used to create the ENSEMBLE component.
-    #Comments begin with a hash (#) and they can be removed.
-    
-    import sys, os
-    
-    import logging
-    
-    from . import ensembleBase
-    
-    class __ENSEMBLE_TEMPLATE__(ensembleBase):
-        """
-        Component name: __ENSEMBLE_TEMPLATE__ # Name of the component
-        Component type: ensemble # Type of the component
-    
-        Author: __AUTHOR__ # Author of the component
-        Date: __DATE__ # Date of last modification
-    
-        # Description of the component
-        ...
-        ...
-        ...
-    
-        :param param1: Description of the parameter 1
-        :type param1: type of the parameter 1
-        :param param2: Description of the parameter 2
-        :type param2: type of the parameter 2
-        :param param3: Description of the parameter 3
-        :type param3: type of the parameter 3, optional
-        ...
-        """
-    
-        def __init__(self,name,**kwargs):
-            super().__init__(_type= self.__class__.__name__,
-                             _name= name,
-                             availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
-                             requiredParameters = ["param1","param2",...], # List of required parameters
-                             **kwargs)
-    
-            ############################################################
-            ############################################################
-            ############################################################
-    
-            #Note logger is accessible through self.logger !!!
-            #self.logger.info("Message")
-    
-            #Define the component dictionary
-            #Particular characteristics of the component are defined here
-            #Rembember this dictionary is inteterpreted by the UAMMD-structured !!!
-            self.ensemble = {}
-    
-            #Editable part ...
-    
-            #Read the parameters
-    
-            param1 = kwargs.get("param1")
-            param2 = kwargs.get("param2")
-    
-            #It is recommended to define a default value those parameters that are not required
-            param3 = kwargs.get("param3",defaultValue = 0.0)
-    
-            ############################################################
-    
-            #Process the parameters
-    
-            #For example:
-            param1 = param1 + param2
-            ...
-    
-            ############################################################
-    
-            #Define the component dictionary
-    
-            self.ensemble["parameters"] = {"param1":param1,
-                                           "param2":param2,
-                                           "param3":param3,
-                                           ...}
+  #Template for the ENSEMBLE component.
+  #This template is used to create the ENSEMBLE component.
+  #Comments begin with a hash (#) and they can be removed.
 
-Models
+  import sys, os
+  import logging
+  from . import ensembleBase
+
+  class __ENSEMBLE_TEMPLATE__(ensembleBase):
+      """
+      {"author": "__AUTHOR__",
+       "description":
+       "Brief description of what this ensemble does and its purpose in the simulation.
+        Provide any relevant background information or key features here.
+        You can use multiple lines for clarity",
+
+       "parameters":{
+          "param1":{"description":"Description of parameter 1",
+                    "type":"type of param1 (e.g., float, int, str)",
+                    "default":null},
+          "param2":{"description":"Description of parameter 2",
+                    "type":"type of param2",
+                    "default":null},
+          "param3":{"description":"Description of optional parameter 3",
+                    "type":"type of param3",
+                    "default":"default_value"}
+       },
+       "example":"
+           {
+              \"type\":\"__ENSEMBLE_TEMPLATE__\",
+              \"parameters\":{
+                  \"param1\":value1,
+                  \"param2\":value2,
+                  \"param3\":value3
+              }
+           }
+          "
+      }
+      """
+
+      availableParameters = {"param1", "param2", "param3"}
+      requiredParameters  = {"param1", "param2"}
+
+      def __init__(self,name,**params):
+          super().__init__(_type = self.__class__.__name__,
+                           _name = name,
+                           availableParameters = self.availableParameters,
+                           requiredParameters  = self.requiredParameters,
+                           **params)
+
+          ############################################################
+          ############################################################
+          ############################################################
+
+          # Access logger if needed
+          # self.logger.info("Initializing __ENSEMBLE_TEMPLATE__")
+
+          # Read parameters
+          param1 = params["param1"]
+          param2 = params["param2"]
+          param3 = params.get("param3", "default_value")
+
+          # Process parameters if necessary
+          # processed_param = some_function(param1, param2)
+
+          # Set the ensemble name
+          self.setEnsembleName("__ENSEMBLE_TEMPLATE__") # This has to be a UAMMD-structured available ensemble name
+
+          self.addEnsembleComponent("componentName1", value)
+          self.addEnsembleComponent("componentName2", value)
+          # ...
+
+          # Log completion if needed
+          # self.logger.info("__ENSEMBLE_TEMPLATE__ initialized successfully")
+
+MODELS
 ------
 
 .. code-block:: python
+  :linenos:
 
-    from VLMP.components.models import modelBase
-    
-    class GENERIC_MODEL(modelBase):
-        """
-        {"author": "Your Name",
-         "description":
-         "GENERIC_MODEL description. Provide a detailed explanation of what this model does,
-          its key features, and potential applications.
-          <p>
-          Include information about:
-          <p>
-          - The main purpose of the model
-          <p>
-          - Key features and capabilities
-          <p>
-          - Any specific algorithms or methods used
-          <p>
-          - Typical use cases or scenarios where this model is particularly useful
-          <p>
-          Add any other relevant details about the model's behavior or implementation.",
-         "parameters":{
-            "param1":{"description":"Description of parameter 1",
-                      "type":"type of parameter 1 (e.g., int, float, str, list)",
-                      "default":"default value if any"},
-            "param2":{"description":"Description of parameter 2",
-                      "type":"type of parameter 2",
-                      "default":"default value if any"},
-            # Add more parameters as needed
-         },
-         "example":"
-             {
-                \"type\":\"GENERIC_MODEL\",
-                \"parameters\":{
-                    \"param1\":value1,
-                    \"param2\":value2
-                    # Add example values for all parameters
-                }
-             }
-            ",
-         "references":[
-             ".. [Ref1] Author, A. (Year). Title of the reference. Journal, Volume(Issue), Pages.",
-             ".. [Ref2] Author, B. (Year). Title of another reference. Conference/Book, Pages.",
-             # Add more references as needed
-         ]
-        }
-        """
-    
-        availableParameters = {"param1", "param2"}  # List all available parameters
-        requiredParameters  = {"param1"}  # List required parameters
-        definedSelections   = {"selectionType1", "selectionType2"}  # List defined selection types
-    
-        def __init__(self,name,**params):
-            super().__init__(_type = self.__class__.__name__,
-                             _name = name,
-                             availableParameters = self.availableParameters,
-                             requiredParameters  = self.requiredParameters,
-                             definedSelections   = self.definedSelections,
-                             **params)
-    
-            ############################################################
-            # Initialize model parameters
-            param1 = params["param1"]
-            param2 = params.get("param2", default_value)  # Use .get() for optional parameters
-    
-            # Log initialization information
-            self.logger.info(f"[GENERIC_MODEL] Initializing with param1={param1}, param2={param2}")
-    
-            ############################################################
-            # Set up model components (types, state, structure, force field)
-    
-            # Set up types
-            types = self.getTypes()
-            # Add types as needed, e.g.:
-            # types.addType(name="TypeName", mass=mass_value, radius=radius_value)
-    
-            # Set up state
-            state = {}
-            state["labels"] = ["id", "position"]  # Add other state variables if needed
-            state["data"] = []
-            # Populate state data
-    
-            # Set up structure
-            structure = {}
-            structure["labels"] = ["id", "type"]  # Add other structure labels if needed
-            structure["data"] = []
-            # Populate structure data
-    
-            # Set up force field
-            forceField = {}
-            # Define force field components, e.g.:
-            # forceField["interaction_name"] = {
-            #     "type": ["InteractionType", "SpecificInteraction"],
-            #     "parameters": {},
-            #     "labels": ["label1", "label2", ...],
-            #     "data": []
-            # }
-            # Populate force field data
-    
-            ############################################################
-            # Set the model's state, structure, and force field
-            self.setState(state)
-            self.setStructure(structure)
-            self.setForceField(forceField)
-    
-        def processSelection(self,selectionType,selectionOptions):
-            # Implement selection processing logic
-            if selectionType == "selectionType1":
-                # Process selection type 1
-                pass
-            elif selectionType == "selectionType2":
-                # Process selection type 2
-                pass
-            else:
-                return None  # Return None for unrecognized selection types
-    
-            # Return the processed selection
+  import sys, os
+  import logging
+  import numpy as np
+  from . import modelBase
 
-ModelOperation
----------------
+  class __MODEL_TEMPLATE__(modelBase):
+      """
+      {
+      "author": "__AUTHOR__",
+      "description": "Brief description of what this model represents or simulates.",
+      "parameters": {
+          "param1": {"description": "Description of parameter 1",
+                     "type": "type of param1"},
+          "param2": {"description": "Description of parameter 2",
+                     "type": "type of param2"},
+          "param3": {"description": "Description of parameter 3",
+                     "type": "type of param3",
+                     "default": "default value if any"}
+      },
+      "example": "
+      {
+          \"type\": \"__MODEL_TEMPLATE__\",
+          \"parameters\": {
+              \"param1\": value1,
+              \"param2\": value2,
+              \"param3\": value3
+          }
+      }
+      "
+      }
+      """
 
-.. code-block:: python
+      availableParameters = {"param1", "param2", "param3"}
+      requiredParameters = {"param1", "param2"}
+      definedSelections = {"selectionType1", "selectionType2"}  # Types of selections this model can process
 
-    from VLMP.components.modelOperations import modelOperationBase
-    
-    import numpy as np
-    
-    class GENERIC_OPERATION(modelOperationBase):
-        """
-        {
-            "author": "Your Name",
-            "description": "Brief description of what this operation does.",
-            "parameters": {
-                "param1": {
-                    "description": "Description of parameter 1",
-                    "type": "type of parameter (e.g., float, int, list, etc.)",
-                    "default": "default value if any"
-                },
-                "param2": {
-                    "description": "Description of parameter 2",
-                    "type": "type of parameter",
-                    "default": "default value if any"
-                }
-            },
-            "selections": {
-                "selection1": {
-                    "description": "Description of selection 1",
-                    "type": "list of ids"
-                },
-                "selection2": {
-                    "description": "Description of selection 2",
-                    "type": "list of ids"
-                }
-            },
-            "example": "{
-                \"type\": \"GENERIC_OPERATION\",
-                \"parameters\": {
-                    \"param1\": value1,
-                    \"param2\": value2,
-                    \"selection1\": \"model1 type A\",
-                    \"selection2\": \"model2 resid 1 to 10\"
-                }
-            }"
-        }
-        """
-    
-        availableParameters = {"param1", "param2"}
-        requiredParameters  = {"param1"}
-        availableSelections = {"selection1", "selection2"}
-        requiredSelections  = {"selection1"}
-    
-        def __init__(self,name,**params):
-            super().__init__(_type = self.__class__.__name__,
-                             _name = name,
-                             availableParameters = self.availableParameters,
-                             requiredParameters  = self.requiredParameters,
-                             availableSelections = self.availableSelections,
-                             requiredSelections  = self.requiredSelections,
-                             **params)
-    
-            ############################################################
-            # Extract parameters and selections
-            param1 = params["param1"]
-            param2 = params.get("param2", default_value)
-    
-            selection1 = self.getSelection("selection1")
-            selection2 = self.getSelection("selection2") if "selection2" in params else None
-    
-            ############################################################
-            # Perform the operation
-            
-            # Example: Get positions of selected particles
-            pos1 = np.asarray(self.getIdsState(selection1, "position"))
-            
-            # Example: Get properties of selected particles
-            property1 = np.asarray(self.getIdsProperty(selection1, "some_property"))
-    
-            # Implement your operation logic here
-            # ...
-    
-            # Example: Update positions of selected particles
-            new_positions = ... # Compute new positions
-            self.setIdsState(selection1, "position", new_positions.tolist())
-    
-            ############################################################
-            # Log operation results if needed
-            self.logger.info(f"[GENERIC_OPERATION] Operation completed on {len(selection1)} particles")
+      def __init__(self, name, **params):
+          super().__init__(_type=self.__class__.__name__,
+                           _name=name,
+                           availableParameters=self.availableParameters,
+                           requiredParameters=self.requiredParameters,
+                           definedSelections=self.definedSelections,
+                           **params)
 
-ModelExtension
----------------
+          ############################################################
+          # Access and process parameters
+          ############################################################
+
+          param1 = params["param1"]
+          param2 = params["param2"]
+          param3 = params.get("param3", "default_value")
+
+          ############################################################
+          # Set up model components
+          ############################################################
+
+          # Set up particle types
+          types = self.getTypes()
+          types.addType(name="TypeA", mass=1.0, radius=0.5)
+          types.addType(name="TypeB", mass=2.0, radius=0.7)
+
+          # Generate initial state (e.g., positions)
+          num_particles = 100  # Example number of particles
+          positions = self._generate_initial_positions(num_particles)
+
+          # Set up state
+          state = {
+              "labels": ["id", "position"],
+              "data": [[i, pos] for i, pos in enumerate(positions)]
+          }
+          self.setState(state)
+
+          # Set up structure
+          structure = {
+              "labels": ["id", "type"],
+              "data": [[i, "TypeA" if i % 2 == 0 else "TypeB"] for i in range(num_particles)]
+          }
+          self.setStructure(structure)
+
+          # Set up force field
+          force_field = self._setup_force_field(param1, param2)
+          self.setForceField(force_field)
+
+          ############################################################
+          # Log model setup
+          ############################################################
+
+          self.logger.info(f"Initialized {name} model with {num_particles} particles")
+
+      def _generate_initial_positions(self, num_particles):
+          # Example: Generate random positions in a cube
+          return np.random.uniform(-5, 5, (num_particles, 3)).tolist()
+
+      def _setup_force_field(self, param1, param2):
+          # Example: Set up a simple Lennard-Jones potential
+          force_field = {
+              "LennardJones": {
+                  "type": ["NonBonded", "LennardJones"],
+                  "parameters": {"epsilon": param1, "sigma": param2},
+                  "labels": ["name_i", "name_j", "epsilon", "sigma"],
+                  "data": [
+                      ["TypeA", "TypeA", param1, param2],
+                      ["TypeA", "TypeB", param1, param2],
+                      ["TypeB", "TypeB", param1, param2]
+                  ]
+              }
+          }
+          return force_field
+
+      def processSelection(self, selectionType, selectionOptions):
+          # Implement selection processing logic here
+          # This method should return a list of particle IDs based on the selection criteria
+          if selectionType == "selectionType1":
+              # Process selectionType1
+              pass
+          elif selectionType == "selectionType2":
+              # Process selectionType2
+              pass
+          return None  # Replace with actual selection logic
+
+MODEL_OPERATIONS
+----------------
 
 .. code-block:: python
+  :linenos:
 
-    #Template for the MODEL_EXTENSION component.
-    #This template is used to create the MODEL_EXTENSION component.
-    #Comments begin with a hash (#) and they can be removed.
-    
-    import sys, os
-    
-    import logging
-    
-    from . import modelExtensionBase
-    
-    class __MODEL_EXTENSION_TEMPLATE__(modelExtensionBase):
-        """
-        Component name: __MODEL_EXTENSION_TEMPLATE__ # Name of the component
-        Component type: modelExtension # Type of the component
-    
-        Author: __AUTHOR__ # Author of the component
-        Date: __DATE__ # Date of last modification
-    
-        # Description of the component
-        ...
-        ...
-        ...
-    
-        :param param1: Description of the parameter 1
-        :type param1: type of the parameter 1
-        :param param2: Description of the parameter 2
-        :type param2: type of the parameter 2
-        :param param3: Description of the parameter 3
-        :type param3: type of the parameter 3, optional
-        ...
-        """
-    
-        def __init__(self,name,**kwargs):
-            super().__init__(_type = self.__class__.__name__,
-                             _name = name,
-                             availableParameters  = ["applyOnModel","selection","param1","param2","param3",...], # List of parameters used by the component
-                             requiredParameters = ["applyOnModel","selection","param1","param2",...], # List of required parameters
-                             **kwargs)
-    
-            targetModels = []
-            for mdl in self.models:
-                if mdl.getName() in self.applyOnModel:
-                    targetModels.append(mdl)
-    
-            ############################################################
-            ############################################################
-            ############################################################
-    
-            #Note logger is accessible through self.logger !!!
-            #self.logger.info("Message")
-    
-            #For a model extension units and models are accessible
-            #through self.units and self.models.
-            #Example
-            #unitsName = self.units.getName()
-            #
-            #for mdl in self.models:
-            #   mdl.getIds() ...
-    
-            #Define the component dictionary
-            #Particular characteristics of the component are defined here
-            #Rembember this dictionary is inteterpreted by the UAMMD-structured !!!
-            self.extension = {}
-    
-            #Editable part ...
-    
-            #Read the parameters
-    
-            param1 = kwargs.get("param1")
-            param2 = kwargs.get("param2")
-    
-            #It is recommended to define a default value those parameters that are not required
-            param3 = kwargs.get("param3",defaultValue = 0.0)
-    
-            ############################################################
-    
-            #Process the parameters
-    
-            #For example:
-            param1 = param1 + param2
-            ...
-    
-            ############################################################
-    
-            #Define the component dictionary
-    
-            self.system["__MODEL_EXTENSION_TEMPLATE__"] = {
-                                                            "type":[modelExtensionClass,modelExtensionSubClass],
-                                                            "parameters":{
-                                                                "param1":param1,
-                                                                "param2":param2,
-                                                                "param3":param3,
-                                                                ...
-                                                            }
-                                                            "labels":[...] # Labels of the component
-                                                            "data":[[...],
-                                                                    [...],
-                                                                     ...] # Data of the component
-                                                            }
+  import sys, os
+  import logging
+  from . import modelOperationBase
 
-Integrator
+  class __MODEL_OPERATION_TEMPLATE__(modelOperationBase):
+      """
+      {
+      "author": "__AUTHOR__",
+      "description": "Short description of what this model operation does.",
+      "parameters": {
+          "param1": {"description": "Description of parameter 1",
+                     "type": "type of param1"},
+          "param2": {"description": "Description of parameter 2",
+                     "type": "type of param2"},
+          "param3": {"description": "Description of parameter 3",
+                     "type": "type of param3",
+                     "default": "default value if any"}
+      },
+      "selections": {
+          "selection1": {"description": "Description of selection 1",
+                         "type": "type of selection1"},
+          "selection2": {"description": "Description of selection 2",
+                         "type": "type of selection2"}
+      },
+      "example": "
+      {
+          \"type\": \"__MODEL_OPERATION_TEMPLATE__\",
+          \"parameters\": {
+              \"param1\": value1,
+              \"param2\": value2,
+              \"selection1\": \"model1 type A\",
+              \"selection2\": \"model2 type B\"
+          }
+      }
+      "
+      }
+      """
+
+      availableParameters = {"param1", "param2", "param3"}
+      requiredParameters = {"param1", "param2"}
+      availableSelections = {"selection1", "selection2"}
+      requiredSelections = {"selection1"}
+
+      def __init__(self, name, **params):
+          super().__init__(_type=self.__class__.__name__,
+                           _name=name,
+                           availableParameters=self.availableParameters,
+                           requiredParameters=self.requiredParameters,
+                           availableSelections=self.availableSelections,
+                           requiredSelections=self.requiredSelections,
+                           **params)
+
+          ############################################################
+          # Access and process parameters
+          ############################################################
+
+          param1 = params["param1"]
+          param2 = params["param2"]
+          param3 = params.get("param3", "default_value")
+
+          # Process selections
+          selection1 = self.getSelection("selection1")
+          selection2 = self.getSelection("selection2") if "selection2" in params else None
+
+          ############################################################
+          # Implement the model operation logic
+          ############################################################
+
+          # Example: Modify positions of selected particles
+          selected_ids = selection1  # Assuming selection1 is the main selection to operate on
+          positions = self.getIdsState(selected_ids, "position")
+
+          # Perform operations on positions...
+          new_positions = [self._process_position(pos, param1, param2) for pos in positions]
+
+          # Update the state with new positions
+          self.setIdsState(selected_ids, "position", new_positions)
+
+          ############################################################
+          # Log the operation
+          ############################################################
+
+          self.logger.info(f"Completed {self._name} operation on {len(selected_ids)} particles")
+
+      def _process_position(self, position, param1, param2):
+          # Example processing function
+          return [p + param1 * param2 for p in position]
+
+MODEL_EXTENSIONS
+----------------
+
+.. code-block:: python
+  :linenos:
+
+  import sys, os
+  import logging
+  from . import modelExtensionBase
+
+  class __MODEL_EXTENSION_TEMPLATE__(modelExtensionBase):
+      """
+      {"author": "__AUTHOR__",
+       "description":
+       "Brief description of what this model extension does and its purpose in the simulation.
+        Explain how it extends or modifies the existing model, its advantages, and when it should be used.
+        Provide any relevant background information or key features here.
+        You can use multiple lines for clarity.",
+       "parameters":{
+          "param1":{"description":"Description of parameter 1",
+                    "type":"type of param1 (e.g., float, int, str)",
+                    "default":null},
+          "param2":{"description":"Description of parameter 2",
+                    "type":"type of param2",
+                    "default":null},
+          "param3":{"description":"Description of optional parameter 3",
+                    "type":"type of param3",
+                    "default":"default_value"}
+       },
+       "selections":{
+          "selection1":{"description":"Description of selection 1",
+                        "type":"list of ids"},
+          "selection2":{"description":"Description of optional selection 2",
+                        "type":"list of ids"}
+       },
+       "example":"
+           {
+              \"type\":\"__MODEL_EXTENSION_TEMPLATE__\",
+              \"parameters\":{
+                  \"param1\":value1,
+                  \"param2\":value2,
+                  \"param3\":value3
+              },
+              \"selections\":{
+                  \"selection1\":\"model1 type A\",
+                  \"selection2\":\"model2 resid 1 to 10\"
+              }
+           }
+          "
+      }
+      """
+
+      availableParameters = {"param1", "param2", "param3"}
+      requiredParameters  = {"param1", "param2"}
+      availableSelections = {"selection1", "selection2"}
+      requiredSelections  = {"selection1"}
+
+      def __init__(self, name, **params):
+          super().__init__(_type = self.__class__.__name__,
+                           _name = name,
+                           availableParameters = self.availableParameters,
+                           requiredParameters  = self.requiredParameters,
+                           availableSelections = self.availableSelections,
+                           requiredSelections  = self.requiredSelections,
+                           **params)
+
+          ############################################################
+          ############################################################
+          ############################################################
+
+          # Access logger if needed
+          # self.logger.info("Initializing __MODEL_EXTENSION_TEMPLATE__")
+
+          # Read parameters
+          param1 = params["param1"]
+          param2 = params["param2"]
+          param3 = params.get("param3", "default_value")
+
+          # Get selections
+          selection1 = self.getSelection("selection1")
+          selection2 = self.getSelection("selection2") if "selection2" in params else None
+
+          # Process parameters if necessary
+          # processed_param = some_function(param1, param2)
+
+          # Define the extension dictionary using UAMMD-structured format
+          extension = {
+              name: {
+                  "type": ["ModelExtension", "__MODEL_EXTENSION_TEMPLATE__"],  # UAMMD-structured type
+                  "parameters": {  # UAMMD-structured parameters
+                      "param1": param1,
+                      "param2": param2,
+                      "param3": param3
+                      # Add any other necessary parameters
+                  },
+                  "labels": ["id", "value1", "value2"],  # UAMMD-structured labels
+                  "data": []  # UAMMD-structured data
+              }
+          }
+
+          # Fill the data based on selections
+          for id in selection1:
+              # Example of how to fill data, adjust as needed for your specific extension
+              extension[name]["data"].append([id, some_value1, some_value2])
+
+          if selection2:
+              for id in selection2:
+                  # Add data for selection2 if it exists
+                  extension[name]["data"].append([id, some_other_value1, some_other_value2])
+
+          # You can add more complex logic here if needed
+          # For example, adding conditional parameters or computed values
+
+          # Set the extension
+          self.setExtension(extension)
+
+          # Set group if needed
+          # self.setGroup("selection1")
+
+          # Log completion if needed
+          # self.logger.info("__MODEL_EXTENSION_TEMPLATE__ initialized successfully")
+
+INTEGRATORS
 -----------
 
 .. code-block:: python
+  :linenos:
 
-    #Template for the INTEGRATORS component.
-    #This template is used to create the INTEGRATORS component.
-    #Comments begin with a hash (#) and they can be removed.
-    
-    import sys, os
-    
-    import logging
-    
-    from . import integratorBase
-    
-    class __INTEGRATORS_TEMPLATE__(integratorBase):
-        """
-        Component name: __INTEGRATORS_TEMPLATE__ # Name of the component
-        Component type: integrator # Type of the component
-    
-        Author: __AUTHOR__ # Author of the component
-        Date: __DATE__ # Date of last modification
-    
-        # Description of the component
-        ...
-        ...
-        ...
-    
-        :param param1: Description of the parameter 1
-        :type param1: type of the parameter 1
-        :param param2: Description of the parameter 2
-        :type param2: type of the parameter 2
-        :param param3: Description of the parameter 3
-        :type param3: type of the parameter 3, optional
-        ...
-        """
-    
-        def __init__(self,name,**kwargs):
-            super().__init__(_type= self.__class__.__name__,
-                             _name= name,
-                             availableParameters  = ["integrationSteps","param1","param2","param3",...], # List of parameters used by the component
-                             requiredParameters = ["integrationSteps","param1","param2",...], # List of required parameters
-                             **kwargs)
-    
-            ############################################################
-            ############################################################
-            ############################################################
-    
-            #Note logger is accessible through self.logger !!!
-            #self.logger.info("Message")
-    
-            #Integration steps is required by the integratorBase class
-            #If this parameter is not provided, an error is raised
-            self.integrationSteps = kwargs.get("integrationSteps")
-    
-            #Define the component dictionary
-            #Particular characteristics of the component are defined here
-            #Rembember this dictionary is inteterpreted by the UAMMD-structured !!!
-            self.integrator = {}
-    
-            #Editable part ...
-    
-            #Read the parameters
-    
-            param1 = kwargs.get("param1")
-            param2 = kwargs.get("param2")
-    
-            #It is recommended to define a default value those parameters that are not required
-            param3 = kwargs.get("param3",defaultValue = 0.0)
-    
-            ############################################################
-    
-            #Process the parameters
-    
-            #For example:
-            param1 = param1 + param2
-            ...
-    
-            ############################################################
-    
-            #Define the component dictionary
-    
-            self.integrator = {
-                               "type"=["IntegratorClass","IntegratorSubClass"],
-                               "parameters":{
-                                    "param1":param1,
-                                    "param2":param2,
-                                    "param3":param3,
-                                   ... #Note than integrationSteps is not included here !!!
-                                }
-                               }
+  import sys, os
+  import logging
+  from . import integratorBase
 
-SimulationStep
---------------
+  class __INTEGRATORS_TEMPLATE__(integratorBase):
+      """
+      {"author": "__AUTHOR__",
+       "description":
+       "Brief description of what this integrator does and its purpose in the simulation.
+        Explain the integration method, its advantages, and when it should be used.
+        Provide any relevant background information or key features here.
+        You can use multiple lines for clarity",
+       "parameters":{
+          "integrationSteps":{"description":"Number of integration steps",
+                              "type":"int",
+                              "default":null},
+          "timeStep":{"description":"Time step for integration",
+                      "type":"float",
+                      "default":null},
+          "param1":{"description":"Description of parameter 1",
+                    "type":"type of param1",
+                    "default":null},
+          "param2":{"description":"Description of optional parameter 2",
+                    "type":"type of param2",
+                    "default":"default_value"}
+       },
+       "example":"
+           {
+              \"type\":\"__INTEGRATORS_TEMPLATE__\",
+              \"parameters\":{
+                  \"integrationSteps\":1000,
+                  \"timeStep\":0.001,
+                  \"param1\":value1,
+                  \"param2\":value2
+              }
+           }
+          "
+      }
+      """
+
+      availableParameters = {"integrationSteps", "timeStep", "param1", "param2"}
+      requiredParameters  = {"integrationSteps", "timeStep", "param1"}
+
+      def __init__(self,name,**params):
+          super().__init__(_type = self.__class__.__name__,
+                           _name = name,
+                           availableParameters = self.availableParameters,
+                           requiredParameters  = self.requiredParameters,
+                           **params)
+
+          ############################################################
+          ############################################################
+          ############################################################
+
+          # Access logger if needed
+          # self.logger.info("Initializing __INTEGRATORS_TEMPLATE__")
+
+          # Read parameters
+          integrationSteps = params["integrationSteps"]
+          timeStep = params["timeStep"]
+          param1 = params["param1"]
+          param2 = params.get("param2", "default_value")
+
+          # Process parameters if necessary
+          # processed_param = some_function(param1, timeStep)
+
+          # Define the integrator dictionary using UAMMD-structured format
+          integrator = {
+              "type": ["Integrator", "__INTEGRATORS_TEMPLATE__"],  # UAMMD-structured type
+              "parameters": {  # UAMMD-structured parameters
+                  "timeStep": timeStep,
+                  "param1": param1,
+                  "param2": param2
+                  # Add any other necessary parameters
+                  # Note: integrationSteps is handled separately by UAMMD
+              }
+          }
+
+          # Set the integration steps
+          self.setIntegrationSteps(integrationSteps)
+
+          # Set the integrator
+          self.setIntegrator(integrator)
+
+          # Log completion if needed
+          # self.logger.info("__INTEGRATORS_TEMPLATE__ initialized successfully")
+
+SIMULATION_STEPS
+----------------
 
 .. code-block:: python
+  :linenos:
 
-    #Template for the SIMULATION_STEPS component.
-    #This template is used to create the SIMULATION_STEPS component.
-    #Comments begin with a hash (#) and they can be removed.
-    
-    import sys, os
-    
-    import logging
-    
-    from . import simulationStepBase
-    
-    class __SIMULATION_STEPS_TEMPLATE__(simulationStepBase):
-        """
-        Component name: __SIMULATION_STEPS_TEMPLATE__ # Name of the component
-        Component type: simulationStepBase # Type of the component
-    
-        Author: __AUTHOR__ # Author of the component
-        Date: __DATE__ # Date of last modification
-    
-        # Description of the component
-        ...
-        ...
-        ...
-    
-        :param param1: Description of the parameter 1
-        :type param1: type of the parameter 1
-        :param param2: Description of the parameter 2
-        :type param2: type of the parameter 2
-        :param param3: Description of the parameter 3
-        :type param3: type of the parameter 3, optional
-        ...
-        """
-    
-        def __init__(self,name,**params):
-            super().__init__(_type = self.__class__.__name__,
-                             _name = name,
-                             availableParameters  = ["param1","param2","param3",...], # List of parameters used by the component
-                             requiredParameters   = ["param1","param2",...], # List of required parameters
-                             availableSelections  = ["selection1","selection2",...], # List of selections used by the component
-                             requiredSelections   = ["selection1","selection2",...], # List of required selections
-                             #If none use set() instead of [] for available and required parameters and selections
-                             **params)
-    
-            ############################################################
-            ############################################################
-            ############################################################
-    
-            #Note there several accesible methods than can be used
-            #Units: getUnits()
-            #Types: getTypes()
-    
-            #Note logger is accessible through self.logger
-            #self.logger.info("Message")
-    
-            #Read the parameters
-    
-            outputFilePath = self.getParameter("outputFilePath")
-    
-            param1 = self.getParameter("param1")
-            param2 = self.getParameter("param2")
-    
-            #It is recommended to define a default value those parameters that are not required
-            param3 = self.getParameter("param3",defaultValue = 0.0)
-    
-            ############################################################
-    
-            #Here we have to fill the simulationStep itself.
-            #Remember you have to use UAMMD-structured syntax
-    
-            parameters = {}
-    
-            parameters["outputFilePath"] = outputFilePath
-            parameters["param1"] = param1
-            parameters["paramA"] = param2+param3
-    
-            simulationStep = {
-                name : { #We use the name of the component as the name of the simulationStep
-                    "type" : ["SimulationStepClass","SimulationStepSubClass"], #Type of the simulationStep
-                    "parameters" : {**parameters} #Parameters of the simulationStep
-                }
-            }
-    
-            ############################################################
-    
-            #We can add the group the simulationSteps is applied to
-            #We can use a given selection
-    
-            self.setGroup("selection1")
-    
-            #We finally add the simulationStep to the component
-            self.setSimulationSteps(simulationStep)
+  import sys, os
+  import logging
+  from . import simulationStepBase
+
+  class __SIMULATION_STEPS_TEMPLATE__(simulationStepBase):
+      """
+      {
+      "author": "__AUTHOR__",
+      "description": "Brief description of what this simulation step does.",
+      "parameters": {
+          "intervalStep": {"description": "Interval at which this step is executed",
+                           "type": "int"},
+          "param1": {"description": "Description of parameter 1",
+                     "type": "type of param1"},
+          "param2": {"description": "Description of parameter 2",
+                     "type": "type of param2"},
+          "param3": {"description": "Description of parameter 3",
+                     "type": "type of param3",
+                     "default": "default value if any"}
+      },
+      "selections": {
+          "selection1": {"description": "Description of selection 1",
+                         "type": "type of selection1"},
+          "selection2": {"description": "Description of selection 2",
+                         "type": "type of selection2"}
+      },
+      "example": "
+      {
+          \"type\": \"__SIMULATION_STEPS_TEMPLATE__\",
+          \"parameters\": {
+              \"intervalStep\": 100,
+              \"param1\": value1,
+              \"param2\": value2,
+              \"selection1\": \"model1 type A\",
+              \"selection2\": \"model2 type B\"
+          }
+      }
+      "
+      }
+      """
+
+      availableParameters = {"intervalStep", "param1", "param2", "param3"}
+      requiredParameters = {"intervalStep", "param1", "param2"}
+      availableSelections = {"selection1", "selection2"}
+      requiredSelections = {"selection1"}
+
+      def __init__(self, name, **params):
+          super().__init__(_type=self.__class__.__name__,
+                           _name=name,
+                           availableParameters=self.availableParameters,
+                           requiredParameters=self.requiredParameters,
+                           availableSelections=self.availableSelections,
+                           requiredSelections=self.requiredSelections,
+                           **params)
+
+          ############################################################
+          # Access and process parameters
+          ############################################################
+
+          intervalStep = params["intervalStep"]
+          param1 = params["param1"]
+          param2 = params["param2"]
+          param3 = params.get("param3", "default_value")
+
+          # Process selections
+          selection1 = self.getSelection("selection1")
+          selection2 = self.getSelection("selection2") if "selection2" in params else None
+
+          ############################################################
+          # Set up the simulation step
+          ############################################################
+
+          simulationStep = {
+              name: {
+                  "type": ["SimulationStepType", "SimulationStepSubType"],
+                  "parameters": {
+                      "intervalStep": intervalStep,
+                      "param1": param1,
+                      "param2": param2,
+                      "param3": param3
+                  }
+              }
+          }
+
+          # If the simulation step requires additional data, add it here
+          if selection1:
+              simulationStep[name]["labels"] = ["id"]
+              simulationStep[name]["data"] = [[id] for id in selection1]
+
+          # Set the group if needed (e.g., if the step applies to a specific selection)
+          self.setGroup("selection1")
+
+          # Set the simulation step
+          self.setSimulationStep(simulationStep)
+
+          ############################################################
+          # Log simulation step setup
+          ############################################################
+
+          self.logger.info(f"Initialized {name} simulation step with interval {intervalStep}")
+
+      def _additional_processing(self, selection):
+          # Example method for additional processing if needed
+          pass
 
