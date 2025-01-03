@@ -1,6 +1,6 @@
 [project]
 name="pyVLMP"
-        version="1.0.71"
+        version="1.0.72"
 authors = [
     {name = "Pablo Ibáñez-Freire", email = "p.ibanez.fre@gmail.com"},
 ]
@@ -18,7 +18,7 @@ classifiers = [
         "Programming Language :: Python :: 3.9",
 ]
 dependencies = [
-    "jsbeautifier","tqdm","pyGrained","JFIO","pyUAMMD"
+    "jsbeautifier","tqdm","pyGrained","JFIO","pyUAMMD","colorama"
 ]
 
 [options]
