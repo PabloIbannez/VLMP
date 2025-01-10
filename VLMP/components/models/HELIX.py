@@ -282,8 +282,8 @@ class HELIX(modelBase):
 
             self.logger.info(f"[HELIX] Using fixed variant")
 
-            variantAvailableParameters  = {"Kd","Kw"}
-            variantRequiredParameters   = {"Kd","Kw"}
+            variantAvailableParameters  = {"Kb","Kw"}
+            variantRequiredParameters   = {"Kb","Kw"}
 
             self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
 
@@ -295,8 +295,8 @@ class HELIX(modelBase):
 
             self.logger.info(f"[HELIX] Using dynamicCosine variant")
 
-            variantAvailableParameters  = {"E","Kd","Kw","rc","energyThreshold","patchRadius"}
-            variantRequiredParameters   = {"E","Kd","Kw","rc"}
+            variantAvailableParameters  = {"E","Kb","Kw","rc","energyThreshold","patchRadius"}
+            variantRequiredParameters   = {"E","Kb","Kw","rc"}
 
             self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
 
@@ -391,22 +391,18 @@ class HELIX(modelBase):
             forceField["helix"]={}
             forceField["helix"]["type"]       = ["Bond2", "HarmonicRAP"]
 
-            forceField["helix"]["parameters"] =  self.variantParams.copy()
-
             forceField["helix"]["labels"] = ["id_i","id_j","Khrm","r0","leftConnection","rightConnection","Krap","R"]
             forceField["helix"]["data"]   = []
 
-            Kd              = self.variantParams["Kd"]
-            Kw              = self.variantParams["Kw"]
-            leftConnection  = self.variantParams["leftConnection"]
-            rightConnection = self.variantParams["rightConnection"]
+            Kb  = self.variantParams["Kb"]
+            Kw  = self.variantParams["Kw"]
 
             Rq = self.R_Hq
 
             for i in range(self.nMonomers-1):
-                forceField["helix"]["data"].append([i,i+1,Kd,0.0,leftConnection,rightConnection,Kw,Rq])
+                forceField["helix"]["data"].append([i,i+1,Kb,0.0,self.e_prev,self.e_next,Kw,Rq])
 
-        if "dynamic" == self.variantName.strip():
+        elif "dynamic" == self.variantName.strip():
 
             patchRadius = self.variantParams["patchRadius"]
 
@@ -458,7 +454,7 @@ class HELIX(modelBase):
             forceField["helix"]["patchesTopology"]["forceField"]["helix"]["parameters"] =  {"condition":"inter"}
 
             E  = self.variantParams["E"]
-            Kd = self.variantParams["Kd"]
+            Kb = self.variantParams["Kb"]
             Kw = self.variantParams["Kw"]
             rc = self.variantParams["rc"]
             Rq     = self.R_Hq
@@ -466,10 +462,11 @@ class HELIX(modelBase):
 
             forceField["helix"]["patchesTopology"]["forceField"]["helix"]["type"]       =  ["NonBondedPatches", "COSRAP"]
             forceField["helix"]["patchesTopology"]["forceField"]["helix"]["labels"]     =  ["name_i", "name_j", "E", "rc", "R", "Kswt", "Krap"]
-            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["data"]       =  [["S", "E", E, rc, Rq, Kd, Kw],
-                                                                                            ["E", "S", E, rc, Rqinv, Kd, Kw]]
+            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["data"]       =  [["S", "E", E, rc, Rq, Kb, Kw],
+                                                                                            ["E", "S", E, rc, Rqinv, Kb, Kw]]
         else:
             #Not implemented yet
+            self.logger.error(f"[HELIX] Variant {self.variantName} not implemented yet")
             raise Exception("Not implemented yet")
 
         #############Patches
