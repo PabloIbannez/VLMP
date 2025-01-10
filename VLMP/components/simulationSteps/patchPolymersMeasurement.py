@@ -64,11 +64,6 @@ class patchPolymersMeasurement(simulationStepBase):
         ############################################################
         ############################################################
 
-        #Check if intervalStep is different from 1. If so, raise an error
-        if params.get("intervalStep") != 1:
-            self.logger.error("[PatchPolymersMeasurement] intervalStep must be 1")
-            raise Exception("Not valid intervalStep")
-
         parameters = {}
 
         parameters["outputFilePath"]         = params["outputFilePath"]

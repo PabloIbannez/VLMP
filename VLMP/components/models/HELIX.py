@@ -40,12 +40,12 @@ class HELIX(modelBase):
       <p>
       The model generates a helical structure based on specified parameters such as the number
       of monomers, helix radius, pitch, and helicity. It can be used to study various properties
-      and behaviors of helical polymers, including their dynamics, and the effectos of several
+      and behaviors of helical polymers, including their dynamics, and the effects of several
       polymer interactions.
       <p>
       Key features of the HELIX model include:
       <p>
-      - Flexible control over helical geometry (radius, pitch, helicity)
+      - Parameters for helical geometry (radius, pitch, helicity)
       <p>
       - Various initialization options (random, line, or pre-formed helix)
       <p>
@@ -75,7 +75,7 @@ class HELIX(modelBase):
         "helicity":{"description":"Helicity of the structure (1.0 for right-handed, -1.0 for left-handed).",
                     "type":"float",
                     "default":1.0},
-        "variant":{"description":"Variant of the model to use ('fixedCosine', 'fixedExponential', 'dynamicCosine', 'dynamicExponential', 'twoStatesCosine', 'twoStatesExponential').",
+        "variant":{"description":"Variant of the model to use ('fixed', 'dynamic').",
                    "type":"str"},
         "surface":{"description":"Whether to include a surface interaction.",
                    "type":"bool",
@@ -94,7 +94,7 @@ class HELIX(modelBase):
                 \"helixRadius\":10.0,
                 \"helixPitch\":34.0,
                 \"epsilon_mm\":1.0,
-                \"variant\":\"dynamicCosine\"
+                \"variant\":\"fixed\"
             }
          }
         ",
@@ -259,9 +259,10 @@ class HELIX(modelBase):
         self.R_H = computeHelixMatrix(self.helixRadius,self.helixPitch,self.helicity,
                                       self.monomerRadius*2.0)
 
-        self.e_x = list(self.R_H[:,0])
-        self.e_y = list(self.R_H[:,1])
-        self.e_z = list(self.R_H[:,2])
+        # Convert to quaternion
+        q = Rotation.from_matrix(self.R_H).as_quat()
+        q = [q[3],q[0],q[1],q[2]] # scalar first
+        self.R_Hq = q
 
         connectionNext,connectionPrevious = computeConnections(self.helixRadius,self.helixPitch,self.helicity,
                                                                self.monomerRadius*2.0)
@@ -272,21 +273,17 @@ class HELIX(modelBase):
         ##############################################
 
         # Available variants:
-        #   - fixedCosine
-        #   - fixedExponential
-        #   - dynamicCosine
-        #   - dynamicExponential
-        #   - twoStatesCosine
-        #   - twoStatesExponential
+        #   - fixed
+        #   - dynamic
 
         self.variantName, self.variantParams = getSubParameters("variant",params)
 
-        if self.variantName == "fixedCosine":
+        if self.variantName == "fixed":
 
-            self.logger.info(f"[HELIX] Using fixedCosine variant")
+            self.logger.info(f"[HELIX] Using fixed variant")
 
-            variantAvailableParameters  = {"E","Kb","theta_start","theta_end","phi_start","phi_end"}
-            variantRequiredParameters   = {"E","Kb","theta_start","theta_end","phi_start","phi_end"}
+            variantAvailableParameters  = {"Kd","Kw"}
+            variantRequiredParameters   = {"Kd","Kw"}
 
             self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
 
@@ -294,26 +291,12 @@ class HELIX(modelBase):
                 self.logger.error(f"[HELIX] Init mode {self.init} is not avaible for fixedCosine variant")
                 raise Exception("Init mode not available")
 
-        elif self.variantName == "fixedExponential":
-
-            self.logger.info(f"[HELIX] Using fixedExponential variant")
-
-            variantAvailableParameters  = {"E","Kb","Ka","Kd"}
-            variantRequiredParameters   = {"E","Kb","Ka","Kd"}
-
-            self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
-
-            #Chekc init mode is helix
-            if self.init != "helix" and self.init != "line":
-                self.logger.error(f"[HELIX] Init mode {self.init} is not avaible for fixedExponential variant")
-                raise Exception("Init mode not available")
-
-        elif self.variantName == "dynamicCosine":
+        elif self.variantName == "dynamic":
 
             self.logger.info(f"[HELIX] Using dynamicCosine variant")
 
-            variantAvailableParameters  = {"energyThreshold","Eb","theta_start","theta_end","phi_start","phi_end","r_start","rc","patchRadius"}
-            variantRequiredParameters   = {"Eb","theta_start","theta_end","phi_start","phi_end","r_start","rc"}
+            variantAvailableParameters  = {"E","Kd","Kw","rc","energyThreshold","patchRadius"}
+            variantRequiredParameters   = {"E","Kd","Kw","rc"}
 
             self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
 
@@ -323,70 +306,6 @@ class HELIX(modelBase):
             if "patchRadius" not in self.variantParams:
                 self.variantParams["patchRadius"] = self.monomerRadius/5.0
 
-        elif self.variantName == "dynamicExponential":
-
-            self.logger.info(f"[HELIX] Using dynamicExponential variant")
-
-            variantAvailableParameters  = {"energyThreshold","Eb","Ka","Kd","Kb","rc","patchRadius"}
-            variantRequiredParameters   = {"Eb","Ka","Kd","Kb","rc"}
-
-            self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
-
-            if "energyThreshold" not in self.variantParams:
-                self.variantParams["energyThreshold"] = 0.0
-
-            if "patchRadius" not in self.variantParams:
-                self.variantParams["patchRadius"] = self.monomerRadius/5.0
-
-        elif self.variantName == "twoStatesCosine":
-
-            self.logger.info(f"[HELIX] Using twoStatesCosine variant")
-
-            variantAvailableParameters  = {"energyThreshold","patchRadius",
-                                           "theta_start_0","theta_end_0","phi_start_0","phi_end_0",
-                                           "theta_start_1","theta_end_1","phi_start_1","phi_end_1",
-                                           "r_start_0","r_start_1","rc_0","rc_1",
-                                           "prob_0_to_1","prob_1_to_0"}
-
-            variantRequiredParameters   = {"patchRadius",
-                                           "theta_start_0","theta_end_0","phi_start_0","phi_end_0",
-                                           "theta_start_1","theta_end_1","phi_start_1","phi_end_1",
-                                           "r_start_0","r_start_1","rc_0","rc_1",
-                                           "prob_0_to_1","prob_1_to_0"}
-
-            self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
-
-            if "energyThreshold" not in self.variantParams:
-                self.variantParams["energyThreshold"] = 0.0
-
-            if "patchRadius" not in self.variantParams:
-                self.variantParams["patchRadius"] = self.monomerRadius/5.0
-
-        elif self.variantName == "twoStatesExponential":
-
-            self.logger.info(f"[HELIX] Using twoStatesExponential variant")
-
-            variantAvailableParameters  = {"energyThreshold","patchRadius",
-                                           "Ka_0","Kd_0","Kb_0",
-                                           "Ka_1","Kd_1","Kb_1",
-                                           "Kb_0","Kb_1",
-                                           "rc_0","rc_1",
-                                           "prob_0_to_1","prob_1_to_0"}
-
-            variantRequiredParameters   = {"patchRadius",
-                                           "Ka_0","Kd_0","Kb_0",
-                                           "Ka_1","Kd_1","Kb_1",
-                                           "Kb_0","Kb_1",
-                                           "rc_0","rc_1",
-                                           "prob_0_to_1","prob_1_to_0"}
-
-            self.__checkVariantParameters(variantRequiredParameters,variantAvailableParameters)
-
-            if "energyThreshold" not in self.variantParams:
-                self.variantParams["energyThreshold"] = 0.0
-
-            if "patchRadius" not in self.variantParams:
-                self.variantParams["patchRadius"] = self.monomerRadius/5.0
 
         else:
             self.logger.error(f"[HELIX] Variant {self.variantName} not available")
@@ -467,30 +386,27 @@ class HELIX(modelBase):
 
         ############Helix
 
-        if "fixed" in self.variantName:
+        if "fixed" == self.variantName.strip():
 
             forceField["helix"]={}
-            if self.variantName == "fixedCosine":
-                forceField["helix"]["type"]       = ["Bond2", "HelixCosine"]
-            elif self.variantName == "fixedExponential":
-                forceField["helix"]["type"]       = ["Bond2", "HelixExponential"]
+            forceField["helix"]["type"]       = ["Bond2", "HarmonicRAP"]
 
             forceField["helix"]["parameters"] =  self.variantParams.copy()
 
-            forceField["helix"]["parameters"]["e_x"] = self.e_x
-            forceField["helix"]["parameters"]["e_y"] = self.e_y
-            forceField["helix"]["parameters"]["e_z"] = self.e_z
-
-            forceField["helix"]["parameters"]["e_next"] = self.e_next
-            forceField["helix"]["parameters"]["e_prev"] = self.e_prev
-
-            forceField["helix"]["labels"] = ["id_i","id_j"]
+            forceField["helix"]["labels"] = ["id_i","id_j","Khrm","r0","leftConnection","rightConnection","Krap","R"]
             forceField["helix"]["data"]   = []
 
-            for i in range(self.nMonomers-1):
-                forceField["helix"]["data"].append([i,i+1])
+            Kd              = self.variantParams["Kd"]
+            Kw              = self.variantParams["Kw"]
+            leftConnection  = self.variantParams["leftConnection"]
+            rightConnection = self.variantParams["rightConnection"]
 
-        if "dynamic" in self.variantName or "twoStates" in self.variantName:
+            Rq = self.R_Hq
+
+            for i in range(self.nMonomers-1):
+                forceField["helix"]["data"].append([i,i+1,Kd,0.0,leftConnection,rightConnection,Kw,Rq])
+
+        if "dynamic" == self.variantName.strip():
 
             patchRadius = self.variantParams["patchRadius"]
 
@@ -541,27 +457,20 @@ class HELIX(modelBase):
             forceField["helix"]["patchesTopology"]["forceField"]["helix"]={}
             forceField["helix"]["patchesTopology"]["forceField"]["helix"]["parameters"] =  {"condition":"inter"}
 
-            if self.variantName == "dynamicCosine":
-                forceField["helix"]["patchesTopology"]["forceField"]["helix"]["type"]       =  ["NonBondedPatches", "HelixCosine"]
-                forceField["helix"]["patchesTopology"]["forceField"]["helix"]["labels"]     =  ["name_i", "name_j", "Eb", "theta_start", "theta_end", "phi_start", "phi_end", "r_start", "rc", "e_x", "e_y", "e_z"]
-                forceField["helix"]["patchesTopology"]["forceField"]["helix"]["data"]       =  [["S", "E",
-                                                                                                 self.variantParams["Eb"],
-                                                                                                 self.variantParams["theta_start"], self.variantParams["theta_end"],
-                                                                                                 self.variantParams["phi_start"], self.variantParams["phi_end"],
-                                                                                                 self.variantParams["r_start"], self.variantParams["rc"],
-                                                                                                 self.e_x,self.e_y,self.e_z]]
-            elif self.variantName == "dynamicExponential":
-                forceField["helix"]["patchesTopology"]["forceField"]["helix"]["type"]       =  ["NonBondedPatches", "HelixExponential"]
-                forceField["helix"]["patchesTopology"]["forceField"]["helix"]["labels"]     =  ["name_i", "name_j", "Eb", "Kb", "Ka", "Kd", "rc", "e_x", "e_y", "e_z"]
-                forceField["helix"]["patchesTopology"]["forceField"]["helix"]["data"]       =  [["S", "E",
-                                                                                                 self.variantParams["Eb"], self.variantParams["Kb"],
-                                                                                                 self.variantParams["Ka"], self.variantParams["Kd"],
-                                                                                                 self.variantParams["rc"],
-                                                                                                 self.e_x,self.e_y,self.e_z]]
+            E  = self.variantParams["E"]
+            Kd = self.variantParams["Kd"]
+            Kw = self.variantParams["Kw"]
+            rc = self.variantParams["rc"]
+            Rq     = self.R_Hq
+            Rqinv  = [Rq[0],-Rq[1],-Rq[2],-Rq[3]]
 
-            else:
-                #Not implemented yet
-                raise Exception("Not implemented yet")
+            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["type"]       =  ["NonBondedPatches", "COSRAP"]
+            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["labels"]     =  ["name_i", "name_j", "E", "rc", "R", "Kswt", "Krap"]
+            forceField["helix"]["patchesTopology"]["forceField"]["helix"]["data"]       =  [["S", "E", E, rc, Rq, Kd, Kw],
+                                                                                            ["E", "S", E, rc, Rqinv, Kd, Kw]]
+        else:
+            #Not implemented yet
+            raise Exception("Not implemented yet")
 
         #############Patches
 
