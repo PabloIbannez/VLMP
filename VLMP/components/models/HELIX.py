@@ -13,8 +13,6 @@ from ...utils.geometry.objects.helix import computeHelixMatrix, generateHelix, c
 
 import random
 
-import orthopoly
-
 import numpy as np
 from scipy.spatial import cKDTree
 

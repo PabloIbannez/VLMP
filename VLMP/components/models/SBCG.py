@@ -84,7 +84,8 @@ class SBCG(modelBase):
                            "bondsModel","nativeContactsModel",
                            "centerInput",
                            "SASA",
-                           "aggregateChains"}
+                           "aggregateChains",
+                           "additionalExclusions"}
     requiredParameters  = {"PDB","resolution","steps","bondsModel","nativeContactsModel"}
     definedSelections   = set()
 
@@ -113,7 +114,8 @@ class SBCG(modelBase):
         sbcgParams = {"SASA":params.get("SASA",True),
                       "centerInput":params.get("centerInput",True),
                       "aggregateChains":params.get("aggregateChains",True),
-                      "parameters": copy.deepcopy(params)}
+                      "parameters": copy.deepcopy(params),
+                      "additionalExclusions": params.get("additionalExclusions",False)}
 
         sbcg = proteinModel.SBCG(name = name,
                                  inputPDBfilePath = inputPDBfilePath,
