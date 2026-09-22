@@ -437,10 +437,15 @@ class AnalysisAFM:
     def __init__(self,
                  VLMPsessionFilePath,
                  outputUnits,
+                 outputType,
                  maxForce = None,
                  plotTime = False):
 
         self.logger = logging.getLogger("VLMP")
+
+        if outputType not in ["window","file"]:
+            self.logger.error("[AnalysisAFM] Output type %s not available, available types are: window, file" % outputType)
+            raise Exception("Output type not available")
 
         ########################################################
 
@@ -450,6 +455,7 @@ class AnalysisAFM:
             self.VLMPsession = json.load(f)
 
         self.outputUnits = outputUnits
+        self.outputType  = outputType
         self.maxForce    = maxForce
         self.plotTime    = plotTime
 
@@ -502,10 +508,15 @@ class AnalysisAFM:
             if self.plotTime:
                 ax2 = ax.twinx()
                 ax2.plot(X,T,"--",color="red")
-            f.show()
 
             if self.maxForce is not None:
                 ax.set_ylim([np.min(F),self.maxForce])
+
+            if self.outputType == "window":
+                f.show()
+            else:
+                f.savefig("/".join(self.VLMPsessionFilePath.split("/")[:-1]) + "/results/" + name + "/afm.png")
+                plt.close(f)
 
             indentationProcessedFilePath = "/".join(self.VLMPsessionFilePath.split("/")[:-1]) + "/results/" + name + "/afm_processed.dat"
             with open(indentationProcessedFilePath,"w") as f:
@@ -514,4 +525,5 @@ class AnalysisAFM:
                     f.write("{} {}\n".format(X[i],F[i]))
 
         #Wait for plots to be closed
-        input("Press enter to continue...")
+        if self.outputType == "window":
+            input("Press enter to continue...")

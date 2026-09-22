@@ -130,7 +130,7 @@ After the simulations are complete, you can use the built-in analysis tools:
 
 .. code-block:: python
 
-   analysis = AnalysisAFM("afm_session/VLMPsession.json", outputUnits="nN_nm")
+   analysis = AnalysisAFM("afm_session/VLMPsession.json", outputUnits="nN_nm", outputType="file")
    analysis.run()
 
 The analysis process includes:
@@ -139,6 +139,10 @@ The analysis process includes:
 2. Converting units (if necessary).
 3. Generating force-distance curves.
 4. Plotting the results and saving processed data.
+
+``outputType`` selects where the curves go. With ``"file"`` each one is saved as
+``afm.png`` next to its processed data. With ``"window"`` they are shown instead,
+and the analysis waits for a key press so the windows stay open.
 
 The `AnalysisAFM` class automates these steps, making it easy to visualize and compare results across multiple samples or parameter sets.
 
